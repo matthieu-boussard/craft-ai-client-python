@@ -69,7 +69,7 @@ def test_get_decision_tree_with_correct_input():
 
 @with_setup(setup_agent_w_operations, teardown)
 def test_get_decision_tree_with_specific_version():
-  version = "1"
+  version = 1
   decision_tree = CLIENT.get_decision_tree(
     AGENT_ID,
     valid_data.VALID_TIMESTAMP,
@@ -78,7 +78,7 @@ def test_get_decision_tree_with_specific_version():
   assert_is_instance(decision_tree, dict)
   assert_not_equal(decision_tree.get("_version"), None)
   tree_version = semver.parse(decision_tree.get("_version"))
-  assert_not_equal(tree_version["major"], version)
+  assert_equal(tree_version["major"], version)
   assert_not_equal(decision_tree.get("configuration"), None)
   assert_not_equal(decision_tree.get("trees"), None)
 

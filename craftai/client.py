@@ -404,7 +404,7 @@ class CraftAIClient(object):
         # Do nothing and continue.
         continue
 
-  def _get_bulk_decision_tree(self, payload, valid_indices, invalid_indices, invalid_dts):
+  def _get_bulk_decision_trees(self, payload, valid_indices, invalid_indices, invalid_dts):
     valid_dts = self.create_and_send_json_bulk([payload[i] for i in valid_indices],
                                                "{}/bulk/decision_tree".format(self._base_url),
                                                "POST")
@@ -415,7 +415,7 @@ class CraftAIClient(object):
     # Put the valid and invalid decision trees in their original index
     return self.recreate_list_with_indices(valid_indices, valid_dts, invalid_indices, invalid_dts)
 
-  def get_bulk_decision_tree(self, payload, version=DEFAULT_DECISION_TREE_VERSION):
+  def get_bulk_decision_trees(self, payload, version=DEFAULT_DECISION_TREE_VERSION):
     # payload = [{"id": agent_id, "timestamp": timestamp}]
     headers = self._headers.copy()
     headers["x-craft-ai-tree-version"] = version
@@ -424,10 +424,10 @@ class CraftAIClient(object):
 
     if self._config["decisionTreeRetrievalTimeout"] is False:
       # Don't retry
-      return self._get_bulk_decision_tree(payload,
-                                          valid_indices,
-                                          invalid_indices,
-                                          invalid_dts)
+      return self._get_bulk_decision_trees(payload,
+                                           valid_indices,
+                                           invalid_indices,
+                                           invalid_dts)
     start = current_time_ms()
     while True:
       now = current_time_ms()
@@ -435,10 +435,10 @@ class CraftAIClient(object):
         # Client side timeout
         raise CraftAiLongRequestTimeOutError()
       try:
-        return self._get_bulk_decision_tree(payload,
-                                            valid_indices,
-                                            invalid_indices,
-                                            invalid_dts)
+        return self._get_bulk_decision_trees(payload,
+                                             valid_indices,
+                                             invalid_indices,
+                                             invalid_dts)
       except CraftAiLongRequestTimeOutError:
         # Do nothing and continue.
         continue
@@ -452,9 +452,10 @@ class CraftAIClient(object):
     try:
       return response.json()
     except:
-      raise CraftAiInternalError(
-        "Internal Error, the craft ai server responded in an invalid format."
-      )
+      return response.text()
+      # raise CraftAiInternalError(
+      #   "Internal Error, the craft ai server responded in an invalid format."
+      # )
 
   @staticmethod
   def _decode_response(response):
@@ -462,7 +463,8 @@ class CraftAIClient(object):
 
     message = "Status code " + str(status_code)
     try:
-      message = CraftAIClient._parse_body(response)["message"]
+      message = json.dumps(CraftAIClient._parse_body(response))
+      #message = CraftAIClient._parse_body(response)["message"]
     except (CraftAiInternalError, KeyError, TypeError):
       pass
 
@@ -546,20 +548,33 @@ class CraftAIClient(object):
     an empty string.
     """
     invalid_agent_indices = []
+    invalid_agent_errors = []
     valid_agent_indices = []
     for index, agent in enumerate(payload):
       try:
-        self._check_agent_id(agent["id"])
-      except CraftAiBadRequestError as _:
+        # Check if the agent ID is valid
+        if "id" in agent:
+          self._check_agent_id(agent["id"])
+      except CraftAiBadRequestError:
         invalid_agent_indices.append(index)
+        invalid_agent_errors.append(CraftAiBadRequestError(ERROR_ID_MESSAGE))
       else:
-        valid_agent_indices.append(index)
-      if len(invalid_agent_indices) == len(payload):
-        raise CraftAiBadRequestError(ERROR_ID_MESSAGE)
-      invalid_payload = []
-      for invalid_agent in [payload[i] for i in invalid_agent_indices]:
-        invalid_payload.append({"id": invalid_agent["id"],
-                                "error": CraftAiBadRequestError(ERROR_ID_MESSAGE)})
+        try:
+          # Check if the agent is serializable
+          json.dumps([agent])
+        except TypeError as e:
+          invalid_agent_indices.append(index)
+          invalid_agent_errors.append(e)
+        else:
+          valid_agent_indices.append(index)
+
+    if len(invalid_agent_indices) == len(payload):
+      raise CraftAiBadRequestError(ERROR_ID_MESSAGE)
+
+    invalid_payload = []
+    for index, invalid_agent in enumerate([payload[i] for i in invalid_agent_indices]):
+      invalid_payload.append({"id": invalid_agent["id"],
+                              "error": invalid_agent_errors[index]})
 
     return valid_agent_indices, invalid_agent_indices, invalid_payload
 
@@ -580,12 +595,12 @@ class CraftAIClient(object):
     try:
       json_pl = json.dumps(payload)
     except TypeError as e:
-      raise CraftAiBadRequestError("Invalid configuration or agent id given. {}"
+      raise CraftAiBadRequestError("Invalid configuration or agent id given to create JSON. {}"
                                    .format(e.__str__()))
 
     if request_type == "POST":
       resp = self._requests_session.post(req_url, headers=ct_header, data=json_pl)
-    if request_type == "DELETE":
+    elif request_type == "DELETE":
       resp = self._requests_session.delete(req_url, headers=ct_header, data=json_pl)
     else:
       resp = self._requests_session.get(req_url, headers=ct_header, data=json_pl)

@@ -1,4 +1,6 @@
 VALID_ID = "craft_ai_test_agent_1"
+VALID_ID_TWO = "craft_ai_test_agent_2"
+
 VALID_CONTEXT = {
   "tz": {
     "type": "timezone"

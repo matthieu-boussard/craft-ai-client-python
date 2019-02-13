@@ -103,7 +103,6 @@ class TestCreateAgentFailure(unittest.TestCase):
       valid_data.VALID_CONFIGURATION,
       "toto/tutu")
 
-  @nottest
   def test_create_agent_with_invalid_context(self):
     """create_agent should fail when given an invalid or no context
 
@@ -125,7 +124,6 @@ class TestCreateAgentFailure(unittest.TestCase):
         self.clean_up_agent,
         self.agent_id)
 
-  @nottest
   def test_create_agent_with_undefined_configuration(self):
     """create_agent should fail when given no configuration key in the request body
 
@@ -133,7 +131,6 @@ class TestCreateAgentFailure(unittest.TestCase):
     no configuration key in the request body, since it is a mandatory field to
     create an agent.
     """
-
     # Testing all non dict configuration cases
     for empty_configuration in invalid_data.UNDEFINED_KEY:
       self.assertRaises(
@@ -145,7 +142,6 @@ class TestCreateAgentFailure(unittest.TestCase):
         self.clean_up_agent,
         self.agent_id)
 
-  @nottest
   def test_create_agent_with_invalid_time_quantum(self):
     """create_agent should fail when given an invalid time quantum
 

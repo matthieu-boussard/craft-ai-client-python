@@ -1,6 +1,7 @@
 INVALID_IDS = {"bad_id_type": 42}
 
 UNKNOWN_ID = "one_eyed_drunken_pirate"
+UNKNOWN_ID_TWO = "one_eyed_drunken_parrot"
 
 INVALID_CONTEXTS = {
   "invalid_context_missing_type_key": {
