@@ -136,7 +136,7 @@ class CraftAIClient(object):
 
     return agent
 
-  def create_bulk_agents(self, payload):
+  def create_agents(self, payload):
     # payload = [{"id": agent_id, "configuration": configuration}] the id key is optionnal
     # Check all ids, raise an error if all ids are invalid
     valid_indices, invalid_indices, invalid_agents = self._check_agent_id_bulk(payload)
@@ -186,7 +186,7 @@ class CraftAIClient(object):
 
     return decoded_resp
 
-  def delete_bulk_agents(self, payload):
+  def delete_agents(self, payload):
     # payload = [{"id": agent_id}]
     # Check all ids, raise an error if all ids are invalid
     valid_indices, invalid_indices, invalid_agents = self._check_agent_id_bulk(payload)
@@ -203,7 +203,7 @@ class CraftAIClient(object):
     return self.recreate_list_with_indices(valid_indices,
                                            valid_agents,
                                            invalid_indices,
-                                           invalid_agents)
+                                           invalid_agents) 
 
   def get_shared_agent_inspector_url(self, agent_id, timestamp=None):
     # Raises an error when agent_id is invalid
@@ -268,7 +268,7 @@ class CraftAIClient(object):
     }
 
   def add_operations_bulk(self, payload):
-    # payload = [{"id": agent_id, "operations": list_operations}
+    # payload = [{"id": agent_id, "operations": list_operations}]
     # Check all ids, raise an error if all ids are invalid
     valid_indices, _, invalid_agents = self._check_agent_id_bulk(payload)
     valid_payload = [payload[i] for i in valid_indices]
@@ -299,6 +299,99 @@ class CraftAIClient(object):
 
     return invalid_agents + valid_agents
 
+  """
+  def add_operations_bulk(self, payload):
+    # payload = [{"id": agent_id, "operations": list_operations}]
+    # Check all ids, raise an error if all ids are invalid
+    valid_indices, invalid_indices, invalid_agents = self._check_agent_id_bulk(payload)
+    valid_payload = [payload[i] for i in valid_indices]
+    url = "{}/bulk/context".format(self._base_url)
+
+    valid_agents = []
+    payload_offset = []
+    nb_operations = 0
+    chunk_size = self.config["operationsChunksSize"]
+
+    for agent in valid_payload:
+      is_looping = True
+      offset = 0
+
+      while is_looping:
+
+        new_agent = {"id": agent["id"]}
+        next_offset = offset + chunk_size
+        try:
+          new_agent["operations"] = agent["operations"][offset:next_offset]
+          nb_operations += len(new_agent["operations"])
+          if new_agent["operations"] != []:
+            payload_offset.append(new_agent)
+        except TypeError as e:
+          new_agent["error"] = e
+          valid_agents.append([new_agent])
+
+        # Send the operations when the size of the payload is max
+        if nb_operations == self.config["operationsChunksSize"]:
+          chunk_size = self.config["operationsChunksSize"]
+          valid_agents.append(
+            self.create_and_send_json_bulk(payload_offset, url, "POST")
+          )
+          payload_offset = []
+          nb_operations = 0
+          offset = next_offset
+
+        # Add operations of the next agent before sending the payload
+        else:
+          is_looping = False
+          chunk_size = self.config["operationsChunksSize"] - nb_operations
+
+
+    # Send the last incomplete payload
+    if payload_offset != []:
+      valid_agents.append(
+        self.create_and_send_json_bulk(payload_offset, url, "POST")
+      )
+
+    # Sort the agents to be in their original places
+    return self.recreate_list_with_indices(valid_indices,
+                                           self._recreate_list_add_operations_bulk(valid_agents),
+                                           invalid_indices,
+                                           invalid_agents)
+
+  @staticmethod
+  def _recreate_list_add_operations_bulk(responses):
+    index = 0
+    all_agent_id = {}
+    res = []
+    for response in responses:
+      for agent in response:
+        print(agent)
+
+        if agent['id'] in all_agent_id:
+
+          index_agent = all_agent_id[agent['id']]
+          if 'message' in agent:
+            if 'message' in res[index_agent]:
+              res[index_agent]['message'] += agent['message']
+            else:
+              res[index_agent]['message'] = agent['message']
+          if 'error' in agent:
+            if 'error' in res[index_agent]:
+              res[index_agent]['error'].append(agent['error'])
+            else:
+              res[index_agent]['error'] = [agent['error']]
+
+        else:
+          all_agent_id[agent['id']] = index
+          index += 1
+          new_agent = {}
+          new_agent['id'] = agent['id']
+          if 'message' in agent:
+            new_agent['message'] = agent['message']
+          else:
+            new_agent['error'] = [agent['error']]
+          res.append(new_agent)
+    return res
+  """
   def _get_operations_list_pages(self, url, ops_list):
     if url is None:
       return ops_list
@@ -404,7 +497,7 @@ class CraftAIClient(object):
         # Do nothing and continue.
         continue
 
-  def _get_bulk_decision_trees(self, payload, valid_indices, invalid_indices, invalid_dts):
+  def _get_decision_trees(self, payload, valid_indices, invalid_indices, invalid_dts):
     valid_dts = self.create_and_send_json_bulk([payload[i] for i in valid_indices],
                                                "{}/bulk/decision_tree".format(self._base_url),
                                                "POST")
@@ -415,7 +508,7 @@ class CraftAIClient(object):
     # Put the valid and invalid decision trees in their original index
     return self.recreate_list_with_indices(valid_indices, valid_dts, invalid_indices, invalid_dts)
 
-  def get_bulk_decision_trees(self, payload, version=DEFAULT_DECISION_TREE_VERSION):
+  def get_decision_trees(self, payload, version=DEFAULT_DECISION_TREE_VERSION):
     # payload = [{"id": agent_id, "timestamp": timestamp}]
     headers = self._headers.copy()
     headers["x-craft-ai-tree-version"] = version
@@ -424,10 +517,10 @@ class CraftAIClient(object):
 
     if self._config["decisionTreeRetrievalTimeout"] is False:
       # Don't retry
-      return self._get_bulk_decision_trees(payload,
-                                           valid_indices,
-                                           invalid_indices,
-                                           invalid_dts)
+      return self._get_decision_trees(payload,
+                                      valid_indices,
+                                      invalid_indices,
+                                      invalid_dts)
     start = current_time_ms()
     while True:
       now = current_time_ms()
@@ -435,10 +528,10 @@ class CraftAIClient(object):
         # Client side timeout
         raise CraftAiLongRequestTimeOutError()
       try:
-        return self._get_bulk_decision_trees(payload,
-                                             valid_indices,
-                                             invalid_indices,
-                                             invalid_dts)
+        return self._get_decision_trees(payload,
+                                        valid_indices,
+                                        invalid_indices,
+                                        invalid_dts)
       except CraftAiLongRequestTimeOutError:
         # Do nothing and continue.
         continue
@@ -495,31 +588,35 @@ class CraftAIClient(object):
   def _decode_response_bulk(response_bulk):
     resp = []
     for response in response_bulk:
-      if "status" in response:
-        agent = {"id": response["id"]}
-        status_code = response["status"]
-        message = response["message"]
-
-        if status_code == 202:
-          agent["error"] = CraftAiLongRequestTimeOutError(message)
-        elif status_code == 401 or status_code == 403:
-          agent["error"] = CraftAiCredentialsError(message)
-        elif status_code == 400:
-          agent["error"] = CraftAiBadRequestError(message)
-        elif status_code == 404:
-          agent["error"] = CraftAiNotFoundError(message)
-        elif status_code == 413:
-          agent["error"] = CraftAiBadRequestError("Given payload is too large")
-        elif status_code == 500:
-          agent["error"] = CraftAiInternalError(message)
-        elif status_code == 503:
-          agent["error"] = CraftAiNetworkError("""Service momentarily unavailable, please try"""
-                                               """again in a few minutes. If the problem """
-                                               """persists please contact us at support@craft.ai""")
-        elif status_code == 504:
-          agent["error"] = CraftAiBadRequestError("Request has timed out")
+      if ("status" in response):
+        if response['status'] == 201:
+          agent = {"id": response["id"],
+                   "message": response["message"]}
         else:
-          agent["error"] = CraftAiUnknownError(message)
+          agent = {"id": response["id"]}
+          status_code = response["status"]
+          message = response["message"]
+
+          if status_code == 202:
+            agent["error"] = CraftAiLongRequestTimeOutError(message)
+          elif status_code == 401 or status_code == 403:
+            agent["error"] = CraftAiCredentialsError(message)
+          elif status_code == 400:
+            agent["error"] = CraftAiBadRequestError(message)
+          elif status_code == 404:
+            agent["error"] = CraftAiNotFoundError(message)
+          elif status_code == 413:
+            agent["error"] = CraftAiBadRequestError("Given payload is too large")
+          elif status_code == 500:
+            agent["error"] = CraftAiInternalError(message)
+          elif status_code == 503:
+            agent["error"] = CraftAiNetworkError("""Service momentarily unavailable, please try"""
+                                                """again in a few minutes. If the problem """
+                                                """persists please contact us at support@craft.ai""")
+          elif status_code == 504:
+            agent["error"] = CraftAiBadRequestError("Request has timed out")
+          else:
+            agent["error"] = CraftAiUnknownError(message)
 
         resp.append(agent)
 
