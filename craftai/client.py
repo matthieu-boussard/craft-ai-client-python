@@ -270,39 +270,6 @@ class CraftAIClient(object):
   def add_operations_bulk(self, payload):
     # payload = [{"id": agent_id, "operations": list_operations}]
     # Check all ids, raise an error if all ids are invalid
-    valid_indices, _, invalid_agents = self._check_agent_id_bulk(payload)
-    valid_payload = [payload[i] for i in valid_indices]
-
-    valid_agents = []
-    offset = 0
-    is_looping = True
-    while is_looping:
-      next_offset = offset + self.config["operationsChunksSize"]
-      payload_offset = []
-
-      for agent in valid_payload:
-        if offset <= len(agent["operations"]):
-          new_agent = {"id": agent["id"]}
-          new_agent["operations"] = agent["operations"][offset:next_offset]
-          payload_offset.append(new_agent)
-
-      if payload_offset == []:
-        is_looping = False
-      else:
-        valid_agents.append(
-          self.create_and_send_json_bulk(payload_offset,
-                                         "{}/bulk/context".format(self._base_url),
-                                         request_type="POST")
-        )
-
-        offset = next_offset
-
-    return invalid_agents + valid_agents
-
-  """
-  def add_operations_bulk(self, payload):
-    # payload = [{"id": agent_id, "operations": list_operations}]
-    # Check all ids, raise an error if all ids are invalid
     valid_indices, invalid_indices, invalid_agents = self._check_agent_id_bulk(payload)
     valid_payload = [payload[i] for i in valid_indices]
     url = "{}/bulk/context".format(self._base_url)
@@ -310,28 +277,24 @@ class CraftAIClient(object):
     valid_agents = []
     payload_offset = []
     nb_operations = 0
-    chunk_size = self.config["operationsChunksSize"]
 
     for agent in valid_payload:
-      is_looping = True
       offset = 0
 
-      while is_looping:
-
-        new_agent = {"id": agent["id"]}
-        next_offset = offset + chunk_size
+      while True:
+        # The next offset is one chunk away from the offset minus the number
+        # of operation already in the payload
+        next_offset = offset + (self.config["operationsChunksSize"] - nb_operations)
         try:
-          new_agent["operations"] = agent["operations"][offset:next_offset]
-          nb_operations += len(new_agent["operations"])
-          if new_agent["operations"] != []:
-            payload_offset.append(new_agent)
+          nb_operations += len(agent["operations"][offset:next_offset])
+          payload_offset.append({"id": agent["id"],
+                                 "operations": agent["operations"][offset:next_offset]}
+                               )
         except TypeError as e:
-          new_agent["error"] = e
-          valid_agents.append([new_agent])
+          valid_agents.append([{"id": agent["id"], "error": e}])
 
         # Send the operations when the size of the payload is max
         if nb_operations == self.config["operationsChunksSize"]:
-          chunk_size = self.config["operationsChunksSize"]
           valid_agents.append(
             self.create_and_send_json_bulk(payload_offset, url, "POST")
           )
@@ -339,18 +302,15 @@ class CraftAIClient(object):
           nb_operations = 0
           offset = next_offset
 
-        # Add operations of the next agent before sending the payload
+        # The payload is incomplete
         else:
-          is_looping = False
-          chunk_size = self.config["operationsChunksSize"] - nb_operations
-
+          break
 
     # Send the last incomplete payload
     if payload_offset != []:
       valid_agents.append(
         self.create_and_send_json_bulk(payload_offset, url, "POST")
       )
-
     # Sort the agents to be in their original places
     return self.recreate_list_with_indices(valid_indices,
                                            self._recreate_list_add_operations_bulk(valid_agents),
@@ -364,10 +324,8 @@ class CraftAIClient(object):
     res = []
     for response in responses:
       for agent in response:
-        print(agent)
 
         if agent['id'] in all_agent_id:
-
           index_agent = all_agent_id[agent['id']]
           if 'message' in agent:
             if 'message' in res[index_agent]:
@@ -391,7 +349,7 @@ class CraftAIClient(object):
             new_agent['error'] = [agent['error']]
           res.append(new_agent)
     return res
-  """
+
   def _get_operations_list_pages(self, url, ops_list):
     if url is None:
       return ops_list
@@ -588,35 +546,35 @@ class CraftAIClient(object):
   def _decode_response_bulk(response_bulk):
     resp = []
     for response in response_bulk:
-      if ("status" in response):
-        if response['status'] == 201:
-          agent = {"id": response["id"],
-                   "message": response["message"]}
-        else:
-          agent = {"id": response["id"]}
-          status_code = response["status"]
-          message = response["message"]
+      if ("status" in response) and (response.get('status') == 201):
+        agent = {"id": response["id"],
+                 "message": response["message"]}
+        resp.append(agent)
+      elif "status" in response:
+        agent = {"id": response["id"]}
+        status_code = response["status"]
+        message = response["message"]
 
-          if status_code == 202:
-            agent["error"] = CraftAiLongRequestTimeOutError(message)
-          elif status_code == 401 or status_code == 403:
-            agent["error"] = CraftAiCredentialsError(message)
-          elif status_code == 400:
-            agent["error"] = CraftAiBadRequestError(message)
-          elif status_code == 404:
-            agent["error"] = CraftAiNotFoundError(message)
-          elif status_code == 413:
-            agent["error"] = CraftAiBadRequestError("Given payload is too large")
-          elif status_code == 500:
-            agent["error"] = CraftAiInternalError(message)
-          elif status_code == 503:
-            agent["error"] = CraftAiNetworkError("""Service momentarily unavailable, please try"""
-                                                """again in a few minutes. If the problem """
-                                                """persists please contact us at support@craft.ai""")
-          elif status_code == 504:
-            agent["error"] = CraftAiBadRequestError("Request has timed out")
-          else:
-            agent["error"] = CraftAiUnknownError(message)
+        if status_code == 202:
+          agent["error"] = CraftAiLongRequestTimeOutError(message)
+        elif status_code == 401 or status_code == 403:
+          agent["error"] = CraftAiCredentialsError(message)
+        elif status_code == 400:
+          agent["error"] = CraftAiBadRequestError(message)
+        elif status_code == 404:
+          agent["error"] = CraftAiNotFoundError(message)
+        elif status_code == 413:
+          agent["error"] = CraftAiBadRequestError("Given payload is too large")
+        elif status_code == 500:
+          agent["error"] = CraftAiInternalError(message)
+        elif status_code == 503:
+          agent["error"] = CraftAiNetworkError("""Service momentarily unavailable, please try"""
+                                               """again in a few minutes. If the problem """
+                                               """persists please contact us at support@craft.ai""")
+        elif status_code == 504:
+          agent["error"] = CraftAiBadRequestError("Request has timed out")
+        else:
+          agent["error"] = CraftAiUnknownError(message)
 
         resp.append(agent)
 

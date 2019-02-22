@@ -1,7 +1,5 @@
 import unittest
-import six
 
-from nose.tools import nottest
 from craftai import Client, errors as craft_err
 
 from . import settings
@@ -72,7 +70,7 @@ class TestAddOperationsBulkSuccess(unittest.TestCase):
 
     payload = [{"id": self.agent_id1,
                 "operations": sorted(operations, key=lambda operation: operation["timestamp"])},
-              {"id": self.agent_id2,
+               {"id": self.agent_id2,
                 "operations": sorted(operations, key=lambda operation: operation["timestamp"])}]
     resp = self.client.add_operations_bulk(payload)
 
@@ -111,7 +109,7 @@ class TestAddOperationsBulkFailure(unittest.TestCase):
     for aid in aids:
       self.clean_up_agent(aid)
 
-  @nottest
+
   def test_add_operations_bulk_with_invalid_agent_id(self):
     """add_operations_bulk should fail when given non-string/empty strings ID
 
@@ -120,46 +118,16 @@ class TestAddOperationsBulkFailure(unittest.TestCase):
     should always be strings.
     """
     for empty_id in invalid_data.UNDEFINED_KEY:
-      payload = [{"id": invalid_data.UNDEFINED_KEY[empty_id], "operations": valid_data.VALID_OPERATIONS_SET},
-                 {"id": invalid_data.UNDEFINED_KEY[empty_id], "operations": valid_data.VALID_OPERATIONS_SET}]
+      payload = [{"id": invalid_data.UNDEFINED_KEY[empty_id],
+                  "operations": valid_data.VALID_OPERATIONS_SET},
+                 {"id": invalid_data.UNDEFINED_KEY[empty_id],
+                  "operations": valid_data.VALID_OPERATIONS_SET}]
       self.assertRaises(
         craft_err.CraftAiBadRequestError,
         self.client.add_operations_bulk,
-        payload)
-      
-      self.addCleanup(self.clean_up_agents,
-                      [self.agent_id1, self.agent_id2])
+        payload
+      )
 
-  @nottest
-  def test_add_operations_bulk_empty_operations_set(self):
-    """add_operations_bulk should fail when given empty sets of operations
-
-    It should raise an error upon request for posting an empty set of
-    operations to all agent's configuration.
-    """
-    for ops_set in invalid_data.UNDEFINED_KEY:
-      payload = [{"id": self.agent_id1, "operations": invalid_data.UNDEFINED_KEY[ops_set]},
-                 {"id": self.agent_id2, "operations": invalid_data.UNDEFINED_KEY[ops_set]}]
-      self.assertRaises(
-        craft_err.CraftAiBadRequestError,
-        self.client.add_operations_bulk,
-        payload)
-      self.addCleanup(self.clean_up_agents,
-                      [self.agent_id1, self.agent_id2])
-
-  def test_add_operations_bulk_invalid_operations(self):
-    """add_operations_bulk should fail when given invalid sets of operations
-
-    It should raise an error upon request for posting an invalid set of
-    operations to all agent's configuration.
-    """
-    for ops_set in invalid_data.INVALID_OPS_SET:
-      payload = [{"id": self.agent_id1, "operations": invalid_data.INVALID_OPS_SET[ops_set]},
-                 {"id": self.agent_id2, "operations": invalid_data.INVALID_OPS_SET[ops_set]}]
-      self.assertRaises(
-        craft_err.CraftAiBadRequestError,
-        self.client.add_operations_bulk,
-        payload)
       self.addCleanup(self.clean_up_agents,
                       [self.agent_id1, self.agent_id2])
 
@@ -302,7 +270,7 @@ class TestAddOperationsBulkSomeFailure(unittest.TestCase):
     self.addCleanup(self.clean_up_agents,
                     [self.agent_id1, self.agent_id2])
 
-  def test_add_operations_bulk_some_empty_string_operations(self):
+  def test_add_operations_bulk_some_empty_string(self):
     """add_operations_bulk should succeed when given some empty string operations set
     and some valid.
 
@@ -326,7 +294,7 @@ class TestAddOperationsBulkSomeFailure(unittest.TestCase):
     self.addCleanup(self.clean_up_agents,
                     [self.agent_id1, self.agent_id2])
 
-  def test_add_operations_bulk_some_empty_dict_operations(self):
+  def test_add_operations_bulk_some_empty_dict(self):
     """add_operations_bulk should succeed when given some empty dict operations set
     and some valid.
 
@@ -350,7 +318,7 @@ class TestAddOperationsBulkSomeFailure(unittest.TestCase):
     self.addCleanup(self.clean_up_agents,
                     [self.agent_id1, self.agent_id2])
 
-  def test_add_operations_bulk_some_empty_list_operations(self):
+  def test_add_operations_bulk_some_empty_list(self):
     """add_operations_bulk should succeed when given some empty list operations set
     and some valid.
 
@@ -374,7 +342,7 @@ class TestAddOperationsBulkSomeFailure(unittest.TestCase):
     self.addCleanup(self.clean_up_agents,
                     [self.agent_id1, self.agent_id2])
 
-  def test_add_operations_bulk_some_incomplete_operations(self):
+  def test_add_operations_bulk_some_incomplete(self):
     """add_operations_bulk should succeed when given some incomplete operations set
     and some valid.
 
@@ -398,7 +366,7 @@ class TestAddOperationsBulkSomeFailure(unittest.TestCase):
     self.addCleanup(self.clean_up_agents,
                     [self.agent_id1, self.agent_id2])
 
-  def test_add_operations_bulk_some_invalid_operations(self):
+  def test_add_operations_bulk_some_invalid(self):
     """add_operations_bulk should succeed when given some invalid operations set
     and some valid.
 
@@ -422,7 +390,7 @@ class TestAddOperationsBulkSomeFailure(unittest.TestCase):
     self.addCleanup(self.clean_up_agents,
                     [self.agent_id1, self.agent_id2])
 
-  def test_add_operations_bulk_some_unexpected_time_operations(self):
+  def test_add_operations_bulk_some_unexpected_time(self):
     """add_operations_bulk should succeed when given some unexpected time operations set
     and some valid.
 

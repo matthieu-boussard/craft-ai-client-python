@@ -7,7 +7,7 @@ unit-tests:
 	nosetests --exe
 
 bulk-test:
-	nosetests --exe tests/test_create_agents.py tests/test_delete_agents.py tests/test_get_decision_trees.py
+	nosetests --exe tests/test_create_agents.py tests/test_delete_agents.py tests/test_get_decision_trees.py tests/test_add_operations_bulk.py
 
 bulk-test-debug:
 	nosetests --exe -v --nocapture tests/test_add_operations_bulk.py
