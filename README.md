@@ -2,7 +2,7 @@
 
 [![PyPI](https://img.shields.io/pypi/v/craft-ai.svg?style=flat-square)](https://pypi.python.org/pypi?:action=display&name=craft-ai) [![Build Status](https://img.shields.io/travis/craft-ai/craft-ai-client-python/master.svg?style=flat-square)](https://travis-ci.org/craft-ai/craft-ai-client-python) [![License](https://img.shields.io/badge/license-BSD--3--Clause-42358A.svg?style=flat-square)](LICENSE) [![python](https://img.shields.io/pypi/pyversions/craft-ai.svg?style=flat-square)](https://pypi.python.org/pypi?:action=display&name=craft-ai)
 
-[**craft ai** cognitive automation API](http://craft.ai) leverages explainable Artificial Intelligence to 10x your knowledge workers productivity. craft ai is the first high level AI API enabling Automated Machine Learning at the individual level that generates explainable predictive models on the fly.
+[**craft ai**'s Explainable AI API](http://craft.ai) enables product & operational teams to quickly deploy and run explainable AIs. craft ai decodes your data streams to deliver self-learning services.
 
 ## Get Started!
 
@@ -12,7 +12,7 @@ If you're reading this you are probably already registered with **craft ai**, if
 
 ### 1 - Create a project
 
-Once your account is setup, let's create your first **project**! Go in the 'Projects' tab in the **craft ai** control center at [`https://beta.craft.ai/projects`](https://beta.craft.ai/projects), and press **Create a project**.
+Once your account is setup, let's create your first **project**! Go in the 'Projects' tab in the **craft ai** control center at [`https://beta.craft.ai/inspector`](https://beta.craft.ai/inspector), and press **Create a project**.
 
 Once it's done, you can click on your newly created project to retrieve its tokens. There are two types of tokens: **read** and **write**. You'll need the **write** token to create, update and delete your agent.
 
@@ -103,6 +103,8 @@ _For further information, check the ['create agent' reference documentation](#cr
 
 We have now created our first agent but it is not able to do much, yet. To learn a decision model it needs to be provided with data, in **craft ai** these are called context operations.
 
+Please note that only value changes are sent, thus if an operation doesn't contain a value, the previous known value is used.
+
 In the following we add 8 operations:
 
 1. The initial one sets the initial state of the agent, on July 25 2016 at 5:30, in Paris, nobody is there and the light is off;
@@ -113,6 +115,7 @@ In the following we add 8 operations:
 6. At 19:23, 2 persons enter the room;
 7. At 22:35, the light is turned on;
 8. At 23:06, everyone leaves the room and the light is turned off.
+
 
 ```python
 agent_id = "my_first_agent"
@@ -432,36 +435,36 @@ Each agent has a configuration defining:
 
   * an abbreviation among the following:
 
-  - **UTC** or **Z** Universal Time Coordinated,
-  - **GMT** Greenwich Mean Time, as UTC,
-  - **BST** British Summer Time, as UTC+1 hour,
-  - **IST** Irish Summer Time, as UTC+1,
-  - **WET** Western Europe Time, as UTC,
-  - **WEST** Western Europe Summer Time, as UTC+1,
-  - **CET** Central Europe Time, as UTC+1,
-  - **CEST** Central Europe Summer Time, as UTC+2,
-  - **EET** Eastern Europe Time, as UTC+2,
-  - **EEST** Eastern Europe Summer Time, as UTC+3,
-  - **MSK** Moscow Time, as UTC+3,
-  - **MSD** Moscow Summer Time, as UTC+4,
-  - **AST** Atlantic Standard Time, as UTC-4,
-  - **ADT** Atlantic Daylight Time, as UTC-3,
-  - **EST** Eastern Standard Time, as UTC-5,
-  - **EDT** Eastern Daylight Saving Time, as UTC-4,
-  - **CST** Central Standard Time, as UTC-6,
-  - **CDT** Central Daylight Saving Time, as UTC-5,
-  - **MST** Mountain Standard Time, as UTC-7,
-  - **MDT** Mountain Daylight Saving Time, as UTC-6,
-  - **PST** Pacific Standard Time, as UTC-8,
-  - **PDT** Pacific Daylight Saving Time, as UTC-7,
-  - **HST** Hawaiian Standard Time, as UTC-10,
-  - **AKST** Alaska Standard Time, as UTC-9,
-  - **AKDT** Alaska Standard Daylight Saving Time, as UTC-8,
-  - **AEST** Australian Eastern Standard Time, as UTC+10,
-  - **AEDT** Australian Eastern Daylight Time, as UTC+11,
-  - **ACST** Australian Central Standard Time, as UTC+9.5,
-  - **ACDT** Australian Central Daylight Time, as UTC+10.5,
-  - **AWST** Australian Western Standard Time, as UTC+8.
+    - **UTC** or **Z** Universal Time Coordinated,
+    - **GMT** Greenwich Mean Time, as UTC,
+    - **BST** British Summer Time, as UTC+1 hour,
+    - **IST** Irish Summer Time, as UTC+1,
+    - **WET** Western Europe Time, as UTC,
+    - **WEST** Western Europe Summer Time, as UTC+1,
+    - **CET** Central Europe Time, as UTC+1,
+    - **CEST** Central Europe Summer Time, as UTC+2,
+    - **EET** Eastern Europe Time, as UTC+2,
+    - **EEST** Eastern Europe Summer Time, as UTC+3,
+    - **MSK** Moscow Time, as UTC+3,
+    - **MSD** Moscow Summer Time, as UTC+4,
+    - **AST** Atlantic Standard Time, as UTC-4,
+    - **ADT** Atlantic Daylight Time, as UTC-3,
+    - **EST** Eastern Standard Time, as UTC-5,
+    - **EDT** Eastern Daylight Saving Time, as UTC-4,
+    - **CST** Central Standard Time, as UTC-6,
+    - **CDT** Central Daylight Saving Time, as UTC-5,
+    - **MST** Mountain Standard Time, as UTC-7,
+    - **MDT** Mountain Daylight Saving Time, as UTC-6,
+    - **PST** Pacific Standard Time, as UTC-8,
+    - **PDT** Pacific Daylight Saving Time, as UTC-7,
+    - **HST** Hawaiian Standard Time, as UTC-10,
+    - **AKST** Alaska Standard Time, as UTC-9,
+    - **AKDT** Alaska Standard Daylight Saving Time, as UTC-8,
+    - **AEST** Australian Eastern Standard Time, as UTC+10,
+    - **AEDT** Australian Eastern Daylight Time, as UTC+11,
+    - **ACST** Australian Central Standard Time, as UTC+9.5,
+    - **ACDT** Australian Central Daylight Time, as UTC+10.5,
+    - **AWST** Australian Western Standard Time, as UTC+8.
 
 > :information_source: By default, the values of the `time_of_day` and `day_of_week`
 > properties are generated from the [`timestamp`](#timestamp) of an agent's
@@ -872,17 +875,19 @@ The decision tree interpreter can be used offline from decisions tree computed t
 
 ### Take decision ###
 
+Note that the python interpreter takes an array of contexts.
+
 ```python
 tree = { ... } # Decision tree as retrieved through the craft ai REST API
 
 # Compute the decision on a fully described context
 decision = craftai.Interpreter.decide(
   tree,
-  { # The context on which the decision is taken
+  [{ # The context on which the decision is taken
     "timezone": "+02:00",
     "timeOfDay": 7.5,
     "peopleCount": 3
-  }
+  }]
 )
 
 # Or Compute the decision on a context created from the given one and filling the
@@ -890,11 +895,12 @@ decision = craftai.Interpreter.decide(
 
 decision = craftai.Interpreter.decide(
   tree,
-  {
+  [{
     "timezone": "+02:00",
     "peopleCount": 3
   },
   craftai.Time("2010-01-01T07:30:30+0200")
+  ]
 )
 ```
 
@@ -981,10 +987,10 @@ from craftai import reduce_decision_rules
 decision = craftai.Interpreter.decide( ... )
 
 # `decision_rules` is the decision rules that led to decision for the `lightBulbState` value
-decision_rules = decision["output"]["lightBulbState"]["decision_rules"]
+decision_rules = decision["output"]["lightbulbState"]["decision_rules"]
 
 # // `decision_rules_str` is a human readable string representation of the rules.
-decision_rules_str = format_decision_rules(decisionRules)
+decision_rules_str = format_decision_rules(decision_rules)
 ```
 
 ## Error Handling ##
@@ -1009,6 +1015,11 @@ import craftai.pandas
 # Most of the time you'll need the following
 import numpy as np
 import pandas as pd
+
+# Client must then be defined using craftai.pandas module
+client = craftai.pandas.Client({
+  "token": "{token}"
+})
 ```
 
 The craft ai pandas module is derived for the _vanilla_ one, with the following methods are overriden to support pandas' [`DataFrame`](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html).
@@ -1043,7 +1054,7 @@ Add a `DataFrame` of operations to the desired agent. The format is the same as 
 df = pd.DataFrame(
   [
     [0, "OFF", "+02:00"],
-    [1, "ON", np.nan],
+    [1, "ON", np.nan], # timezone will be "+02:00"
     [2, np.nan, np.nan],
     [np.nan, "OFF", np.nan],
     [0, np.nan, np.nan]
@@ -1080,6 +1091,7 @@ df = client.get_state_history("my_new_agent")
 #### `craftai.pandas.Client.decide_from_contexts_df` #####
 
 Take multiple decisions on a given `DataFrame` following the same format as above.
+Missing values are not accepted for expected properties here.
 
 ```python
 decisions_df = client.decide_from_contexts_df(tree, pd.DataFrame(
@@ -1087,7 +1099,7 @@ decisions_df = client.decide_from_contexts_df(tree, pd.DataFrame(
     [0, "+02:00"],
     [1, np.nan],
     [2, np.nan],
-    [np.nan, np.nan],
+    [1, np.nan],
     [0, np.nan]
   ],
   columns=['peopleCount', 'timezone'],
@@ -1107,7 +1119,7 @@ This function never raises `CraftAiNullDecisionError`, instead it inserts these 
 
 #### `craftai.pandas.utils.create_tree_html` #####
 
-Returns a HTML version of the given decision tree. If this latter is saved in a `.html` file, it can be opened in
+Returns a HTML version of the given decision tree. If this latter is saved in a `.html` file, it can be opened in 
 a browser to be visualized.
 
 ```python
@@ -1128,7 +1140,7 @@ html = create_tree_html(tree)
 
 #### `craftai.pandas.utils.display_tree` #####
 
-Display a decision tree in a Jupyter Notebook.
+Display a decision tree in a Jupyter Notebook. 
 This function can be useful for analyzing the induced decision trees.
 
 ```python
