@@ -5,19 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/craft-ai/craft-ai-client-python/compare/v1.14.1...HEAD) ##
+## [Unreleased](https://github.com/craft-ai/craft-ai-client-python/compare/v1.14.1...HEAD)
 
 ### Added
 
-- Support timezones as UTC offset in minutes
-- Support V2 trees including:
-    - Missing values: it is now possible to handle missing values by adding `deactivate_missing_values: false` in the agent configuration. Missing values correspond to a `null` value in a given context.
-    - Optional values: it is now possible to handle optional values by adding `is_optional: true` for a property in the agent configuration. Optional values are defined by `{}`, the empty Object, in a given context.
-    - The multi-enum operator `ìn`.
-    - Boolean values
-- Predictions now return the number of samples in the leaf and its distribution if it is a classification problem.
+- Support timezones as UTC offset in minutes.
+- Ready for the upcoming decision trees v2, including the following.
+  - **Missing values**: it is now possible to handle missing values by adding `deactivate_missing_values: false` in the agent configuration. Missing values correspond to a `null` value in a given context.
+  - **Optional values**: it is now possible to handle optional values by adding `is_optional: true` for a property in the agent configuration. Optional values are defined by `{}`, the empty Object, in a given context.
+  - **Multi-enum operator** `in`.
+  - **Boolean** property type.
+  - Predictions now return the number of samples in the leaf and its distribution if it is a classification problem.
 
-## [1.14.1](https://github.com/craft-ai/craft-ai-client-python/compare/v1.14.0...v1.14.1) - 2018-11-28 ##
+### Changed
+
+- Relaxing the constraints on the libraries dependencies.
+
+## [1.14.1](https://github.com/craft-ai/craft-ai-client-python/compare/v1.14.0...v1.14.1) - 2018-11-28
 
 ### Changed
 
