@@ -136,13 +136,13 @@ class CraftAIClient(object):
 
     return agent
 
-  def create_agents(self, payload):
+  def create_agents_bulk(self, payload):
     # payload = [{"id": agent_id, "configuration": configuration}] the id key is optionnal
     # Check all ids, raise an error if all ids are invalid
     valid_indices, invalid_indices, invalid_agents = self._check_agent_id_bulk(payload)
 
     # Create the json file with the agents with valid id and send it
-    valid_agents = self.create_and_send_json_bulk([payload[i] for i in valid_indices],
+    valid_agents = self._create_and_send_json_bulk([payload[i] for i in valid_indices],
                                                   "{}/bulk/agents".format(self._base_url),
                                                   "POST")
 
@@ -150,10 +150,10 @@ class CraftAIClient(object):
       return valid_agents
 
     # Put the valid and invalid agents in their original index
-    return self.recreate_list_with_indices(valid_indices,
-                                           valid_agents,
-                                           invalid_indices,
-                                           invalid_agents)
+    return self._recreate_list_with_indices(valid_indices,
+                                            valid_agents,
+                                            invalid_indices,
+                                            invalid_agents)
 
   def get_agent(self, agent_id):
     # Raises an error when agent_id is invalid
@@ -186,13 +186,13 @@ class CraftAIClient(object):
 
     return decoded_resp
 
-  def delete_agents(self, payload):
+  def delete_agents_bulk(self, payload):
     # payload = [{"id": agent_id}]
     # Check all ids, raise an error if all ids are invalid
     valid_indices, invalid_indices, invalid_agents = self._check_agent_id_bulk(payload)
 
     # Create the json file with the agents with valid id and send it
-    valid_agents = self.create_and_send_json_bulk([payload[i] for i in valid_indices],
+    valid_agents = self._create_and_send_json_bulk([payload[i] for i in valid_indices],
                                                   "{}/bulk/agents".format(self._base_url),
                                                   "DELETE")
 
@@ -200,10 +200,10 @@ class CraftAIClient(object):
       return valid_agents
 
     # Put the valid and invalid agents in their original index
-    return self.recreate_list_with_indices(valid_indices,
-                                           valid_agents,
-                                           invalid_indices,
-                                           invalid_agents) 
+    return self._recreate_list_with_indices(valid_indices,
+                                            valid_agents,
+                                            invalid_indices,
+                                            invalid_agents) 
 
   def get_shared_agent_inspector_url(self, agent_id, timestamp=None):
     # Raises an error when agent_id is invalid
@@ -287,16 +287,17 @@ class CraftAIClient(object):
         next_offset = offset + (self.config["operationsChunksSize"] - nb_operations)
         try:
           nb_operations += len(agent["operations"][offset:next_offset])
-          payload_offset.append({"id": agent["id"],
-                                 "operations": agent["operations"][offset:next_offset]}
-                               )
+          new_agent = {"id": agent["id"], "operations": agent["operations"][offset:next_offset]}
+          if new_agent['operations'] != []:
+            payload_offset.append(new_agent)
         except TypeError as e:
           valid_agents.append([{"id": agent["id"], "error": e}])
 
         # Send the operations when the size of the payload is max
         if nb_operations == self.config["operationsChunksSize"]:
+          print("\n sending")
           valid_agents.append(
-            self.create_and_send_json_bulk(payload_offset, url, "POST")
+            self._create_and_send_json_bulk(payload_offset, url, "POST")
           )
           payload_offset = []
           nb_operations = 0
@@ -309,13 +310,16 @@ class CraftAIClient(object):
     # Send the last incomplete payload
     if payload_offset != []:
       valid_agents.append(
-        self.create_and_send_json_bulk(payload_offset, url, "POST")
+        self._create_and_send_json_bulk(payload_offset, url, "POST")
       )
+    else:
+      # faire quelque chose ici
+      valid_indices = valid_indices[:-1]
     # Sort the agents to be in their original places
-    return self.recreate_list_with_indices(valid_indices,
-                                           self._recreate_list_add_operations_bulk(valid_agents),
-                                           invalid_indices,
-                                           invalid_agents)
+    return self._recreate_list_with_indices(valid_indices,
+                                            self._recreate_list_add_operations_bulk(valid_agents),
+                                            invalid_indices,
+                                            invalid_agents)
 
   @staticmethod
   def _recreate_list_add_operations_bulk(responses):
@@ -455,8 +459,8 @@ class CraftAIClient(object):
         # Do nothing and continue.
         continue
 
-  def _get_decision_trees(self, payload, valid_indices, invalid_indices, invalid_dts):
-    valid_dts = self.create_and_send_json_bulk([payload[i] for i in valid_indices],
+  def _get_decision_trees_bulk(self, payload, valid_indices, invalid_indices, invalid_dts):
+    valid_dts = self._create_and_send_json_bulk([payload[i] for i in valid_indices],
                                                "{}/bulk/decision_tree".format(self._base_url),
                                                "POST")
 
@@ -464,21 +468,22 @@ class CraftAIClient(object):
       return valid_dts
 
     # Put the valid and invalid decision trees in their original index
-    return self.recreate_list_with_indices(valid_indices, valid_dts, invalid_indices, invalid_dts)
+    return self._recreate_list_with_indices(valid_indices, valid_dts, invalid_indices, invalid_dts)
 
-  def get_decision_trees(self, payload, version=DEFAULT_DECISION_TREE_VERSION):
+  def get_decision_trees_bulk(self, payload, version=DEFAULT_DECISION_TREE_VERSION):
     # payload = [{"id": agent_id, "timestamp": timestamp}]
     headers = self._headers.copy()
     headers["x-craft-ai-tree-version"] = version
+
     # Check all ids, raise an error if all ids are invalid
     valid_indices, invalid_indices, invalid_dts = self._check_agent_id_bulk(payload)
 
     if self._config["decisionTreeRetrievalTimeout"] is False:
       # Don't retry
-      return self._get_decision_trees(payload,
-                                      valid_indices,
-                                      invalid_indices,
-                                      invalid_dts)
+      return self._get_decision_trees_bulk(payload,
+                                           valid_indices,
+                                           invalid_indices,
+                                           invalid_dts)
     start = current_time_ms()
     while True:
       now = current_time_ms()
@@ -486,10 +491,10 @@ class CraftAIClient(object):
         # Client side timeout
         raise CraftAiLongRequestTimeOutError()
       try:
-        return self._get_decision_trees(payload,
-                                        valid_indices,
-                                        invalid_indices,
-                                        invalid_dts)
+        return self._get_decision_trees_bulk(payload,
+                                             valid_indices,
+                                             invalid_indices,
+                                             invalid_dts)
       except CraftAiLongRequestTimeOutError:
         # Do nothing and continue.
         continue
@@ -595,12 +600,10 @@ class CraftAIClient(object):
       raise CraftAiBadRequestError(ERROR_ID_MESSAGE)
 
   def _check_agent_id_bulk(self, payload):
-    """Checks that the given agent_id is a valid non-empty string.
-        # payload = [{"id": agent_id}]
+    """Checks that all the given agent_ids are valid non-empty strings
 
-
-    Raises an error if the given agent_id is not of type string or if it is
-    an empty string.
+    Raises an error if all the given agent_id are not of type string are
+    empty string.
     """
     invalid_agent_indices = []
     invalid_agent_errors = []
@@ -634,7 +637,10 @@ class CraftAIClient(object):
     return valid_agent_indices, invalid_agent_indices, invalid_payload
 
   @staticmethod
-  def recreate_list_with_indices(indices1, values1, indices2, values2):
+  def _recreate_list_with_indices(indices1, values1, indices2, values2):
+    
+    print("indices", indices1)
+    print("values", values1)
     full_list = [None] * (len(indices1) + len(indices2))
     for i, index in enumerate(indices1):
       full_list[index] = values1[i]
@@ -643,7 +649,7 @@ class CraftAIClient(object):
 
     return full_list
 
-  def create_and_send_json_bulk(self, payload, req_url, request_type="GET"):
+  def _create_and_send_json_bulk(self, payload, req_url, request_type="GET"):
     # Extra header in addition to the main session's
     ct_header = {"Content-Type": "application/json; charset=utf-8"}
 

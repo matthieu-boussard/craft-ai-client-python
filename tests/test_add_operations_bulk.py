@@ -63,7 +63,8 @@ class TestAddOperationsBulkSuccess(unittest.TestCase):
     timestamp = operation["timestamp"]
     length = len(operations)
 
-    while length < 2000:
+    #while length < 2000:
+    while length < 50:
       operation["timestamp"] = timestamp + length
       operations.append(operation.copy())
       length = length + 1
