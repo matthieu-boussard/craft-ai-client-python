@@ -86,7 +86,7 @@ def test_get_decision_tree_with_specific_version():
 def test_get_decision_tree_without_timestamp():
   # test if we get the latest decision tree
   decision_tree = CLIENT.get_decision_tree(AGENT_ID)
-  ground_truth_decision_tree = decision_tree = CLIENT.get_decision_tree(AGENT_ID, 1458741262)
+  ground_truth_decision_tree = decision_tree = CLIENT.get_decision_tree(AGENT_ID, 1458741230 + 505)
   assert_is_instance(decision_tree, dict)
   assert_not_equal(decision_tree.get("_version"), None)
   assert_not_equal(decision_tree.get("configuration"), None)

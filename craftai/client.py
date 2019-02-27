@@ -143,8 +143,8 @@ class CraftAIClient(object):
 
     # Create the json file with the agents with valid id and send it
     valid_agents = self._create_and_send_json_bulk([payload[i] for i in valid_indices],
-                                                  "{}/bulk/agents".format(self._base_url),
-                                                  "POST")
+                                                   "{}/bulk/agents".format(self._base_url),
+                                                   "POST")
 
     if invalid_indices == []:
       return valid_agents
@@ -193,8 +193,8 @@ class CraftAIClient(object):
 
     # Create the json file with the agents with valid id and send it
     valid_agents = self._create_and_send_json_bulk([payload[i] for i in valid_indices],
-                                                  "{}/bulk/agents".format(self._base_url),
-                                                  "DELETE")
+                                                   "{}/bulk/agents".format(self._base_url),
+                                                   "DELETE")
 
     if invalid_indices == []:
       return valid_agents
@@ -203,7 +203,7 @@ class CraftAIClient(object):
     return self._recreate_list_with_indices(valid_indices,
                                             valid_agents,
                                             invalid_indices,
-                                            invalid_agents) 
+                                            invalid_agents)
 
   def get_shared_agent_inspector_url(self, agent_id, timestamp=None):
     # Raises an error when agent_id is invalid
@@ -287,15 +287,13 @@ class CraftAIClient(object):
         next_offset = offset + (self.config["operationsChunksSize"] - nb_operations)
         try:
           nb_operations += len(agent["operations"][offset:next_offset])
-          new_agent = {"id": agent["id"], "operations": agent["operations"][offset:next_offset]}
-          if new_agent['operations'] != []:
-            payload_offset.append(new_agent)
+          payload_offset.append({"id": agent["id"],
+                                 "operations": agent["operations"][offset:next_offset]})
         except TypeError as e:
           valid_agents.append([{"id": agent["id"], "error": e}])
 
         # Send the operations when the size of the payload is max
         if nb_operations == self.config["operationsChunksSize"]:
-          print("\n sending")
           valid_agents.append(
             self._create_and_send_json_bulk(payload_offset, url, "POST")
           )
@@ -312,9 +310,7 @@ class CraftAIClient(object):
       valid_agents.append(
         self._create_and_send_json_bulk(payload_offset, url, "POST")
       )
-    else:
-      # faire quelque chose ici
-      valid_indices = valid_indices[:-1]
+
     # Sort the agents to be in their original places
     return self._recreate_list_with_indices(valid_indices,
                                             self._recreate_list_add_operations_bulk(valid_agents),
@@ -329,28 +325,28 @@ class CraftAIClient(object):
     for response in responses:
       for agent in response:
 
-        if agent['id'] in all_agent_id:
-          index_agent = all_agent_id[agent['id']]
-          if 'message' in agent:
-            if 'message' in res[index_agent]:
-              res[index_agent]['message'] += agent['message']
+        if agent["id"] in all_agent_id:
+          index_agent = all_agent_id[agent["id"]]
+          if "message" in agent:
+            if "message" in res[index_agent]:
+              res[index_agent]["message"] += agent["message"]
             else:
-              res[index_agent]['message'] = agent['message']
-          if 'error' in agent:
-            if 'error' in res[index_agent]:
-              res[index_agent]['error'].append(agent['error'])
+              res[index_agent]["message"] = agent["message"]
+          if "error" in agent:
+            if "error" in res[index_agent]:
+              res[index_agent]["error"].append(agent["error"])
             else:
-              res[index_agent]['error'] = [agent['error']]
+              res[index_agent]["error"] = [agent["error"]]
 
         else:
-          all_agent_id[agent['id']] = index
+          all_agent_id[agent["id"]] = index
           index += 1
           new_agent = {}
-          new_agent['id'] = agent['id']
-          if 'message' in agent:
-            new_agent['message'] = agent['message']
+          new_agent["id"] = agent["id"]
+          if "message" in agent:
+            new_agent["message"] = agent["message"]
           else:
-            new_agent['error'] = [agent['error']]
+            new_agent["error"] = [agent["error"]]
           res.append(new_agent)
     return res
 
@@ -461,8 +457,8 @@ class CraftAIClient(object):
 
   def _get_decision_trees_bulk(self, payload, valid_indices, invalid_indices, invalid_dts):
     valid_dts = self._create_and_send_json_bulk([payload[i] for i in valid_indices],
-                                               "{}/bulk/decision_tree".format(self._base_url),
-                                               "POST")
+                                                "{}/bulk/decision_tree".format(self._base_url),
+                                                "POST")
 
     if invalid_indices == []:
       return valid_dts
@@ -508,10 +504,10 @@ class CraftAIClient(object):
     try:
       return response.json()
     except:
-      return response.text()
-      # raise CraftAiInternalError(
-      #   "Internal Error, the craft ai server responded in an invalid format."
-      # )
+      #return response.text()
+      raise CraftAiInternalError(
+        "Internal Error, the craft ai server responded in an invalid format."
+      )
 
   @staticmethod
   def _decode_response(response):
@@ -526,32 +522,15 @@ class CraftAIClient(object):
 
     if status_code in [200, 201, 204, 207]:
       return CraftAIClient._parse_body(response)
-    if status_code == 202:
-      raise CraftAiLongRequestTimeOutError(message)
-    if status_code == 401 or status_code == 403:
-      raise CraftAiCredentialsError(message)
-    if status_code == 400:
-      raise CraftAiBadRequestError(message)
-    if status_code == 404:
-      raise CraftAiNotFoundError(message)
-    if status_code == 413:
-      raise CraftAiBadRequestError("Given payload is too large")
-    if status_code == 500:
-      raise CraftAiInternalError(message)
-    if status_code == 503:
-      raise CraftAiNetworkError("""Service momentarily unavailable, please try"""
-                                """again in a few minutes. If the problem """
-                                """persists please contact us at support@craft.ai""")
-    if status_code == 504:
-      raise CraftAiBadRequestError("Request has timed out")
-
-    raise CraftAiUnknownError(message)
+    else:
+      raise CraftAIClient._get_error_from_status(status_code, message)
+    return None
 
   @staticmethod
   def _decode_response_bulk(response_bulk):
     resp = []
     for response in response_bulk:
-      if ("status" in response) and (response.get('status') == 201):
+      if ("status" in response) and (response.get("status") == 201):
         agent = {"id": response["id"],
                  "message": response["message"]}
         resp.append(agent)
@@ -559,27 +538,7 @@ class CraftAIClient(object):
         agent = {"id": response["id"]}
         status_code = response["status"]
         message = response["message"]
-
-        if status_code == 202:
-          agent["error"] = CraftAiLongRequestTimeOutError(message)
-        elif status_code == 401 or status_code == 403:
-          agent["error"] = CraftAiCredentialsError(message)
-        elif status_code == 400:
-          agent["error"] = CraftAiBadRequestError(message)
-        elif status_code == 404:
-          agent["error"] = CraftAiNotFoundError(message)
-        elif status_code == 413:
-          agent["error"] = CraftAiBadRequestError("Given payload is too large")
-        elif status_code == 500:
-          agent["error"] = CraftAiInternalError(message)
-        elif status_code == 503:
-          agent["error"] = CraftAiNetworkError("""Service momentarily unavailable, please try"""
-                                               """again in a few minutes. If the problem """
-                                               """persists please contact us at support@craft.ai""")
-        elif status_code == 504:
-          agent["error"] = CraftAiBadRequestError("Request has timed out")
-        else:
-          agent["error"] = CraftAiUnknownError(message)
+        agent["error"] = CraftAIClient._get_error_from_status(status_code, message)
 
         resp.append(agent)
 
@@ -587,6 +546,32 @@ class CraftAIClient(object):
         resp.append(response)
 
     return resp
+
+  @staticmethod
+  def _get_error_from_status(status_code, message):
+    if status_code == 202:
+      err = CraftAiLongRequestTimeOutError(message)
+    elif status_code == 401 or status_code == 403:
+      err = CraftAiCredentialsError(message)
+    elif status_code == 400:
+      err = CraftAiBadRequestError(message)
+    elif status_code == 404:
+      err = CraftAiNotFoundError(message)
+    elif status_code == 413:
+      err = CraftAiBadRequestError("Given payload is too large")
+    elif status_code == 500:
+      err = CraftAiInternalError(message)
+    elif status_code == 503:
+      err = CraftAiNetworkError("""Service momentarily unavailable, please try"""
+                                """again in a few minutes. If the problem """
+                                """persists please contact us at support@craft.ai""")
+    elif status_code == 504:
+      err = CraftAiBadRequestError("Request has timed out")
+    else:
+      err = CraftAiUnknownError(message)
+
+    return err
+
 
   @staticmethod
   def _check_agent_id(agent_id):
@@ -638,9 +623,6 @@ class CraftAIClient(object):
 
   @staticmethod
   def _recreate_list_with_indices(indices1, values1, indices2, values2):
-    
-    print("indices", indices1)
-    print("values", values1)
     full_list = [None] * (len(indices1) + len(indices2))
     for i, index in enumerate(indices1):
       full_list[index] = values1[i]
@@ -660,6 +642,7 @@ class CraftAIClient(object):
                                    .format(e.__str__()))
 
     if request_type == "POST":
+      print(json_pl)
       resp = self._requests_session.post(req_url, headers=ct_header, data=json_pl)
     elif request_type == "DELETE":
       resp = self._requests_session.delete(req_url, headers=ct_header, data=json_pl)

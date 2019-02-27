@@ -80,27 +80,27 @@ VALID_OPERATIONS_SET = [
     }
   },
   {
-    "timestamp": 1458741231,
+    "timestamp": VALID_TIMESTAMP + 101,
     "context": {
       "presence": "player",
       "lightIntensity": 0.5,
     }
   },
   {
-    "timestamp": 1458741232,
+    "timestamp": VALID_TIMESTAMP + 202,
     "context": {
       "presence": "none",
       "lightIntensity": 0,
     }
   },
   {
-    "timestamp": 1458741242,
+    "timestamp": VALID_TIMESTAMP + 303,
     "context": {
       "presence": "occupant+player"
     }
   },
   {
-    "timestamp": 1458741252,
+    "timestamp": VALID_TIMESTAMP + 404,
     "context": {
       "tz": "+01:00",
       "presence": "occupant",
@@ -109,7 +109,7 @@ VALID_OPERATIONS_SET = [
     }
   },
   {
-    "timestamp": 1458741262,
+    "timestamp": VALID_TIMESTAMP + 505,
     "context": {
       "presence": "player",
       "lightIntensity": 0.5,

@@ -1,4 +1,5 @@
 import unittest
+import copy
 
 from craftai import Client, errors as craft_err
 
@@ -58,7 +59,7 @@ class TestAddOperationsBulkSuccess(unittest.TestCase):
     It should give a proper JSON response with a list containing dicts with
     a `message` fields being a string and no 'error' field.
     """
-    operations = valid_data.VALID_OPERATIONS_SET[:]
+    operations = copy.deepcopy(valid_data.VALID_OPERATIONS_SET[:])
     operation = operations[-1]
     timestamp = operation["timestamp"]
     length = len(operations)
@@ -330,7 +331,7 @@ class TestAddOperationsBulkSomeFailure(unittest.TestCase):
     """
     ops_set = invalid_data.UNDEFINED_KEY["empty_list"]
     payload = [{"id": self.agent_id1, "operations": ops_set},
-              {"id": self.agent_id2, "operations": valid_data.VALID_OPERATIONS_SET}]
+               {"id": self.agent_id2, "operations": valid_data.VALID_OPERATIONS_SET}]
     resp = self.client.add_operations_bulk(payload)
 
     self.assertIsInstance(resp, list)

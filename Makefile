@@ -10,7 +10,7 @@ bulk-test:
 	nosetests --exe tests/test_create_agents_bulk.py tests/test_delete_agents_bulk.py tests/test_get_decision_trees_bulk.py tests/test_add_operations_bulk.py
 
 bulk-test-debug:
-	nosetests --exe -v --nocapture tests/test_add_operations_bulk.py
+	nosetests --exe -v --nocapture tests/test_get_decision_trees_bulk.py
 
 lint:
 	pylint --load-plugins pylint_quotes craftai tests

@@ -1,6 +1,7 @@
 import unittest
 
 import craftai
+import copy
 
 from . import settings
 from .data import valid_data
@@ -39,7 +40,8 @@ class TestAddOperationsSuccess(unittest.TestCase):
     It should give a proper JSON response with a `message` fields being a
     string.
     """
-    operations = valid_data.VALID_OPERATIONS_SET[:]
+    operations = copy.deepcopy(valid_data.VALID_OPERATIONS_SET[:])
+    print(operations)
     operation = operations[-1]
     timestamp = operation["timestamp"]
     length = len(operations)

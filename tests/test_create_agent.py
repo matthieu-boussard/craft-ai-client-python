@@ -1,7 +1,6 @@
 import unittest
 import six
 
-from nose.tools import nottest
 from craftai import Client, errors as craft_err
 
 from . import settings
