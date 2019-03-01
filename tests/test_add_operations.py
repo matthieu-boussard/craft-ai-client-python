@@ -1,11 +1,13 @@
 import unittest
 
-import craftai
 import copy
+import craftai
 
 from . import settings
 from .data import valid_data
 from .data import invalid_data
+
+NB_OPERATIONS_TO_ADD = 2000
 
 class TestAddOperationsSuccess(unittest.TestCase):
   """Checks that the client succeeds when getting an agent with OK input"""
@@ -41,12 +43,11 @@ class TestAddOperationsSuccess(unittest.TestCase):
     string.
     """
     operations = copy.deepcopy(valid_data.VALID_OPERATIONS_SET[:])
-    print(operations)
     operation = operations[-1]
     timestamp = operation["timestamp"]
     length = len(operations)
 
-    while length < 2000:
+    while length < NB_OPERATIONS_TO_ADD:
       operation["timestamp"] = timestamp + length
       operations.append(operation.copy())
       length = length + 1

@@ -7,6 +7,8 @@ from . import settings
 from .data import valid_data
 from .data import invalid_data
 
+NB_OPERATIONS_TO_ADD = 2000
+
 class TestAddOperationsBulkSuccess(unittest.TestCase):
   """Checks that the client succeeds when adding operations to
   multiple agent(s) with OK input"""
@@ -64,11 +66,10 @@ class TestAddOperationsBulkSuccess(unittest.TestCase):
     timestamp = operation["timestamp"]
     length = len(operations)
 
-    #while length < 2000:
-    while length < 50:
-      operation["timestamp"] = timestamp + length
+    while num_operation < NB_OPERATIONS_TO_ADD:
+      operation["timestamp"] = timestamp + num_operation
       operations.append(operation.copy())
-      length = length + 1
+      num_operation = num_operation + 1
 
     payload = [{"id": self.agent_id1,
                 "operations": sorted(operations, key=lambda operation: operation["timestamp"])},
@@ -76,6 +77,7 @@ class TestAddOperationsBulkSuccess(unittest.TestCase):
                 "operations": sorted(operations, key=lambda operation: operation["timestamp"])}]
     resp = self.client.add_operations_bulk(payload)
 
+    print(resp)
     self.assertIsInstance(resp, list)
     self.assertEqual(resp[0].get("id"), self.agent_id1)
     self.assertEqual(resp[1].get("id"), self.agent_id2)
@@ -93,24 +95,6 @@ class TestAddOperationsBulkFailure(unittest.TestCase):
   @classmethod
   def setUpClass(cls):
     cls.client = Client(settings.CRAFT_CFG)
-    cls.agent_id1 = valid_data.VALID_ID  + "_" + settings.RUN_ID
-    cls.agent_id2 = valid_data.VALID_ID_TWO  + "_" + settings.RUN_ID
-
-  def setUp(self):
-    self.client.delete_agent(self.agent_id1)
-    self.client.delete_agent(self.agent_id2)
-    self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id1)
-    self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id2)
-
-  def clean_up_agent(self, aid):
-    # Makes sure that no agent with the standard ID remains
-    self.client.delete_agent(aid)
-
-  def clean_up_agents(self, aids):
-    # Makes sure that no agent with the standard ID remains
-    for aid in aids:
-      self.clean_up_agent(aid)
-
 
   def test_add_operations_bulk_with_invalid_agent_id(self):
     """add_operations_bulk should fail when given non-string/empty strings ID
@@ -129,9 +113,6 @@ class TestAddOperationsBulkFailure(unittest.TestCase):
         self.client.add_operations_bulk,
         payload
       )
-
-      self.addCleanup(self.clean_up_agents,
-                      [self.agent_id1, self.agent_id2])
 
 
 class TestAddOperationsBulkSomeFailure(unittest.TestCase):
@@ -159,6 +140,28 @@ class TestAddOperationsBulkSomeFailure(unittest.TestCase):
     # Makes sure that no agent with the standard ID remains
     for aid in aids:
       self.clean_up_agent(aid)
+
+  # def test_add_operations_bulk_some_no_agent_id(self):
+  #   """add_operations_bulk should succeed when given some invalid agent id and some valid.
+
+  #   It should give a proper JSON response with a list containing two dicts.
+  #   The first one should have an 'error' field being a CraftAiBadRequestError.
+  #   The second one should have `id` and `message` fields being strings and no
+  #   'error' field.
+  #   """
+  #   empty_id = invalid_data.UNDEFINED_KEY["none"]
+  #   payload = [{"operations": valid_data.VALID_OPERATIONS_SET},
+  #              {"id": self.agent_id2, "operations": valid_data.VALID_OPERATIONS_SET}]
+  #   resp = self.client.add_operations_bulk(payload)
+
+  #   self.assertIsInstance(resp, list)
+  #   self.assertEqual(resp[1].get("id"), self.agent_id2)
+  #   self.assertTrue("message" in resp[1].keys())
+  #   self.assertTrue("error" in resp[0].keys())
+  #   self.assertFalse("error" in resp[1].keys())
+
+  #   self.addCleanup(self.clean_up_agents,
+  #                   [self.agent_id1, self.agent_id2])
 
   def test_add_operations_bulk_some_none_agent_id(self):
     """add_operations_bulk should succeed when given some invalid agent id and some valid.
@@ -334,12 +337,11 @@ class TestAddOperationsBulkSomeFailure(unittest.TestCase):
                {"id": self.agent_id2, "operations": valid_data.VALID_OPERATIONS_SET}]
     resp = self.client.add_operations_bulk(payload)
 
+    # There is only the second agent that return
     self.assertIsInstance(resp, list)
-    self.assertEqual(resp[0].get("id"), self.agent_id1)
-    self.assertEqual(resp[1].get("id"), self.agent_id2)
-    self.assertTrue("message" in resp[1].keys())
-    self.assertTrue("error" in resp[0].keys())
-    self.assertFalse("error" in resp[1].keys())
+    self.assertEqual(resp[0].get("id"), self.agent_id2)
+    self.assertTrue("message" in resp[0].keys())
+    self.assertFalse("error" in resp[0].keys())
 
     self.addCleanup(self.clean_up_agents,
                     [self.agent_id1, self.agent_id2])

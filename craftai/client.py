@@ -287,8 +287,11 @@ class CraftAIClient(object):
         next_offset = offset + (self.config["operationsChunksSize"] - nb_operations)
         try:
           nb_operations += len(agent["operations"][offset:next_offset])
+          if agent["operations"][offset:next_offset] == []:
+            break
           payload_offset.append({"id": agent["id"],
                                  "operations": agent["operations"][offset:next_offset]})
+
         except TypeError as e:
           valid_agents.append([{"id": agent["id"], "error": e}])
 
@@ -327,11 +330,13 @@ class CraftAIClient(object):
 
         if agent["id"] in all_agent_id:
           index_agent = all_agent_id[agent["id"]]
+          # Add a message saying that operations were added
           if "message" in agent:
             if "message" in res[index_agent]:
-              res[index_agent]["message"] += agent["message"]
+              res[index_agent]["message"] += agent["message"] + "\n"
             else:
-              res[index_agent]["message"] = agent["message"]
+              res[index_agent]["message"] = agent["message"] + "\n"
+          # Add an error
           if "error" in agent:
             if "error" in res[index_agent]:
               res[index_agent]["error"].append(agent["error"])
@@ -535,11 +540,14 @@ class CraftAIClient(object):
                  "message": response["message"]}
         resp.append(agent)
       elif "status" in response:
-        agent = {"id": response["id"]}
         status_code = response["status"]
         message = response["message"]
-        agent["error"] = CraftAIClient._get_error_from_status(status_code, message)
-
+        agent = {"error": CraftAIClient._get_error_from_status(status_code, message)}
+        try:
+          agent["id"] = response["id"]
+        except KeyError:
+          pass
+          # sys.exc_clear() if python2 don't work
         resp.append(agent)
 
       else:
@@ -625,11 +633,16 @@ class CraftAIClient(object):
   def _recreate_list_with_indices(indices1, values1, indices2, values2):
     full_list = [None] * (len(indices1) + len(indices2))
     for i, index in enumerate(indices1):
-      full_list[index] = values1[i]
+      try:
+        full_list[index] = values1[i]
+      except IndexError:
+        pass
     for i, index in enumerate(indices2):
-      full_list[index] = values2[i]
-
-    return full_list
+      try:
+        full_list[index] = values2[i]
+      except IndexError:
+        pass
+    return [x for x in full_list if x != None]
 
   def _create_and_send_json_bulk(self, payload, req_url, request_type="GET"):
     # Extra header in addition to the main session's
@@ -642,7 +655,6 @@ class CraftAIClient(object):
                                    .format(e.__str__()))
 
     if request_type == "POST":
-      print(json_pl)
       resp = self._requests_session.post(req_url, headers=ct_header, data=json_pl)
     elif request_type == "DELETE":
       resp = self._requests_session.delete(req_url, headers=ct_header, data=json_pl)

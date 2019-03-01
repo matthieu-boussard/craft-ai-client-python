@@ -6,6 +6,10 @@ from . import settings
 from .data import valid_data, invalid_data
 
 
+# TODO : add a function that delete a lot od agents
+# TODO 2 : add the case of absence of a field
+NB_AGENTS_TO_DELETE = 100
+
 class TestDeleteAgentWithValidID(unittest.TestCase):
   """Checks that the client succeeds when deleting an agent with OK input"""
   @classmethod

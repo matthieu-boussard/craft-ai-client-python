@@ -1,5 +1,6 @@
-VALID_ID = "craft_ai_test_agent_1"
-VALID_ID_TWO = "craft_ai_test_agent_2"
+VALID_ID_TEMPLATE = "craft_ai_test_agent"
+VALID_ID = VALID_ID_TEMPLATE + "_1"
+VALID_ID_TWO = VALID_ID_TEMPLATE + "_2"
 
 VALID_CONTEXT = {
   "tz": {
@@ -69,6 +70,7 @@ VALID_LARGE_CONFIGURATION = {
 }
 
 VALID_TIMESTAMP = 1458741230
+VALID_LAST_TIMESTAMP = 1458741735
 VALID_OPERATIONS_SET = [
   {
     "timestamp": VALID_TIMESTAMP,
@@ -80,27 +82,27 @@ VALID_OPERATIONS_SET = [
     }
   },
   {
-    "timestamp": VALID_TIMESTAMP + 101,
+    "timestamp": 1458741331,
     "context": {
       "presence": "player",
       "lightIntensity": 0.5,
     }
   },
   {
-    "timestamp": VALID_TIMESTAMP + 202,
+    "timestamp": 1458741432,
     "context": {
       "presence": "none",
       "lightIntensity": 0,
     }
   },
   {
-    "timestamp": VALID_TIMESTAMP + 303,
+    "timestamp": 1458741533,
     "context": {
       "presence": "occupant+player"
     }
   },
   {
-    "timestamp": VALID_TIMESTAMP + 404,
+    "timestamp": 1458741634,
     "context": {
       "tz": "+01:00",
       "presence": "occupant",
@@ -109,7 +111,7 @@ VALID_OPERATIONS_SET = [
     }
   },
   {
-    "timestamp": VALID_TIMESTAMP + 505,
+    "timestamp": VALID_LAST_TIMESTAMP,
     "context": {
       "presence": "player",
       "lightIntensity": 0.5,

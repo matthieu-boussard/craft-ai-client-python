@@ -7,6 +7,8 @@ from . import settings
 from .data import valid_data
 from .data import invalid_data
 
+NB_AGENTS_TO_CREATE = 100
+
 class TestCreateAgentsBulkSuccess(unittest.TestCase):
   """Checks that the client succeeds when creating
   an/multiple agent(s) with OK input"""
@@ -106,6 +108,30 @@ class TestCreateAgentsBulkSuccess(unittest.TestCase):
     self.addCleanup(self.clean_up_agents, [resp[0].get("id"), resp[1].get("id")])
 
 
+  def test_create_lot_of_agents_bulk(self):
+    """create_agents_bulk should succeed when given a lot of agents to create.
+
+    It should give a proper JSON response with a list containing dicts
+    with `id` and `configuration` fields being strings and the first `id` being the
+    same as the one given as a parameter.
+    """
+    payload = []
+    agents_lst = []
+    for i in range(NB_AGENTS_TO_CREATE):
+      new_agent_id = valid_data.VALID_ID_TEMPLATE + str(i)  + "_" + settings.RUN_ID
+      self.client.delete_agent(new_agent_id)
+      payload.append({"id": new_agent_id, "configuration": valid_data.VALID_CONFIGURATION})
+      agents_lst.append(new_agent_id)
+
+    resp = self.client.create_agents_bulk(payload)
+
+    for i in range(len(resp)):
+      self.assertEqual(resp[i].get("id"), agents_lst[i])
+      self.assertFalse("error" in resp[i])
+
+    self.addCleanup(self.clean_up_agents,
+                    agents_lst)
+
 class TestCreateAgentsBulkFailure(unittest.TestCase):
   """Checks that the client fails when creating
   an/multiple agent(s) with bad input"""
@@ -152,12 +178,13 @@ class TestCreateAgentsBulkFailure(unittest.TestCase):
     self.addCleanup(self.clean_up_agents, [self.agent_id1, self.agent_id2])
 
   def test_create_agents_bulk_with_invalid_agent_id(self):
-    """create_agents_bulk should fail with all agents id are invalid.
+    """create_agents_bulk should fail with all agents id are invalid or if the id field
+    doesn't exist.
 
     It should raise an error upon request for creation of all agents with invalid id.
     """
     payload = [{"id": "toto/tutu", "configuration": valid_data.VALID_CONFIGURATION},
-               {"id": "toto@tata", "configuration": valid_data.VALID_CONFIGURATION}]
+               {"configuration": valid_data.VALID_CONFIGURATION}]
     self.assertRaises(
       craft_err.CraftAiBadRequestError,
       self.client.create_agents_bulk,
@@ -169,20 +196,41 @@ class TestCreateAgentsBulkFailure(unittest.TestCase):
 
     It should raise an error upon request for creation of all agents with invalid context.
     """
-    for inv_context in invalid_data.INVALID_CONTEXTS:
-      configuration = {
-        "context": invalid_data.INVALID_CONTEXTS[inv_context],
+    payload = []
+    agents_lst = []
+    i = 0
+    # Add all the invalid context to check
+    for invalid_context in invalid_data.INVALID_CONTEXTS:
+      new_agent_id = valid_data.VALID_ID_TEMPLATE + str(i)  + "_" + settings.RUN_ID
+      invalid_configuration = {
+        "context": invalid_data.INVALID_CONTEXTS[invalid_context],
         "output": ["lightbulbColor"],
         "time_quantum": 100
       }
-      payload = [{"id": self.agent_id1, "configuration": configuration},
-                 {"id": self.agent_id2, "configuration": configuration}]
+      self.client.delete_agent(new_agent_id)
 
-      self.assertRaises(
+      payload.append({"id": new_agent_id, "configuration": invalid_configuration})
+      agents_lst.append(new_agent_id)
+      i += 1
+
+    # Add an agent with no context field
+    new_agent_id = valid_data.VALID_ID_TEMPLATE + str(i)  + "_" + settings.RUN_ID
+    self.client.delete_agent(new_agent_id)
+    invalid_configuration = {
+        "output": ["lightbulbColor"],
+        "time_quantum": 100
+      }
+    payload.append({"id": new_agent_id, "configuration": invalid_configuration})
+    agents_lst.append(new_agent_id)
+
+    self.assertRaises(
         craft_err.CraftAiBadRequestError,
         self.client.create_agents_bulk,
         payload
       )
+
+    self.addCleanup(self.clean_up_agents,
+                    agents_lst)
 
   def test_create_agents_bulk_undefined_config(self):
     """create_agents_bulk should fail when no configuration key is given for all
@@ -192,20 +240,33 @@ class TestCreateAgentsBulkFailure(unittest.TestCase):
     no configuration key in the request body, since it is a mandatory field to
     create an agent.
     """
-    # Testing all non dict configuration cases
+    payload = []
+    agents_lst = []
+    i = 0
+    # Add all the invalid context to check
     for empty_configuration in invalid_data.UNDEFINED_KEY:
-      payload = [{"id": self.agent_id1,
-                  "configuration": invalid_data.UNDEFINED_KEY[empty_configuration]},
-                 {"id": self.agent_id2,
-                  "configuration": invalid_data.UNDEFINED_KEY[empty_configuration]}]
-      self.assertRaises(
+      new_agent_id = valid_data.VALID_ID_TEMPLATE + str(i)  + "_" + settings.RUN_ID
+      self.client.delete_agent(new_agent_id)
+
+      payload.append({"id": new_agent_id,
+                      "configuration": invalid_data.UNDEFINED_KEY[empty_configuration]})
+      agents_lst.append(new_agent_id)
+      i += 1
+
+    # Add agent with no configuration
+    new_agent_id = valid_data.VALID_ID_TEMPLATE + str(i)  + "_" + settings.RUN_ID
+    self.client.delete_agent(new_agent_id)
+    payload.append({"id": new_agent_id})
+    agents_lst.append(new_agent_id)
+
+    self.assertRaises(
         craft_err.CraftAiBadRequestError,
         self.client.create_agents_bulk,
-        payload)
-      self.addCleanup(
-        self.clean_up_agents,
-        [self.agent_id1, self.agent_id2]
+        payload
       )
+
+    self.addCleanup(self.clean_up_agents,
+                    agents_lst)
 
   def test_create_agents_bulk_invalid_time_quantum(self):
     """create_agents_bulk should fail when given invalid time quantums
@@ -214,21 +275,41 @@ class TestCreateAgentsBulkFailure(unittest.TestCase):
     incorrect time quantum in the configuration, since it is essential to
     perform any action with craft ai.
     """
+    payload = []
+    agents_lst = []
+    i = 0
     for inv_tq in invalid_data.INVALID_TIME_QUANTA:
-      configuration = {
+      new_agent_id = valid_data.VALID_ID_TEMPLATE + str(i)  + "_" + settings.RUN_ID
+      invalid_configuration = {
         "context": valid_data.VALID_CONTEXT,
         "output": valid_data.VALID_OUTPUT,
         "time_quantum": invalid_data.INVALID_TIME_QUANTA[inv_tq]
       }
-      payload = [{"id": self.agent_id1, "configuration": configuration},
-                 {"id": self.agent_id2, "configuration": configuration}]
-      self.assertRaises(
+      self.client.delete_agent(new_agent_id)
+
+      payload.append({"id": new_agent_id,
+                      "configuration": invalid_configuration})
+      agents_lst.append(new_agent_id)
+      i += 1
+
+    # Add an agent with no time quantum field
+    new_agent_id = valid_data.VALID_ID_TEMPLATE + str(i)  + "_" + settings.RUN_ID
+    self.client.delete_agent(new_agent_id)
+    invalid_configuration = {
+        "context": valid_data.VALID_CONTEXT,
+        "output": ["lightbulbColor"]
+      }
+    payload.append({"id": new_agent_id, "configuration": invalid_configuration})
+    agents_lst.append(new_agent_id)
+
+    self.assertRaises(
         craft_err.CraftAiBadRequestError,
         self.client.create_agents_bulk,
-        payload)
-      self.addCleanup(
-        self.clean_up_agents,
-        [self.agent_id1, self.agent_id2])
+        payload
+      )
+
+    self.addCleanup(self.clean_up_agents,
+                    agents_lst)
 
 
 class TestCreateAgentsBulkSomeFailure(unittest.TestCase):
@@ -239,15 +320,11 @@ class TestCreateAgentsBulkSomeFailure(unittest.TestCase):
   def setUpClass(cls):
     cls.client = Client(settings.CRAFT_CFG)
     cls.agent_id1 = valid_data.VALID_ID  + "_" + settings.RUN_ID
-    cls.agent_id2 = valid_data.VALID_ID_TWO  + "_" + settings.RUN_ID
 
   def setUp(self):
     # Makes sure that no agent with the same ID already exists
     resp1 = self.client.delete_agent(self.agent_id1)
-    resp2 = self.client.delete_agent(self.agent_id2)
-
     self.assertIsInstance(resp1, dict)
-    self.assertIsInstance(resp2, dict)
 
   def clean_up_agent(self, aid):
     # Makes sure that no agent with the standard ID remains
@@ -267,7 +344,6 @@ class TestCreateAgentsBulkSomeFailure(unittest.TestCase):
     'error' field being a CraftAiBadRequestError.
     The second one should have `id` and `configuration` fields being strings.
     """
-    # Calling create_agents_bulk a first time
     payload = [{"id": self.agent_id1, "configuration": valid_data.VALID_CONFIGURATION},
                {"configuration": valid_data.VALID_CONFIGURATION}]
     resp1 = self.client.create_agents_bulk(payload)
@@ -294,7 +370,7 @@ class TestCreateAgentsBulkSomeFailure(unittest.TestCase):
     The second one with `id` and `configuration` fields being strings.
     """
     payload = [{"id": "toto/tutu", "configuration": valid_data.VALID_CONFIGURATION},
-               {"configuration": valid_data.VALID_CONFIGURATION}]
+               {"id": "tata@tutu", "configuration": valid_data.VALID_CONFIGURATION}]
     resp = self.client.create_agents_bulk(payload)
 
     self.assertEqual(resp[0].get("id"), "toto/tutu")
@@ -327,208 +403,113 @@ class TestCreateAgentsBulkSomeFailure(unittest.TestCase):
     self.addCleanup(self.clean_up_agent,
                     self.agent_id1)
 
-  def test_create_some_agents_unserialisable_context(self):
-    """create_agents_bulk should succeed with some agents with unserialisable context
+  def test_create_some_agents_bulk_with_invalid_context(self):
+    """create_agents_bulk should succeed with some agents with invalid context
     and some with valid context.
 
-    It should give a proper JSON response with a list containing two dicts.
-    The first one should have 'id' being the same as the one given as a parameter,
-    'error' field being a TypeError.
-    The second one with `id` and `configuration` fields being strings.
+    It should give a proper JSON response with a list containing dicts.
+    The valid ones should have `id` and `configuration` fields being strings.
+    The invalid ones should have 'id' and 'error' fields.
     """
-    configuration = {
-      "context": invalid_data.INVALID_CONTEXTS["invalid_context_nonjsonserializable"],
-      "output": ["lightbulbColor"],
-      "time_quantum": 100
-    }
-    payload = [{"id": self.agent_id1,
-                "configuration": configuration},
-               {"id": self.agent_id2,
-                "configuration": valid_data.VALID_CONFIGURATION}]
+    payload = [{"id": self.agent_id1, "configuration": valid_data.VALID_CONFIGURATION}]
+    agents_lst = [self.agent_id1]
+    i = 0
+    for invalid_context in invalid_data.INVALID_CONTEXTS:
+      new_agent_id = valid_data.VALID_ID_TEMPLATE + str(i)  + "_" + settings.RUN_ID
+      invalid_configuration = {
+        "context": invalid_data.INVALID_CONTEXTS[invalid_context],
+        "output": ["lightbulbColor"],
+        "time_quantum": 100
+      }
+      self.client.delete_agent(new_agent_id)
+
+      payload.append({"id": new_agent_id, "configuration": invalid_configuration})
+      agents_lst.append(new_agent_id)
+      i += 1
+
     resp = self.client.create_agents_bulk(payload)
     self.assertEqual(resp[0].get("id"), self.agent_id1)
-    self.assertIsInstance(resp[0].get("error"), TypeError)
-    self.assertFalse("configuration" in resp[0])
-    self.assertEqual(resp[1].get("id"), self.agent_id2)
-    self.assertTrue("configuration" in resp[1])
-    self.assertFalse("error" in resp[1])
+    self.assertTrue("configuration" in resp[0])
+    self.assertFalse("error" in resp[0])
+
+    for i in range(1, len(resp)):
+      self.assertEqual(resp[i].get("id"), agents_lst[i])
+      self.assertTrue("error" in resp[i])
+      self.assertFalse("configuration" in resp[i])
+
     self.addCleanup(self.clean_up_agents,
-                    [self.agent_id1, self.agent_id2])
+                    agents_lst)
 
-  def test_create_some_agents_with_missing_context(self):
-    """create_agents_bulk should succeed with some agents with missing context
-    and some with valid context.
+  def test_create_some_agents_bulk_with_undefined_configuration(self):
+    """create_agents_bulk should succeed with some agents with invalid configuration
+    and some with valid configuration.
 
-    It should give a proper JSON response with a list containing two dicts.
-    The first one should have 'id' being the same as the one given as a parameter,
-    'error' field being a CraftAiBadRequestError.
-    The second one with `id` and `configuration` fields being strings.
+    It should give a proper JSON response with a list containing dicts.
+    The valid ones should have `id` and `configuration` fields being strings.
+    The invalid ones should have 'id' and 'error' fields.
     """
-    configuration = {
-      "context": invalid_data.INVALID_CONTEXTS["invalid_context_missing_type_key"],
-      "output": ["lightbulbColor"],
-      "time_quantum": 100
-    }
-    payload = [{"id": self.agent_id1,
-                "configuration": configuration},
-               {"id": self.agent_id2,
-                "configuration": valid_data.VALID_CONFIGURATION}]
-    resp = self.client.create_agents_bulk(payload)
-    self.assertEqual(resp[0].get("id"), self.agent_id1)
-    self.assertIsInstance(resp[0].get("error"), craft_err.CraftAiBadRequestError)
-    self.assertFalse("configuration" in resp[0])
-    self.assertEqual(resp[1].get("id"), self.agent_id2)
-    self.assertTrue("configuration" in resp[1])
-    self.assertFalse("error" in resp[1])
-    self.addCleanup(self.clean_up_agents,
-                    [self.agent_id1, self.agent_id2])
+    payload = [{"id": self.agent_id1, "configuration": valid_data.VALID_CONFIGURATION}]
+    agents_lst = [self.agent_id1]
+    i = 0
+    for empty_configuration in invalid_data.UNDEFINED_KEY:
+      new_agent_id = valid_data.VALID_ID_TEMPLATE + str(i)  + "_" + settings.RUN_ID
+      self.client.delete_agent(new_agent_id)
 
-  def test_create_some_agents_config_none(self):
-    """create_agents_bulk should succed when given some agents with no configuration key
-    and some agent with valid configuration.
+      payload.append({"id": new_agent_id,
+                      "configuration": invalid_data.UNDEFINED_KEY[empty_configuration]})
+      agents_lst.append(new_agent_id)
+      i += 1
 
-    It should give a proper JSON response with a list containing two dicts.
-    The first one should have 'id' being the same as the one given as a parameter,
-    'error' field being a CraftAiBadRequestError.
-    The second one with `id` and `configuration` fields being strings.
-    """
-    payload = [{"id": self.agent_id1, "configuration": invalid_data.UNDEFINED_KEY["none"]},
-               {"id": self.agent_id2, "configuration": valid_data.VALID_CONFIGURATION}]
     resp = self.client.create_agents_bulk(payload)
 
     self.assertEqual(resp[0].get("id"), self.agent_id1)
-    self.assertIsInstance(resp[0].get("error"), craft_err.CraftAiBadRequestError)
-    self.assertFalse("configuration" in resp[0])
-    self.assertEqual(resp[1].get("id"), self.agent_id2)
-    self.assertTrue("configuration" in resp[1])
-    self.assertFalse("error" in resp[1])
+    self.assertTrue("configuration" in resp[0])
+    self.assertFalse("error" in resp[0])
+
+    for i in range(1, len(resp)):
+      self.assertEqual(resp[i].get("id"), agents_lst[i])
+      self.assertTrue("error" in resp[i])
+      self.assertFalse("configuration" in resp[i])
 
     self.addCleanup(self.clean_up_agents,
-                    [self.agent_id1, self.agent_id2])
+                    agents_lst)
 
-  def test_create_some_agents_config_empty_string(self):
-    """create_agents_bulk should succed when given some agents with no configuration key
-    and some agent with valid configuration in the request body.
+  def test_create_some_agents_bulk_with_invalid_time_quantum(self):
+    """create_agents_bulk should succeed with some agents with invalid time quantum
+    in the configuration and some with valid configuration.
 
-    It should give a proper JSON response with a list containing two dicts.
-    The first one should have 'id' being the same as the one given as a parameter,
-    'error' field being a CraftAiBadRequestError.
-    The second one with `id` and `configuration` fields being strings.
+    It should give a proper JSON response with a list containing dicts.
+    The valid ones should have `id` and `configuration` fields being strings.
+    The invalid ones should have 'id' and 'error' fields.
     """
-    payload = [{"id": self.agent_id1, "configuration": invalid_data.UNDEFINED_KEY["empty_string"]},
-               {"id": self.agent_id2, "configuration": valid_data.VALID_CONFIGURATION}]
+    payload = [{"id": self.agent_id1, "configuration": valid_data.VALID_CONFIGURATION}]
+    agents_lst = [self.agent_id1]
+    i = 0
+    for inv_tq in invalid_data.INVALID_TIME_QUANTA:
+      new_agent_id = valid_data.VALID_ID_TEMPLATE + str(i)  + "_" + settings.RUN_ID
+      invalid_configuration = {
+        "context": valid_data.VALID_CONTEXT,
+        "output": valid_data.VALID_OUTPUT,
+        "time_quantum": invalid_data.INVALID_TIME_QUANTA[inv_tq]
+      }
+      self.client.delete_agent(new_agent_id)
+
+      payload.append({"id": new_agent_id,
+                      "configuration": invalid_configuration})
+      agents_lst.append(new_agent_id)
+      i += 1
+
     resp = self.client.create_agents_bulk(payload)
 
     self.assertEqual(resp[0].get("id"), self.agent_id1)
-    self.assertIsInstance(resp[0].get("error"), craft_err.CraftAiBadRequestError)
-    self.assertFalse("configuration" in resp[0])
-    self.assertEqual(resp[1].get("id"), self.agent_id2)
-    self.assertTrue("configuration" in resp[1])
-    self.assertFalse("error" in resp[1])
+    self.assertTrue("configuration" in resp[0])
+    self.assertFalse("error" in resp[0])
+
+    for i in range(1, len(resp)):
+      self.assertEqual(resp[i].get("id"), agents_lst[i])
+      self.assertTrue("error" in resp[i])
+      self.assertIsInstance(resp[i].get("error"), craft_err.CraftAiBadRequestError)
+      self.assertFalse("configuration" in resp[i])
 
     self.addCleanup(self.clean_up_agents,
-                    [self.agent_id1, self.agent_id2])
-
-  def test_create_some_agents_config_empty_dict(self):
-    """create_agents_bulk should succed when given some agents with no configuration key
-    and some agent with valid configuration in the request body.
-
-    It should give a proper JSON response with a list containing two dicts.
-    The first one should have 'id' being the same as the one given as a parameter,
-    'error' field being a CraftAiBadRequestError.
-    The second one with `id` and `configuration` fields being strings.
-    """
-    payload = [{"id": self.agent_id1, "configuration": invalid_data.UNDEFINED_KEY["empty_dict"]},
-               {"id": self.agent_id2, "configuration": valid_data.VALID_CONFIGURATION}]
-    resp = self.client.create_agents_bulk(payload)
-
-    self.assertEqual(resp[0].get("id"), self.agent_id1)
-    self.assertIsInstance(resp[0].get("error"), craft_err.CraftAiBadRequestError)
-    self.assertFalse("configuration" in resp[0])
-    self.assertEqual(resp[1].get("id"), self.agent_id2)
-    self.assertTrue("configuration" in resp[1])
-    self.assertFalse("error" in resp[1])
-
-    self.addCleanup(self.clean_up_agents,
-                    [self.agent_id1, self.agent_id2])
-
-  def test_create_some_agents_config_empty_list(self):
-    """create_agents_bulk should succed when given some agents with no configuration key
-    and some agent with valid configuration in the request body.
-
-    It should give a proper JSON response with a list containing two dicts.
-    The first one should have 'id' being the same as the one given as a parameter,
-    'error' field being a CraftAiBadRequestError.
-    The second one with `id` and `configuration` fields being strings.
-    """
-    payload = [{"id": self.agent_id1, "configuration": invalid_data.UNDEFINED_KEY["empty_list"]},
-               {"id": self.agent_id2, "configuration": valid_data.VALID_CONFIGURATION}]
-    resp = self.client.create_agents_bulk(payload)
-
-    self.assertEqual(resp[0].get("id"), self.agent_id1)
-    self.assertIsInstance(resp[0].get("error"), craft_err.CraftAiBadRequestError)
-    self.assertFalse("configuration" in resp[0])
-    self.assertEqual(resp[1].get("id"), self.agent_id2)
-    self.assertTrue("configuration" in resp[1])
-    self.assertFalse("error" in resp[1])
-
-    self.addCleanup(self.clean_up_agents,
-                    [self.agent_id1, self.agent_id2])
-
-  def test_create_some_agents_negative_time_quantum(self):
-    """create_agents_bulk should succed when given some negative time quantum and some valid.
-
-    It should give a proper JSON response with a list containing two dicts.
-    The first one should have 'id' being the same as the one given as a parameter,
-    'error' field being a CraftAiBadRequestError.
-    The second one with `id` and `configuration` fields being strings.
-    """
-    configuration = {
-      "context": valid_data.VALID_CONTEXT,
-      "output": valid_data.VALID_OUTPUT,
-      "time_quantum": invalid_data.INVALID_TIME_QUANTA["negative_tq"]
-    }
-    payload = [{"id": self.agent_id1,
-                "configuration": configuration},
-               {"id": self.agent_id2,
-                "configuration": valid_data.VALID_CONFIGURATION}]
-    resp = self.client.create_agents_bulk(payload)
-
-    self.assertEqual(resp[0].get("id"), self.agent_id1)
-    self.assertIsInstance(resp[0].get("error"), craft_err.CraftAiBadRequestError)
-    self.assertFalse("configuration" in resp[0])
-    self.assertEqual(resp[1].get("id"), self.agent_id2)
-    self.assertTrue("configuration" in resp[1])
-    self.assertFalse("error" in resp[1])
-
-    self.addCleanup(self.clean_up_agents,
-                    [self.agent_id1, self.agent_id2])
-
-  def test_create_some_agents_null_time_quantum(self):
-    """create_agents_bulk should succed when given some null time quantum and some valid.
-
-    It should give a proper JSON response with a list containing two dicts.
-    The first one should have 'id' being the same as the one given as a parameter,
-    'error' field being a CraftAiBadRequestError.
-    The second one with `id` and `configuration` fields being strings.
-    """
-    configuration = {
-      "context": valid_data.VALID_CONTEXT,
-      "output": valid_data.VALID_OUTPUT,
-      "time_quantum": invalid_data.INVALID_TIME_QUANTA["null_tq"]
-    }
-    payload = [{"id": self.agent_id1,
-                "configuration": configuration},
-               {"id": self.agent_id2,
-                "configuration": valid_data.VALID_CONFIGURATION}]
-    resp = self.client.create_agents_bulk(payload)
-
-    self.assertEqual(resp[0].get("id"), self.agent_id1)
-    self.assertIsInstance(resp[0].get("error"), craft_err.CraftAiBadRequestError)
-    self.assertFalse("configuration" in resp[0])
-    self.assertEqual(resp[1].get("id"), self.agent_id2)
-    self.assertTrue("configuration" in resp[1])
-    self.assertFalse("error" in resp[1])
-
-    self.addCleanup(self.clean_up_agents,
-                    [self.agent_id1, self.agent_id2])
+                    agents_lst)

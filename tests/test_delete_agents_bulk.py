@@ -91,6 +91,20 @@ class TestDeleteAgentsBulkFailure(unittest.TestCase):
         payload
       )
 
+  def test_delete_agents_bulk_with_no_agent_id(self):
+    """delete_agents_bulk should fail with all agents id fields empty.
+
+    It should raise an error upon request for creation of all agents with
+    empty id field.
+    """
+    payload = [{},
+               {}]
+    self.assertRaises(
+        craft_err.CraftAiBadRequestError,
+        self.client.delete_agents_bulk,
+        payload
+    )
+
 class TestDeleteBulkAgentsBulkSomeFailure(unittest.TestCase):
   """Checks that the client succeed when deleting
   an/multiple agent(s) with bad input and an/multiple agent(s)
@@ -123,6 +137,24 @@ class TestDeleteBulkAgentsBulkSomeFailure(unittest.TestCase):
     """
     for empty_id in invalid_data.UNDEFINED_KEY:
       payload = [{"id": invalid_data.UNDEFINED_KEY[empty_id]},
+                 {"id": self.agent_id2}]
+      resp = self.client.delete_agents_bulk(payload)
+
+      self.assertTrue("error" in resp[0])
+      self.assertIsInstance(resp[0].get("error"), craft_err.CraftAiBadRequestError)
+      self.assertEqual(resp[1].get("id"), self.agent_id2)
+      self.assertFalse("error" in resp[1])
+
+  def test_delete_some_agents_bulk_with_no_agent_id(self):
+    """delete_agents_bulk should succeed when given some empty id field and some valid.
+
+    It should give a proper JSON response with a list containing two dicts.
+    The first one should have 'id' being the same as the one given as a parameter,
+    'error' field being a CraftAiBadRequestError.
+    The second one should have `id` being the same as the one given as a parameter.
+    """
+    for empty_id in invalid_data.UNDEFINED_KEY:
+      payload = [{},
                  {"id": self.agent_id2}]
       resp = self.client.delete_agents_bulk(payload)
 
