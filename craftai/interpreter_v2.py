@@ -77,6 +77,8 @@ class InterpreterV2(object):
       distribution = prediction.get("distribution")
       if not isinstance(distribution, list) and distribution.get("standard_deviation"):
         leaf["standard_deviation"] = distribution.get("standard_deviation")
+        leaf["min"] = distribution.get("min")
+        leaf["max"] = distribution.get("max")
       else:
         leaf["distribution"] = distribution
 
@@ -114,6 +116,12 @@ class InterpreterV2(object):
 
     if result.get("standard_deviation", None) is not None:
       final_result["standard_deviation"] = result.get("standard_deviation")
+
+    if result.get("min") is not None:
+      final_result["min"] = result.get("min")
+
+    if result.get("max") is not None:
+      final_result["max"] = result.get("max")
 
     if result.get("distribution"):
       final_result["distribution"] = result.get("distribution")

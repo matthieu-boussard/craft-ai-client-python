@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.0...HEAD) ##
 
+### Added
+
+- Predictions now return min and max information for continuous output values.
+
 ### Fixed
 
 - `craftai.pandas.decide_from_contexts_df` can take decisions on contexts with the same timestamp.
