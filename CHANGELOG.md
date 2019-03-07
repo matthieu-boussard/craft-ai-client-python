@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.0...HEAD) ##
 
+### Fixed
+
+- `craftai.pandas.decide_from_contexts_df` can take decisions on contexts with the same timestamp.
+
 ## [1.15.0](https://github.com/craft-ai/craft-ai-client-python/compare/v1.14.1...v1.15.0) - 2019-02-25 ##
 
 ### Added
