@@ -11,7 +11,7 @@ def decide_from_row(tree, columns, row, timezone_df):
   # If a timezone_df is provided use it
   # otherwise use the dataframe index timezone
   if isinstance(timezone_df, pd.DataFrame):
-    timezone = timezone_df.loc[row.name].values[0]
+    timezone = timezone_df.iloc[row.timestamp_unique_index].values[0]
     context.update({timezone_df.columns[0]: timezone})
   else:
     timezone = row.name.tz
@@ -57,6 +57,8 @@ class Interpreter(VanillaInterpreter):
       df[DUMMY_COLUMN_NAME] = 0
     else:
       df = contexts_df
+    # Add a unique index column to have a unique row if several context have the same timestamp.
+    df = df.assign(timestamp_unique_index=range(len(df)))
     return df.apply(lambda row: decide_from_row(tree,
                                                 columns,
                                                 row,
