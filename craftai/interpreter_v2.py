@@ -222,6 +222,8 @@ class InterpreterV2(object):
         new_size = size
         continue
       total_size = 1.0 * size + new_size
+      if total_size == 0:
+        continue
       new_variance = (1.0 / (total_size - 1.0)) * (
         (size - 1.0) * variance
         + (new_size - 1.0) * new_variance

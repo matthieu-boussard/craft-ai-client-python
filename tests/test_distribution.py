@@ -46,6 +46,14 @@ def test_regression_mean_std():
   assert_equal(size, 6.0)
   assert_true(abs((std - sqrt((16.0 + 80.0 / 6.0) / 5.0))) < 0.001)
 
+  means = [0, 0, 0, 0, 1]
+  stds = [0, 0, 0, 0, 2]
+  sizes = [0, 0, 0, 0, 20]
+  mean, size, std = list(InterpreterV2.compute_mean_values(means, sizes, stds))
+  assert_equal(mean, 1.0)
+  assert_equal(size, 20.0)
+  assert_true(abs((std - 2.0)) < 0.001)
+
 def test_classification_probabilities():
   distributions = [[0.1, 0.2, 0.7],
                    [0.1, 0.2, 0.7],
