@@ -1140,8 +1140,10 @@ html = create_tree_html(tree)
 
 #### `craftai.pandas.utils.display_tree` #####
 
-Display a decision tree in a Jupyter Notebook. 
+Display a decision tree in a **JupyterLab** Notebook. 
 This function can be useful for analyzing the induced decision trees.
+
+:warning: This feature does not work yet on **Jupyter** Notebooks.
 
 ```python
 
