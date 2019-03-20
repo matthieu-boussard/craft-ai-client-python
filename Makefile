@@ -6,9 +6,6 @@ test: lint unit-tests
 unit-tests:
 	nosetests
 
-testy_testa:
-	nosetests --exe -v --nocapture tests/test_create_agents_bulk.py
-
 lint:
 	pylint --load-plugins pylint_quotes craftai tests
 

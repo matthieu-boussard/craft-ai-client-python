@@ -105,6 +105,11 @@ class TestAddOperationsFailure(unittest.TestCase):
         invalid_data.UNDEFINED_KEY[ops_set])
 
   def test_add_operations_with_invalid_operation_set(self):
+    """add_operations should fail when given an invalid set of operations
+
+    It should raise an error upon request for posting an invalid set of
+    operations to an agent's configuration.
+    """
     for ops_set in invalid_data.INVALID_OPS_SET:
       self.assertRaises(
         craftai.errors.CraftAiBadRequestError,
