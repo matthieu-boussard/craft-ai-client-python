@@ -88,8 +88,7 @@ class CraftEstimator(BaseEstimator):
 
   @staticmethod
   def add_timestamp(df, start=0):
-    df = df.assign(ts=pd.date_range(start, periods=df.shape[0], freq="s", tz="UTC"))
-    df.set_index("ts", inplace=True)
+    df.index = pd.date_range(start, periods=df.shape[0], freq="s", tz="UTC")
     return df
 
 class CraftEstimatorClassifier(CraftEstimator, ClassifierMixin):

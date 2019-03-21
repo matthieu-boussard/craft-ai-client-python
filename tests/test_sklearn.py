@@ -40,6 +40,11 @@ SIMPLE_AGENT_DATA_TIMESTAMPS = pd.DataFrame(
   index=pd.date_range("20130101", periods=300, freq="T").tz_localize("Europe/Paris")
 )
 
+SIMPLE_AGENT_DATA_NO_TIMESTAMPS = pd.DataFrame(
+  randn(300, 5),
+  columns=["a", "b", "c", "d", "e"]
+)
+
 G_S = GridSearchCV(CraftEstimatorRegressor(),
                    {"configuration": [configuration_agent(max_depth=3),
                                       configuration_agent(max_depth=6),
@@ -48,6 +53,20 @@ G_S = GridSearchCV(CraftEstimatorRegressor(),
 
 X_TRAIN = SIMPLE_AGENT_DATA_TIMESTAMPS[["a", "b", "c", "d"]]
 Y_TRAIN = SIMPLE_AGENT_DATA_TIMESTAMPS[["e"]]
+
+G_S.fit(X_TRAIN, Y_TRAIN)
+
+assert_true(len(G_S.cv_results_.keys()) > 0)
+
+
+G_S = GridSearchCV(CraftEstimatorRegressor(add_timestamps_for_static=True),
+                   {"configuration": [configuration_agent(max_depth=3),
+                                      configuration_agent(max_depth=6),
+                                      configuration_agent(max_depth=9)]},
+                   cv=TimeSeriesSplit(n_splits=5))
+
+X_TRAIN = SIMPLE_AGENT_DATA_NO_TIMESTAMPS[["a", "b", "c", "d"]]
+Y_TRAIN = SIMPLE_AGENT_DATA_NO_TIMESTAMPS[["e"]]
 
 G_S.fit(X_TRAIN, Y_TRAIN)
 

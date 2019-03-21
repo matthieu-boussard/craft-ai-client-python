@@ -11,4 +11,3 @@ semver==2.7.7
 python-dateutil==2.7.2
 IPython==5.8.0
 scikit-learn==0.20.3
-scipy==1.2.1
