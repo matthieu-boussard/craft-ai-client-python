@@ -1,12 +1,12 @@
-import pandas as pd
-from sklearn.model_selection import GridSearchCV, TimeSeriesSplit
-
 from numpy.random import randn
 from nose.tools import assert_true
+from pandas import date_range, DataFrame
 
+from sklearn.model_selection import GridSearchCV, TimeSeriesSplit
 from craftai.sklearn_model import CraftEstimatorRegressor
 
 from . import settings
+
 
 AGENT_ID = "test_sklearn_" + settings.RUN_ID
 def configuration_agent(max_depth=5):
@@ -34,13 +34,13 @@ def configuration_agent(max_depth=5):
     "tree_max_depth": max_depth
   }
 
-SIMPLE_AGENT_DATA_TIMESTAMPS = pd.DataFrame(
+SIMPLE_AGENT_DATA_TIMESTAMPS = DataFrame(
   randn(300, 5),
   columns=["a", "b", "c", "d", "e"],
-  index=pd.date_range("20130101", periods=300, freq="T").tz_localize("Europe/Paris")
+  index=date_range("20130101", periods=300, freq="T").tz_localize("Europe/Paris") # pylint: disable=no-member
 )
 
-SIMPLE_AGENT_DATA_NO_TIMESTAMPS = pd.DataFrame(
+SIMPLE_AGENT_DATA_NO_TIMESTAMPS = DataFrame(
   randn(300, 5),
   columns=["a", "b", "c", "d", "e"]
 )
