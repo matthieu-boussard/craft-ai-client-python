@@ -1,3 +1,4 @@
+import math
 import numbers
 import six
 
@@ -77,6 +78,8 @@ class InterpreterV2(object):
       distribution = prediction.get("distribution")
       if not isinstance(distribution, list) and distribution.get("standard_deviation"):
         leaf["standard_deviation"] = distribution.get("standard_deviation")
+        leaf["min"] = distribution.get("min")
+        leaf["max"] = distribution.get("max")
       else:
         leaf["distribution"] = distribution
 
@@ -115,6 +118,12 @@ class InterpreterV2(object):
     if result.get("standard_deviation", None) is not None:
       final_result["standard_deviation"] = result.get("standard_deviation")
 
+    if result.get("min") is not None:
+      final_result["min"] = result.get("min")
+
+    if result.get("max") is not None:
+      final_result["max"] = result.get("max")
+
     if result.get("distribution"):
       final_result["distribution"] = result.get("distribution")
 
@@ -122,49 +131,62 @@ class InterpreterV2(object):
 
   @staticmethod
   def compute_distribution(node, output_values, output_type):
-    result, size = InterpreterV2._distribution(node)
+    result = InterpreterV2._distribution(node, output_type)
     if output_type == "enum":
+      distribution, nb_samples = result
       final_result = {
-        "predicted_value": output_values[result.index(max(result))],
-        "distribution": result
+        "predicted_value": output_values[distribution.index(max(distribution))],
+        "distribution": distribution,
+        "nb_samples": nb_samples
       }
     else:
-      final_result = {"predicted_value": result}
+      mean_value, nb_samples, standard_deviation = result
+      final_result = {
+        "predicted_value": mean_value,
+        "nb_samples": nb_samples,
+        "standard_deviation": standard_deviation
+      }
     final_result["decision_rules"] = []
     final_result["confidence"] = None
-    final_result["nb_samples"] = size
+
     return final_result
 
   @staticmethod
-  def _distribution(node):
+  def _distribution(node, output_type):
     # If it is a leaf
     if not (node.get("children") is not None and len(node.get("children"))):
       prediction = node["prediction"]
       value_distribution = prediction["distribution"]
       nb_samples = prediction["nb_samples"]
       # It is a classification problem
-      if isinstance(value_distribution, list):
+      if output_type == "enum":
         return [value_distribution, nb_samples]
-
-      # It is a regression problem
-      predicted_value = prediction.get("value")
-      if predicted_value is not None:
-        return [predicted_value, nb_samples]
-
-      raise CraftAiDecisionError(
-        """Unable to take decision: the decision tree has no valid"""
-        """ predicted value for the given context."""
-      )
-
+      else:
+        # It is a regression problem
+        predicted_value = prediction.get("value")
+        standard_deviation = value_distribution.get("standard_deviation")
+        if predicted_value is not None:
+          if standard_deviation is not None:
+            return [predicted_value, nb_samples, standard_deviation]
+          raise CraftAiDecisionError(
+            """Unable to take decision: the decision tree has no valid"""
+            """ standard deviation for the given context."""
+          )
+        raise CraftAiDecisionError(
+          """Unable to take decision: the decision tree has no valid"""
+          """ predicted value for the given context."""
+        )
     # If it is not a leaf, we recurse into the children and store
     # the distributions/means and sizes of each child branch.
     def recurse(_child):
-      return InterpreterV2._distribution(_child)
-    values_sizes = map(recurse, node.get("children"))
-    values, sizes = zip(*values_sizes)
-    if isinstance(values[0], list):
+      return InterpreterV2._distribution(_child, output_type)
+    values_sizes = list(map(recurse, node.get("children")))
+    # It is a classification problem
+    if output_type == "enum":
+      values, sizes = zip(*values_sizes)
       return InterpreterV2.compute_mean_distributions(values, sizes)
-    return InterpreterV2.compute_mean_values(values, sizes)
+    values, sizes, stds = zip(*values_sizes)
+    return InterpreterV2.compute_mean_values(values, sizes, stds)
 
   @staticmethod
   def compute_mean_distributions(values, sizes):
@@ -177,14 +199,39 @@ class InterpreterV2(object):
     return list(map(sum, zip(*ratio_applied))), total_size
 
   @staticmethod
-  def compute_mean_values(values, sizes):
+  def compute_mean_values(values, sizes, stds=None):
     # Compute the weighted mean of the given array of values.
     # Example, for values = [ 4, 3, 6 ], sizes = [1, 2, 1]
     # This function computes (4*1 + 3*2 + 1*6) / (1+2+1) = 16/4 = 4
-    total_size = sum(sizes)
-    mean = sum([val * size / float(total_size)
-                for val, size in zip(values, sizes)])
-    return mean, total_size
+    # If no standard deviation array is given, use classical weighted mean formula:
+    if stds is None:
+      total_size = sum(sizes)
+      mean = sum([val * size / float(total_size)
+                  for val, size in zip(values, sizes)])
+      return mean, total_size
+    # Otherwise, to compute the weighted standard deviation the following formula is used:
+    # https://math.stackexchange.com/questions/2238086/calculate-variance-of-a-subset
+    new_variance = None
+    new_mean = None
+    new_size = None
+    for mean, std, size in zip(values, stds, sizes):
+      variance = std * std
+      if new_mean is None:
+        new_variance = variance
+        new_mean = mean
+        new_size = size
+        continue
+      total_size = 1.0 * size + new_size
+      if total_size == 0:
+        continue
+      new_variance = (1.0 / (total_size - 1.0)) * (
+        (size - 1.0) * variance
+        + (new_size - 1.0) * new_variance
+        + (size * new_size / total_size) * (mean - new_mean)**2
+      )
+      new_mean = (1.0 / total_size) * (size * mean + new_size * new_mean)
+      new_size = total_size
+    return new_mean, new_size, math.sqrt(new_variance)
 
   @staticmethod
   def _find_matching_child(node, context, deactivate_missing_values=True):
