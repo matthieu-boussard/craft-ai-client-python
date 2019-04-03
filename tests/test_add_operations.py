@@ -1,10 +1,13 @@
 import unittest
 
+import copy
 import craftai
 
 from . import settings
 from .data import valid_data
 from .data import invalid_data
+
+NB_OPERATIONS_TO_ADD = 2000
 
 class TestAddOperationsSuccess(unittest.TestCase):
   """Checks that the client succeeds when getting an agent with OK input"""
@@ -39,12 +42,12 @@ class TestAddOperationsSuccess(unittest.TestCase):
     It should give a proper JSON response with a `message` fields being a
     string.
     """
-    operations = valid_data.VALID_OPERATIONS_SET[:]
+    operations = copy.deepcopy(valid_data.VALID_OPERATIONS_SET[:])
     operation = operations[-1]
     timestamp = operation["timestamp"]
     length = len(operations)
 
-    while length < 2000:
+    while length < NB_OPERATIONS_TO_ADD:
       operation["timestamp"] = timestamp + length
       operations.append(operation.copy())
       length = length + 1
@@ -102,6 +105,11 @@ class TestAddOperationsFailure(unittest.TestCase):
         invalid_data.UNDEFINED_KEY[ops_set])
 
   def test_add_operations_with_invalid_operation_set(self):
+    """add_operations should fail when given an invalid set of operations
+
+    It should raise an error upon request for posting an invalid set of
+    operations to an agent's configuration.
+    """
     for ops_set in invalid_data.INVALID_OPS_SET:
       self.assertRaises(
         craftai.errors.CraftAiBadRequestError,
