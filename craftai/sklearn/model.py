@@ -3,6 +3,7 @@ import os
 import random as rnd
 import pandas as pd
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
+import craftai.pandas
 
 class CraftEstimator(BaseEstimator):
 
@@ -22,9 +23,8 @@ class CraftEstimator(BaseEstimator):
     # agents.
     self.agent_name_base = agent_name
 
-    import craftai.pandas as craftai_pandas
     # Initialize the craft ai client.
-    self.craft_client = craftai_pandas.Client({
+    self.craft_client = craftai.pandas.Client({
       "token": os.environ.get("CRAFT_TOKEN")
     })
 
