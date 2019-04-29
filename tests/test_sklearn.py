@@ -3,7 +3,7 @@ from nose.tools import assert_true
 from pandas import date_range, DataFrame
 
 from sklearn.model_selection import GridSearchCV, TimeSeriesSplit
-from craftai.sklearn_model import CraftEstimatorRegressor
+from craftai.sklearn.model import CraftEstimatorRegressor
 
 from . import settings
 

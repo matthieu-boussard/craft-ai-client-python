@@ -1,7 +1,7 @@
 # pylint: skip-file
 import os
 import random as rnd
-from pandas import date_range, DataFrame
+import pandas as pd
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 
 class CraftEstimator(BaseEstimator):
@@ -53,7 +53,7 @@ class CraftEstimator(BaseEstimator):
     # Add timestamps for the input and output dataframes
     if self.add_timestamps_for_static:
       input_x = CraftEstimator.add_timestamp(input_x)
-      target = CraftEstimator.add_timestamp(DataFrame(target))
+      target = CraftEstimator.add_timestamp(pd.DataFrame(target))
 
     # Add the output in the input dataframe - the craft ai client takes both in an unique DF.
     input_x = input_x.assign(**{self.output_name: target})
@@ -88,7 +88,7 @@ class CraftEstimator(BaseEstimator):
 
   @staticmethod
   def add_timestamp(df, start=0):
-    df.index = date_range(start, periods=df.shape[0], freq="s", tz="UTC")
+    df.index = pd.date_range(start, periods=df.shape[0], freq="s", tz="UTC")
     return df
 
 class CraftEstimatorClassifier(CraftEstimator, ClassifierMixin):
