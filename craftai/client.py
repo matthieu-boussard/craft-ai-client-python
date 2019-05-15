@@ -339,7 +339,7 @@ class CraftAIClient(object):
 
     :return: list of agents containing a message about the added
     operations.
-    :rtype: list if dict.
+    :rtype: list of dict.
 
     :raises CraftAiBadRequestError: if the input is not of the right form.
     """
@@ -380,7 +380,7 @@ class CraftAIClient(object):
 
     :return: list of agents containing a message about the added
     operations.
-    :rtype: list if dict.
+    :rtype: list of dict.
 
     :raises CraftAiBadRequestError: if all of the ids are invalid or
     referenced non existing agents or one of the operations is invalid.
@@ -737,7 +737,7 @@ class CraftAIClient(object):
         AGENT_ID_PATTERN.match(agent_id) is None):
       raise CraftAiBadRequestError(ERROR_ID_MESSAGE)
 
-  def _check_agent_id_bulk(self, payload):
+  def _check_agent_id_bulk(self, payload, check_serializable=True):
     """Checks that all the given agent ids are valid non-empty strings
     and if the agents are serializable.
 
@@ -762,15 +762,18 @@ class CraftAIClient(object):
         invalid_payload.append({"id": agent["id"],
                                 "error": CraftAiBadRequestError(ERROR_ID_MESSAGE)})
       else:
-        # Check if the agent is serializable
-        try:
-          json.dumps([agent])
-        except TypeError as err:
-          invalid_agent_indices.append(index)
-          invalid_payload.append({"id": agent["id"],
-                                  "error": err})
+        if check_serializable:
+          # Check if the agent is serializable
+          try:
+            json.dumps([agent])
+          except TypeError as err:
+            invalid_agent_indices.append(index)
+            invalid_payload.append({"id": agent["id"],
+                                    "error": err})
+          else:
+            valid_agent_indices.append(index)
         else:
-          valid_agent_indices.append(index)
+            valid_agent_indices.append(index)
 
     if len(invalid_agent_indices) == len(payload):
       raise CraftAiBadRequestError(ERROR_ID_MESSAGE)

@@ -53,8 +53,6 @@ class TestAddOperationsBulkSuccess(unittest.TestCase):
     self.assertEqual(resp[1].get("status"), 201)
     self.assertTrue("message" in resp[0].keys())
     self.assertTrue("message" in resp[1].keys())
-    self.assertFalse("error" in resp[0].keys())
-    self.assertFalse("error" in resp[1].keys())
 
     self.addCleanup(self.clean_up_agents,
                     [self.agent_id1, self.agent_id2])
@@ -92,7 +90,6 @@ class TestAddOperationsBulkSuccess(unittest.TestCase):
     self.assertEqual(resp[1].get("status"), 201)
     self.assertTrue("message" in resp[0].keys())
     self.assertTrue("message" in resp[1].keys())
-    self.assertFalse("error" in resp[1].keys())
 
     self.addCleanup(self.clean_up_agents,
                     [self.agent_id1, self.agent_id2])
@@ -141,7 +138,6 @@ class TestAddOperationsGroupAgentsBulkSuccess(unittest.TestCase):
       self.assertEqual(resp.get("id"), self.agents[i])
       self.assertEqual(resp.get("status"), 201)
       self.assertTrue("message" in resp.keys())
-      self.assertFalse("error" in resp.keys())
 
     self.addCleanup(self.clean_up_agents,
                     self.agents)

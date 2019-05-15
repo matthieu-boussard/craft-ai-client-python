@@ -9,6 +9,9 @@ unit-tests:
 lint:
 	pylint --load-plugins pylint_quotes craftai tests
 
+yolo:
+	nosetests --exe -v --nocapture tests/test_pandas_add_operations_bulk.py
+
 update-readme:
 	./scripts/update_readme.sh
 
