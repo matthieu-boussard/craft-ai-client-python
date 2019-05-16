@@ -1,7 +1,6 @@
-from six.moves import range
-
-import pandas as pd
 import json
+import pandas as pd
+from six.moves import range
 
 from .. import Client as VanillaClient
 from ..errors import CraftAiBadRequestError
@@ -70,9 +69,11 @@ class Client(VanillaClient):
       operations = agent["operations"]
       if isinstance(operations, pd.DataFrame):
         if not isinstance(operations.index, pd.DatetimeIndex):
-          raise CraftAiBadRequestError("Invalid dataframe given for agent" + agent["id"] + ", it is not time indexed.")
+          raise CraftAiBadRequestError("Invalid dataframe given for agent "
+                                       "{}, it is not time indexed.".format(agent["id"]))
         if operations.index.tz is None:
-          raise CraftAiBadRequestError("tz-naive DatetimeIndex are not supported for agent" + agent["id"] + ", it must be tz-aware.")
+          raise CraftAiBadRequestError("tz-naive DatetimeIndex are not supported for "
+                                       "agent {}, it must be tz-aware.".format(agent["id"]))
 
         new_operations = [{
           "timestamp": row.name.value // 10 ** 9, # Timestamp.value returns nanoseconds
@@ -86,7 +87,8 @@ class Client(VanillaClient):
         json.dumps([agent])
         new_payload.append({"id": agent["id"], "operations": operations})
       else:
-        raise CraftAiBadRequestError("The operations are not put in a DataFrame or a list of dict form for the agent " + agent["id"] + ".")
+        raise CraftAiBadRequestError("The operations are not put in a DataFrame or a list"
+                                     "of dict form for the agent {}.".format(agent["id"]))
 
     return super(Client, self).add_operations_bulk(new_payload)
 

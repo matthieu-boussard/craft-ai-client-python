@@ -773,7 +773,7 @@ class CraftAIClient(object):
           else:
             valid_agent_indices.append(index)
         else:
-            valid_agent_indices.append(index)
+          valid_agent_indices.append(index)
 
     if len(invalid_agent_indices) == len(payload):
       raise CraftAiBadRequestError(ERROR_ID_MESSAGE)
