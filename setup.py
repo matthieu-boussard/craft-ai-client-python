@@ -64,7 +64,10 @@ setup(
   ],
   extras_require = {
     "pandas_support":  [
-      "pandas>=0.20"
+      "pandas~=0.24.2"
+    ],
+    "sklearn_support": [
+      "scikit-learn~=0.20.3"
     ]
   },
 

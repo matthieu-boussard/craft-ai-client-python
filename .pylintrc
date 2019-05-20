@@ -28,7 +28,7 @@ docstring-quote=double
 
 [TYPECHECK]
 
-generated-members=requests\..*
+generated-members=requests\..*,pandas.*,numpy.*,np.*,pd.*
 ignored-classes=dict
 
 [REPORTS]
