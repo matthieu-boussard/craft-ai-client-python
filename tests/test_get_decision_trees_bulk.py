@@ -95,12 +95,12 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
     """
     payload = [{"id": self.agent_id1, "timestamp": valid_data.VALID_LAST_TIMESTAMP},
                {"id": self.agent_id2, "timestamp": valid_data.VALID_LAST_TIMESTAMP}]
-    version = 1
+    version = "2"
     decision_trees = self.client.get_decision_trees_bulk(payload, version)
 
     self.assertNotEqual(decision_trees[0].get("tree").get("_version"), None)
     tree_version = semver.parse(decision_trees[0].get("tree").get("_version"))
-    self.assertEqual(tree_version["major"], version)
+    self.assertEqual(tree_version["major"], int(version))
     self.assertNotEqual(decision_trees[1].get("tree").get("_version"), None)
     tree_version = semver.parse(decision_trees[1].get("tree").get("_version"))
     self.assertEqual(tree_version["major"], version)

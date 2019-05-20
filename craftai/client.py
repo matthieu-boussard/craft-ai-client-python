@@ -499,8 +499,7 @@ class CraftAIClient(object):
     :return: decision tree.
     :rtype: dict.
     """
-    headers = self._headers.copy()
-    headers["x-craft-ai-tree-version"] = version
+    self._requests_session.headers["x-craft-ai-tree-version"] = version
     # If we give no timestamp the default behaviour is to give the tree from the latest timestamp
     if timestamp is None:
       req_url = "{}/agents/{}/decision/tree?".format(self._base_url, agent_id)
