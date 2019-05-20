@@ -136,6 +136,32 @@ class TestAddOperationsBulkSuccess(unittest.TestCase):
     self.addCleanup(self.clean_up_agents,
                     [self.agent_id1, self.agent_id2])
 
+  def test_add_operations_bulk_correct_order(self):
+    """add_operations_bulk should succeed when given two dataframe as input
+    data which are in a chronological order with the same correct `id`s.
+
+    It should give a proper JSON response with a list containing dicts with
+    'id' fields being the same as the one in parameters, 'message' fields
+    being a string, 'status' fields being 201 and no 'error' field.
+    """
+    data_part1 = SIMPLE_AGENT_DATA.iloc[:int(0.5*len(SIMPLE_AGENT_DATA)), :]
+    data_part2 = SIMPLE_AGENT_DATA.iloc[int(0.5*len(SIMPLE_AGENT_DATA))+1:, :]
+
+    payload = [{"id": self.agent_id1, "operations": data_part1},
+               {"id": self.agent_id1, "operations": data_part2},
+               {"id": self.agent_id2, "operations": data_part1},
+               {"id": self.agent_id2, "operations": data_part2}]
+    resp = self.client.add_operations_bulk(payload)
+
+    self.assertIsInstance(resp, list)
+    self.assertEqual(resp[0].get("id"), self.agent_id1)
+    self.assertEqual(resp[1].get("id"), self.agent_id1)
+    self.assertEqual(resp[2].get("id"), self.agent_id2)
+    self.assertEqual(resp[3].get("id"), self.agent_id2)
+
+    self.addCleanup(self.clean_up_agents,
+                    [self.agent_id1, self.agent_id2])
+
 
 class TestAddOperationsGroupAgentBulkSuccess(unittest.TestCase):
   """Checks that the client succeeds when adding operations to
@@ -297,7 +323,7 @@ class TestAddOperationsBulkFailure(unittest.TestCase):
                     agent_id)
 
   def test_add_operations_bulk_invalid_index(self):
-    """add_operations_bulk should fail when given a df with index.
+    """add_operations_bulk should fail when given a df with invalid index.
 
     It should raise an error upon request for operations posting for all agents
     with invalid index in the operations set.
@@ -323,6 +349,32 @@ class TestAddOperationsBulkFailure(unittest.TestCase):
 
     self.addCleanup(self.clean_up_agents,
                     list_agents)
+
+  def test_add_operations_bulk_wrong_order(self):
+    """add_operations_bulk should fails when the DataFrame are in a non
+    chrological order.
+
+    It should raise an error upon request for operations posting when an agent
+    appears multiple time in the same bulk and the operations are not in
+    chronological order.
+    """
+    agent_id = self.agent_name.format(0)
+    self.client.delete_agent(agent_id)
+    self.client.create_agent(SIMPLE_AGENT_CONFIGURATION, agent_id)
+
+    data_part1 = SIMPLE_AGENT_DATA.iloc[:int(0.5*len(SIMPLE_AGENT_DATA)), :]
+    data_part2 = SIMPLE_AGENT_DATA.iloc[int(0.5*len(SIMPLE_AGENT_DATA))+1:, :]
+
+    payload = [{"id": agent_id, "operations": data_part2},
+               {"id": agent_id, "operations": data_part1}]
+    self.assertRaises(
+      craft_err.CraftAiBadRequestError,
+      self.client.add_operations_bulk,
+      payload
+    )
+
+    self.addCleanup(self.clean_up_agent,
+                    agent_id)
 
 
 class TestAddOperationsBulkSomeFailure(unittest.TestCase):

@@ -2,7 +2,8 @@ import pandas as pd
 import numpy as np
 from numpy.random import randn
 
-NB_OPERATIONS_TO_ADD = 1000
+NB_OPERATIONS = 300
+NB_MANY_OPERATIONS = 1000
 
 SIMPLE_AGENT_CONFIGURATION = {
   "context": {
@@ -28,15 +29,15 @@ SIMPLE_AGENT_CONFIGURATION = {
 }
 
 SIMPLE_AGENT_DATA = pd.DataFrame(
-  randn(300, 5),
+  randn(NB_OPERATIONS, 5),
   columns=["a", "b", "c", "d", "e"],
-  index=pd.date_range("20130101", periods=300, freq="T").tz_localize("Europe/Paris")
+  index=pd.date_range("20130101", periods=NB_OPERATIONS, freq="T").tz_localize("Europe/Paris")
 )
 
 SIMPLE_AGENT_MANY_DATA = pd.DataFrame(
-  randn(1000, 5),
+  randn(NB_MANY_OPERATIONS, 5),
   columns=["a", "b", "c", "d", "e"],
-  index=pd.date_range("20130101", periods=1000, freq="T").tz_localize("Europe/Paris")
+  index=pd.date_range("20130101", periods=NB_MANY_OPERATIONS, freq="T").tz_localize("Europe/Paris")
 )
 
 SIMPLE_AGENT_DATA_DICT = [

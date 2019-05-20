@@ -482,7 +482,7 @@ class CraftAIClient(object):
   # Decision tree methods #
   #########################
 
-  def _get_decision_tree(self, agent_id, timestamp, version):
+  def _get_decision_tree(self, agent_id, timestamp, version=DEFAULT_DECISION_TREE_VERSION):
     """Tool for the function get_decision_tree.
 
     :param str agent_id: the id of the agent to get the tree. It
@@ -499,8 +499,8 @@ class CraftAIClient(object):
     :return: decision tree.
     :rtype: dict.
     """
-    headers = self._headers.copy()
-    headers["x-craft-ai-tree-version"] = version
+    self._requests_session.headers["x-craft-ai-tree-version"] = version
+
     # If we give no timestamp the default behaviour is to give the tree from the latest timestamp
     if timestamp is None:
       req_url = "{}/agents/{}/decision/tree?".format(self._base_url, agent_id)
@@ -594,9 +594,7 @@ class CraftAIClient(object):
     :raises CraftAiLongRequestTimeOutError: if the API doesn't get
     the tree in the time given by the configuration.
     """
-    # payload = [{"id": agent_id, "timestamp": timestamp}]
-    headers = self._headers.copy()
-    headers["x-craft-ai-tree-version"] = version
+    self._requests_session.headers["x-craft-ai-tree-version"] = version
 
     # Check all ids, raise an error if all ids are invalid
     valid_indices, invalid_indices, invalid_dts = self._check_agent_id_bulk(payload)
