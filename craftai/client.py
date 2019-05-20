@@ -593,9 +593,7 @@ class CraftAIClient(object):
     :raises CraftAiLongRequestTimeOutError: if the API doesn't get
     the tree in the time given by the configuration.
     """
-    # payload = [{"id": agent_id, "timestamp": timestamp}]
-    headers = self._headers.copy()
-    headers["x-craft-ai-tree-version"] = version
+    self._requests_session.headers["x-craft-ai-tree-version"] = version
 
     # Check all ids, raise an error if all ids are invalid
     valid_indices, invalid_indices, invalid_dts = self._check_agent_id_bulk(payload)

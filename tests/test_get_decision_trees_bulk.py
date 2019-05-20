@@ -103,7 +103,7 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
     self.assertEqual(tree_version["major"], int(version))
     self.assertNotEqual(decision_trees[1].get("tree").get("_version"), None)
     tree_version = semver.parse(decision_trees[1].get("tree").get("_version"))
-    self.assertEqual(tree_version["major"], version)
+    self.assertEqual(tree_version["major"], int(version))
 
     self.addCleanup(self.clean_up_agents,
                     [self.agent_id1, self.agent_id2])
