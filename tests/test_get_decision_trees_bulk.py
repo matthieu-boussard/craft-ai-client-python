@@ -2,6 +2,7 @@ import unittest
 import semver
 
 from craftai import Client, errors as craft_err
+from craftai.constants import DEFAULT_DECISION_TREE_VERSION
 
 from . import settings
 from .data import valid_data
@@ -42,7 +43,8 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
     """get_decision_trees_bulk should succeed when given a correct input.
 
     It should give a proper JSON response with a list containing a dict
-    with `id` field being string and 'tree' field being a dict.
+    with `id` field being string and 'tree' field being a dict. As we don't
+    specify the version the field 'tree''_version' should be the one by default.
     """
     payload = [{"id": self.agent_id1, "timestamp": valid_data.VALID_LAST_TIMESTAMP}]
 
@@ -52,6 +54,8 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
     self.assertIsInstance(decision_trees[0], dict)
     self.assertIsInstance(decision_trees[0].get("tree"), dict)
     self.assertNotEqual(decision_trees[0].get("tree").get("_version"), None)
+    tree_version = semver.parse(decision_trees[0].get("tree").get("_version"))
+    self.assertEqual(tree_version["major"], int(DEFAULT_DECISION_TREE_VERSION))
     self.assertNotEqual(decision_trees[0].get("tree").get("configuration"), None)
     self.assertNotEqual(decision_trees[0].get("tree").get("trees"), None)
 
@@ -62,7 +66,8 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
     """get_decision_trees_bulk should succeed when given an correct input.
 
     It should give a proper JSON response with a list containing dicts
-    with `id` field being string and 'tree' field being a dict.
+    with `id` field being string and 'tree' field being a dict. As we don't
+    specify the version the field 'tree''_version' should be the one by default.
     """
     payload = [{"id": self.agent_id1, "timestamp": valid_data.VALID_LAST_TIMESTAMP},
                {"id": self.agent_id2, "timestamp": valid_data.VALID_LAST_TIMESTAMP}]
@@ -70,16 +75,22 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
     decision_trees = self.client.get_decision_trees_bulk(payload)
 
     self.assertIsInstance(decision_trees, list)
+
     self.assertIsInstance(decision_trees[0], dict)
     self.assertEqual(decision_trees[0].get("id"), self.agent_id1)
     self.assertIsInstance(decision_trees[0].get("tree"), dict)
     self.assertNotEqual(decision_trees[0].get("tree").get("_version"), None)
+    tree_version = semver.parse(decision_trees[0].get("tree").get("_version"))
+    self.assertEqual(tree_version["major"], int(DEFAULT_DECISION_TREE_VERSION))
     self.assertNotEqual(decision_trees[0].get("tree").get("configuration"), None)
     self.assertNotEqual(decision_trees[0].get("tree").get("trees"), None)
+
     self.assertIsInstance(decision_trees[1], dict)
     self.assertEqual(decision_trees[1].get("id"), self.agent_id2)
     self.assertIsInstance(decision_trees[1].get("tree"), dict)
     self.assertNotEqual(decision_trees[1].get("tree").get("_version"), None)
+    tree_version = semver.parse(decision_trees[1].get("tree").get("_version"))
+    self.assertEqual(tree_version["major"], int(DEFAULT_DECISION_TREE_VERSION))
     self.assertNotEqual(decision_trees[1].get("tree").get("configuration"), None)
     self.assertNotEqual(decision_trees[1].get("tree").get("trees"), None)
 
@@ -88,26 +99,50 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
 
   def test_get_decision_trees_bulk_specific_version(self):
     """get_decision_trees_bulk should succeed when given a specific version.
+    The version asked is the version 1.
 
     It should give a proper JSON response with a list containing a dict
     with `id` field being string and 'tree' field being a dict with the
-    field 'version''major' being the version given as a parameter.
+    field '_version''major' being the version given as a parameter.
     """
     payload = [{"id": self.agent_id1, "timestamp": valid_data.VALID_LAST_TIMESTAMP},
                {"id": self.agent_id2, "timestamp": valid_data.VALID_LAST_TIMESTAMP}]
-    version = "2"
+    version = 1
     decision_trees = self.client.get_decision_trees_bulk(payload, version)
 
     self.assertNotEqual(decision_trees[0].get("tree").get("_version"), None)
     tree_version = semver.parse(decision_trees[0].get("tree").get("_version"))
-    self.assertEqual(tree_version["major"], int(version))
+    self.assertEqual(tree_version["major"], version)
     self.assertNotEqual(decision_trees[1].get("tree").get("_version"), None)
     tree_version = semver.parse(decision_trees[1].get("tree").get("_version"))
-    self.assertEqual(tree_version["major"], int(version))
+    self.assertEqual(tree_version["major"], version)
 
     self.addCleanup(self.clean_up_agents,
                     [self.agent_id1, self.agent_id2])
 
+  def test_get_decision_trees_bulk_specific_version2(self):
+    """get_decision_trees_bulk should succeed when given a specific version.
+    The version asked is the version 2.
+
+    It should give a proper JSON response with a list containing a dict
+    with `id` field being string and 'tree' field being a dict with the
+    field '_version''major' being the version given as a parameter.
+    """
+    payload = [{"id": self.agent_id1, "timestamp": valid_data.VALID_LAST_TIMESTAMP},
+               {"id": self.agent_id2, "timestamp": valid_data.VALID_LAST_TIMESTAMP}]
+    version = 2
+    decision_trees = self.client.get_decision_trees_bulk(payload, version)
+
+    self.assertNotEqual(decision_trees[0].get("tree").get("_version"), None)
+    tree_version = semver.parse(decision_trees[0].get("tree").get("_version"))
+    self.assertEqual(tree_version["major"], version)
+
+    self.assertNotEqual(decision_trees[1].get("tree").get("_version"), None)
+    tree_version = semver.parse(decision_trees[1].get("tree").get("_version"))
+    self.assertEqual(tree_version["major"], version)
+
+    self.addCleanup(self.clean_up_agents,
+                    [self.agent_id1, self.agent_id2])
 
   def test_get_decision_trees_bulk_without_timestamp(self):
     """get_decision_trees_bulk should succeed when given no timestamp.
