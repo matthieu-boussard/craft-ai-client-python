@@ -66,10 +66,12 @@ def test_get_decision_tree_with_correct_input():
   assert_not_equal(decision_tree.get("_version"), None)
   assert_not_equal(decision_tree.get("configuration"), None)
   assert_not_equal(decision_tree.get("trees"), None)
+  tree_version = semver.parse(decision_tree.get("_version"))
+  assert_equal(tree_version["major"], int(DEFAULT_DECISION_TREE_VERSION))
 
 @with_setup(setup_agent_w_operations, teardown)
-def test_get_decision_tree_with_specific_version():
-  version = "2"
+def test_get_decision_tree_with_specific_version2():
+  version = 1
   decision_tree = CLIENT.get_decision_tree(
     AGENT_ID,
     valid_data.VALID_TIMESTAMP,
@@ -78,7 +80,22 @@ def test_get_decision_tree_with_specific_version():
   assert_is_instance(decision_tree, dict)
   assert_not_equal(decision_tree.get("_version"), None)
   tree_version = semver.parse(decision_tree.get("_version"))
-  assert_equal(tree_version["major"], int(version))
+  assert_equal(tree_version["major"], version)
+  assert_not_equal(decision_tree.get("configuration"), None)
+  assert_not_equal(decision_tree.get("trees"), None)
+
+@with_setup(setup_agent_w_operations, teardown)
+def test_get_decision_tree_with_specific_version2():
+  version = 2
+  decision_tree = CLIENT.get_decision_tree(
+    AGENT_ID,
+    valid_data.VALID_TIMESTAMP,
+    version)
+
+  assert_is_instance(decision_tree, dict)
+  assert_not_equal(decision_tree.get("_version"), None)
+  tree_version = semver.parse(decision_tree.get("_version"))
+  assert_equal(tree_version["major"], version)
   assert_not_equal(decision_tree.get("configuration"), None)
   assert_not_equal(decision_tree.get("trees"), None)
 

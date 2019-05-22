@@ -493,7 +493,7 @@ class CraftAIClient(object):
     :default timestamp: None, means that we get the tree computed
     with all its context history.
     :param version: version of the tree to get.
-    :type version: str or int
+    :type version: str or int.
     :default version: default version of the tree.
 
     :return: decision tree.
@@ -532,6 +532,9 @@ class CraftAIClient(object):
     :raises CraftAiLongRequestTimeOutError: if the API doesn't get
     the tree in the time given by the configuration.
     """
+    if isinstance(version, int):
+      version = str(version)
+
     # Raises an error when agent_id is invalid
     self._check_agent_id(agent_id)
     if self._config["decisionTreeRetrievalTimeout"] is False:
@@ -593,6 +596,8 @@ class CraftAIClient(object):
     :raises CraftAiLongRequestTimeOutError: if the API doesn't get
     the tree in the time given by the configuration.
     """
+    if isinstance(version, int):
+      version = str(version)
     self._requests_session.headers["x-craft-ai-tree-version"] = version
 
     # Check all ids, raise an error if all ids are invalid
