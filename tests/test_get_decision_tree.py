@@ -3,6 +3,7 @@ import semver
 
 from nose.tools import assert_equal, assert_is_instance, assert_not_equal, assert_raises, with_setup
 import craftai
+from craftai.constants import DEFAULT_DECISION_TREE_VERSION
 
 from . import settings
 from .data import valid_data
@@ -70,7 +71,7 @@ def test_get_decision_tree_with_correct_input():
   assert_equal(tree_version["major"], int(DEFAULT_DECISION_TREE_VERSION))
 
 @with_setup(setup_agent_w_operations, teardown)
-def test_get_decision_tree_with_specific_version2():
+def test_get_decision_tree_with_specific_version():
   version = 1
   decision_tree = CLIENT.get_decision_tree(
     AGENT_ID,
