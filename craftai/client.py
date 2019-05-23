@@ -493,14 +493,13 @@ class CraftAIClient(object):
     :default timestamp: None, means that we get the tree computed
     with all its context history.
     :param version: version of the tree to get.
-    :type version: str or int
+    :type version: str or int.
     :default version: default version of the tree.
 
     :return: decision tree.
     :rtype: dict.
     """
-    headers = self._headers.copy()
-    headers["x-craft-ai-tree-version"] = version
+    self._requests_session.headers["x-craft-ai-tree-version"] = version
     # If we give no timestamp the default behaviour is to give the tree from the latest timestamp
     if timestamp is None:
       req_url = "{}/agents/{}/decision/tree?".format(self._base_url, agent_id)
@@ -533,6 +532,9 @@ class CraftAIClient(object):
     :raises CraftAiLongRequestTimeOutError: if the API doesn't get
     the tree in the time given by the configuration.
     """
+    if isinstance(version, int):
+      version = str(version)
+
     # Raises an error when agent_id is invalid
     self._check_agent_id(agent_id)
     if self._config["decisionTreeRetrievalTimeout"] is False:
@@ -594,9 +596,9 @@ class CraftAIClient(object):
     :raises CraftAiLongRequestTimeOutError: if the API doesn't get
     the tree in the time given by the configuration.
     """
-    # payload = [{"id": agent_id, "timestamp": timestamp}]
-    headers = self._headers.copy()
-    headers["x-craft-ai-tree-version"] = version
+    if isinstance(version, int):
+      version = str(version)
+    self._requests_session.headers["x-craft-ai-tree-version"] = version
 
     # Check all ids, raise an error if all ids are invalid
     valid_indices, invalid_indices, invalid_dts = self._check_agent_id_bulk(payload)
