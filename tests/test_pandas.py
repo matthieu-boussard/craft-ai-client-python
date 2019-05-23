@@ -1,140 +1,24 @@
 import pandas as pd
-import numpy as np
 
 from numpy.random import randn
 from nose.tools import assert_equal, assert_raises, with_setup
 
 import craftai.pandas
+from .data import pandas_valid_data
 
 from . import settings
 
 AGENT_ID = "test_pandas_" + settings.RUN_ID
-SIMPLE_AGENT_CONFIGURATION = {
-  "context": {
-    "a": {
-      "type": "continuous"
-    },
-    "b": {
-      "type": "continuous"
-    },
-    "c": {
-      "type": "continuous"
-    },
-    "d": {
-      "type": "continuous"
-    },
-    "e": {
-      "type": "continuous"
-    }
-  },
-  "output": ["a"],
-  "time_quantum": 100,
-  "deactivate_missing_values": True,
-}
-SIMPLE_AGENT_DATA = pd.DataFrame(
-  randn(300, 5),
-  columns=["a", "b", "c", "d", "e"],
-  index=pd.date_range("20130101", periods=300, freq="T").tz_localize("Europe/Paris")
-)
-COMPLEX_AGENT_CONFIGURATION = {
-  "context": {
-    "a": {
-      "type": "continuous"
-    },
-    "b": {
-      "type": "enum"
-    },
-    "tz": {
-      "type": "timezone"
-    }
-  },
-  "output": ["b"],
-  "time_quantum": 100,
-  "deactivate_missing_values": True,
-}
-COMPLEX_AGENT_CONFIGURATION_2 = {
-  "context": {
-    "a": {
-      "type": "continuous"
-    },
-    "b": {
-      "type": "enum"
-    },
-    "tz": {
-      "type": "timezone"
-    }
-  },
-  "output": ["a"],
-  "time_quantum": 100,
-  "deactivate_missing_values": True,
-}
-COMPLEX_AGENT_DATA = pd.DataFrame(
-  [
-    [1, "Pierre", "+02:00"],
-    [2, "Paul"],
-    [3],
-    [4],
-    [5, "Jacques"],
-    [6],
-    [7],
-    [8, np.nan, "+01:00"],
-    [9],
-    [10]
-  ],
-  columns=["a", "b", "tz"],
-  index=pd.date_range("20130101", periods=10, freq="D").tz_localize("Europe/Paris")
-)
-COMPLEX_AGENT_DATA_2 = pd.DataFrame(
-  [
-    [1, "Pierre", "+02:00", [8, 9]],
-    [2, "Paul"],
-    [3],
-    [4],
-    [5, "Jacques"],
-    [6],
-    [7],
-    [8, np.nan, "+01:00", [1, 2, 3]],
-    [9],
-    [10]
-  ],
-  columns=["a", "b", "tz", "arrays"],
-  index=pd.date_range("20130101", periods=10, freq="D").tz_localize("Europe/Paris")
-)
-DATETIME_AGENT_CONFIGURATION = {
-  "context": {
-    "a": {
-      "type": "continuous"
-    },
-    "b": {
-      "type": "enum"
-    },
-    "myTimeOfDay": {
-      "type": "time_of_day"
-    },
-    "myCoolTimezone": {
-      "type": "timezone"
-    }
-  },
-  "output": ["b"],
-  "time_quantum": 3600,
-  "deactivate_missing_values": True
-}
-DATETIME_AGENT_DATA = pd.DataFrame(
-  [
-    [1, "Pierre", "+02:00"],
-    [2, "Paul"],
-    [3, np.nan, "+04:00"],
-    [4],
-    [5, "Jacques", "UTC"],
-    [6],
-    [7, np.nan, "+08:00"],
-    [8],
-    [9],
-    [10, np.nan, "+10:00"]
-  ],
-  columns=["a", "b", "myCoolTimezone"],
-  index=pd.date_range("20130101 00:00:00", periods=10, freq="H").tz_localize("UTC")
-)
+
+SIMPLE_AGENT_CONFIGURATION = pandas_valid_data.SIMPLE_AGENT_CONFIGURATION
+SIMPLE_AGENT_DATA = pandas_valid_data.SIMPLE_AGENT_DATA
+COMPLEX_AGENT_CONFIGURATION = pandas_valid_data.COMPLEX_AGENT_CONFIGURATION
+COMPLEX_AGENT_CONFIGURATION_2 = pandas_valid_data.COMPLEX_AGENT_CONFIGURATION_2
+COMPLEX_AGENT_DATA = pandas_valid_data.COMPLEX_AGENT_DATA
+COMPLEX_AGENT_DATA_2 = pandas_valid_data.COMPLEX_AGENT_DATA_2
+DATETIME_AGENT_CONFIGURATION = pandas_valid_data.DATETIME_AGENT_CONFIGURATION
+DATETIME_AGENT_DATA = pandas_valid_data.DATETIME_AGENT_DATA
+
 CLIENT = craftai.pandas.Client(settings.CRAFT_CFG)
 
 def setup_simple_agent():

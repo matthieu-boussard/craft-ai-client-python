@@ -1,6 +1,6 @@
-from six.moves import range
-
+import json
 import pandas as pd
+from six.moves import range
 
 from .. import Client as VanillaClient
 from ..errors import CraftAiBadRequestError
@@ -40,6 +40,57 @@ class Client(VanillaClient):
       }
     else:
       return super(Client, self).add_operations(agent_id, operations)
+
+  def add_operations_bulk(self, payload):
+    """Add operations to a group of agents.
+
+    :param list payload: contains the informations necessary for the action.
+    It's in the form [{"id": agent_id, "operations": operations}]
+    With id that is an str containing only characters in "a-zA-Z0-9_-"
+    and must be between 1 and 36 characters. It must referenced an
+    existing agent.
+    With operations either a list of dict or a DataFrame that has
+    the form given in the craftai documentation and the configuration of
+    the agent.
+
+    :return: list of agents containing a message about the added
+    operations.
+    :rtype: list of dict.
+
+    :raises CraftAiBadRequestError: if all of the ids are invalid or
+    referenced non existing agents or one of the operations is invalid.
+    """
+    # Check all ids, raise an error if all ids are invalid
+    valid_indices, _, _ = self._check_agent_id_bulk(payload, check_serializable=False)
+    valid_payload = [payload[i] for i in valid_indices]
+
+    new_payload = []
+    for agent in valid_payload:
+      operations = agent["operations"]
+      if isinstance(operations, pd.DataFrame):
+        if not isinstance(operations.index, pd.DatetimeIndex):
+          raise CraftAiBadRequestError("Invalid dataframe given for agent "
+                                       "{}, it is not time indexed.".format(agent["id"]))
+        if operations.index.tz is None:
+          raise CraftAiBadRequestError("tz-naive DatetimeIndex are not supported for "
+                                       "agent {}, it must be tz-aware.".format(agent["id"]))
+
+        new_operations = [{
+          "timestamp": row.name.value // 10 ** 9, # Timestamp.value returns nanoseconds
+          "context": {
+            col: row[col] for col in operations.columns if is_valid_property_value(col, row[col])
+          }
+        } for _, row in operations.iterrows()]
+        new_payload.append({"id": agent["id"], "operations": new_operations})
+      elif isinstance(operations, list):
+        # Check if the operations are serializable
+        json.dumps([agent])
+        new_payload.append({"id": agent["id"], "operations": operations})
+      else:
+        raise CraftAiBadRequestError("The operations are not put in a DataFrame or a list"
+                                     "of dict form for the agent {}.".format(agent["id"]))
+
+    return super(Client, self).add_operations_bulk(new_payload)
 
   def get_operations_list(self, agent_id, start=None, end=None):
     operations_list = super(Client, self).get_operations_list(agent_id, start, end)

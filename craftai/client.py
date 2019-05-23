@@ -339,7 +339,7 @@ class CraftAIClient(object):
 
     :return: list of agents containing a message about the added
     operations.
-    :rtype: list if dict.
+    :rtype: list of dict.
 
     :raises CraftAiBadRequestError: if the input is not of the right form.
     """
@@ -380,7 +380,7 @@ class CraftAIClient(object):
 
     :return: list of agents containing a message about the added
     operations.
-    :rtype: list if dict.
+    :rtype: list of dict.
 
     :raises CraftAiBadRequestError: if all of the ids are invalid or
     referenced non existing agents or one of the operations is invalid.
@@ -482,7 +482,7 @@ class CraftAIClient(object):
   # Decision tree methods #
   #########################
 
-  def _get_decision_tree(self, agent_id, timestamp, version):
+  def _get_decision_tree(self, agent_id, timestamp, version=DEFAULT_DECISION_TREE_VERSION):
     """Tool for the function get_decision_tree.
 
     :param str agent_id: the id of the agent to get the tree. It
@@ -500,6 +500,7 @@ class CraftAIClient(object):
     :rtype: dict.
     """
     self._requests_session.headers["x-craft-ai-tree-version"] = version
+
     # If we give no timestamp the default behaviour is to give the tree from the latest timestamp
     if timestamp is None:
       req_url = "{}/agents/{}/decision/tree?".format(self._base_url, agent_id)
@@ -739,7 +740,7 @@ class CraftAIClient(object):
         AGENT_ID_PATTERN.match(agent_id) is None):
       raise CraftAiBadRequestError(ERROR_ID_MESSAGE)
 
-  def _check_agent_id_bulk(self, payload):
+  def _check_agent_id_bulk(self, payload, check_serializable=True):
     """Checks that all the given agent ids are valid non-empty strings
     and if the agents are serializable.
 
@@ -764,13 +765,16 @@ class CraftAIClient(object):
         invalid_payload.append({"id": agent["id"],
                                 "error": CraftAiBadRequestError(ERROR_ID_MESSAGE)})
       else:
-        # Check if the agent is serializable
-        try:
-          json.dumps([agent])
-        except TypeError as err:
-          invalid_agent_indices.append(index)
-          invalid_payload.append({"id": agent["id"],
-                                  "error": err})
+        if check_serializable:
+          # Check if the agent is serializable
+          try:
+            json.dumps([agent])
+          except TypeError as err:
+            invalid_agent_indices.append(index)
+            invalid_payload.append({"id": agent["id"],
+                                    "error": err})
+          else:
+            valid_agent_indices.append(index)
         else:
           valid_agent_indices.append(index)
 
