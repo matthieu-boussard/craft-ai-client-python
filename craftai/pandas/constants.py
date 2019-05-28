@@ -1,10 +1,10 @@
-class MissingValue:    
-    def __str__(self):
-        return "MISSING"
-    
-class OptionalValue:    
-    def __str__(self):
-        return "OPTIONAL"
+class MissingValue(object): # pylint: disable=too-few-public-methods
+  def __str__(self):
+    return "MISSING"
 
-MISSING_VALUE  = MissingValue()
+class OptionalValue(object): # pylint: disable=too-few-public-methods
+  def __str__(self):
+    return "OPTIONAL"
+
+MISSING_VALUE = MissingValue()
 OPTIONAL_VALUE = OptionalValue()

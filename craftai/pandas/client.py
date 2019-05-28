@@ -36,7 +36,7 @@ class Client(VanillaClient):
           {
             "timestamp": row.name.value // 10 ** 9, # Timestamp.value returns nanoseconds
             "context": {
-              col: format_input(row[col]) 
+              col: format_input(row[col])
               for col in chunk.columns if is_valid_property_value(col, row[col])
             }
           } for _, row in chunk.iterrows()
