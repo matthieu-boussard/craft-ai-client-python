@@ -5,7 +5,7 @@ from six.moves import range
 from .. import Client as VanillaClient
 from ..errors import CraftAiBadRequestError
 from .interpreter import Interpreter
-from .utils import is_valid_property_value
+from .utils import format_input, is_valid_property_value
 
 def chunker(to_be_chunked_df, chunk_size):
   return (to_be_chunked_df[pos:pos + chunk_size]
@@ -28,7 +28,8 @@ class Client(VanillaClient):
           {
             "timestamp": row.name.value // 10 ** 9, # Timestamp.value returns nanoseconds
             "context": {
-              col: row[col] for col in chunk.columns if is_valid_property_value(col, row[col])
+              col: format_input(row[col])
+              for col in chunk.columns if is_valid_property_value(col, row[col])
             }
           } for _, row in chunk.iterrows()
         ]

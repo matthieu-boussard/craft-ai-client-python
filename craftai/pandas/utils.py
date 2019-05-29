@@ -6,8 +6,16 @@ from IPython.core.display import display, HTML
 import semver
 from ..errors import CraftAiError
 from ..constants import REACT_CRAFT_AI_DECISION_TREE_VERSION
+from .constants import MISSING_VALUE, OPTIONAL_VALUE
 
 DUMMY_COLUMN_NAME = "CraftGeneratedDummy"
+
+def format_input(val):
+  if val == MISSING_VALUE:
+    return None
+  if val == OPTIONAL_VALUE:
+    return {}
+  return val
 
 def is_valid_property_value(key, value):
   # From https://stackoverflow.com/a/19773559
@@ -15,7 +23,9 @@ def is_valid_property_value(key, value):
   return key != DUMMY_COLUMN_NAME and \
          ( \
            (not hasattr(value, "__len__") \
-            or isinstance(value, (str, six.text_type))) \
+            or isinstance(value, (str, six.text_type)) \
+            or value == MISSING_VALUE \
+            or value == OPTIONAL_VALUE) \
            and pd.notnull(value) \
          )
 

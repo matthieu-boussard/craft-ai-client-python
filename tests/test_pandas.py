@@ -18,6 +18,8 @@ COMPLEX_AGENT_DATA = pandas_valid_data.COMPLEX_AGENT_DATA
 COMPLEX_AGENT_DATA_2 = pandas_valid_data.COMPLEX_AGENT_DATA_2
 DATETIME_AGENT_CONFIGURATION = pandas_valid_data.DATETIME_AGENT_CONFIGURATION
 DATETIME_AGENT_DATA = pandas_valid_data.DATETIME_AGENT_DATA
+MISSING_AGENT_CONFIGURATION = pandas_valid_data.MISSING_AGENT_CONFIGURATION
+MISSING_AGENT_DATA = pandas_valid_data.MISSING_AGENT_DATA
 
 CLIENT = craftai.pandas.Client(settings.CRAFT_CFG)
 
@@ -36,6 +38,10 @@ def setup_complex_agent_2():
 def setup_datetime_agent():
   CLIENT.delete_agent(AGENT_ID)
   CLIENT.create_agent(DATETIME_AGENT_CONFIGURATION, AGENT_ID)
+
+def setup_missing_agent():
+  CLIENT.delete_agent(AGENT_ID)
+  CLIENT.create_agent(MISSING_AGENT_CONFIGURATION, AGENT_ID)
 
 def teardown():
   CLIENT.delete_agent(AGENT_ID)
@@ -65,6 +71,13 @@ def test_add_operations_df_complex_agent():
   agent = CLIENT.get_agent(AGENT_ID)
   assert_equal(agent["firstTimestamp"], COMPLEX_AGENT_DATA.first_valid_index().value // 10 ** 9)
   assert_equal(agent["lastTimestamp"], COMPLEX_AGENT_DATA.last_valid_index().value // 10 ** 9)
+
+@with_setup(setup_missing_agent, teardown)
+def test_add_operations_df_missing_agent():
+  CLIENT.add_operations(AGENT_ID, MISSING_AGENT_DATA)
+  agent = CLIENT.get_agent(AGENT_ID)
+  assert_equal(agent["firstTimestamp"], MISSING_AGENT_DATA.first_valid_index().value // 10 ** 9)
+  assert_equal(agent["lastTimestamp"], MISSING_AGENT_DATA.last_valid_index().value // 10 ** 9)
 
 @with_setup(setup_simple_agent, teardown)
 def test_add_operations_df_unexpected_property():
@@ -188,6 +201,30 @@ def test_decide_from_contexts_df_with_array():
 
   assert pd.notnull(df["a_predicted_value"][1])
   assert pd.isnull(df["error"][1])
+
+def setup_missing_agent_with_data():
+  setup_missing_agent()
+  CLIENT.add_operations(AGENT_ID, MISSING_AGENT_DATA)
+
+@with_setup(setup_missing_agent_with_data, teardown)
+def test_decide_from_missing_contexts_df():
+  tree = CLIENT.get_decision_tree(AGENT_ID,
+                                  MISSING_AGENT_DATA.last_valid_index().value // 10 ** 9,
+                                  "2")
+
+  df = CLIENT.decide_from_contexts_df(tree, MISSING_AGENT_DATA)
+
+  assert_equal(len(df), 10)
+  assert_equal(df.first_valid_index(), pd.Timestamp("2013-01-01 00:00:00", tz="Europe/Paris"))
+  assert_equal(df.last_valid_index(), pd.Timestamp("2013-01-10 00:00:00", tz="Europe/Paris"))
+
+  # Also works as before, with a context containing an optional value
+  output = CLIENT.decide(tree, {
+    "b": {},
+    "tz": "+02:00"
+  })
+
+  assert pd.notnull(output["output"]["a"]["predicted_value"])
 
 def setup_datetime_agent_with_data():
   setup_datetime_agent()
