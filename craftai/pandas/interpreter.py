@@ -2,11 +2,11 @@ import pandas as pd
 
 from .. import Interpreter as VanillaInterpreter, Time
 from ..errors import CraftAiNullDecisionError
-from .utils import is_valid_property_value, create_timezone_df, DUMMY_COLUMN_NAME
+from .utils import is_valid_property_value, create_timezone_df, DUMMY_COLUMN_NAME, format_input
 
 def decide_from_row(tree, columns, row, timezone_df):
   context = {
-    col: row[col] for col in columns if is_valid_property_value(col, row[col])
+    col: format_input(row[col]) for col in columns if is_valid_property_value(col, row[col])
   }
   # If a timezone_df is provided use it
   # otherwise use the dataframe index timezone

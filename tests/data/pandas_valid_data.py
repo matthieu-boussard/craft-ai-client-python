@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from numpy.random import randn
+from craftai.pandas import MISSING_VALUE, OPTIONAL_VALUE
 
 NB_OPERATIONS = 300
 NB_MANY_OPERATIONS = 1000
@@ -200,4 +201,40 @@ DATETIME_AGENT_DATA = pd.DataFrame(
   ],
   columns=["a", "b", "myCoolTimezone"],
   index=pd.date_range("20130101 00:00:00", periods=10, freq="H").tz_localize("UTC")
+)
+
+MISSING_AGENT_CONFIGURATION = {
+  "context": {
+    "a": {
+      "type": "continuous",
+      "is_optional": True
+    },
+    "b": {
+      "type": "enum",
+      "is_optional": True
+    },
+    "tz": {
+      "type": "timezone"
+    }
+  },
+  "output": ["a"],
+  "time_quantum": 100,
+  "deactivate_missing_values": False,
+}
+
+MISSING_AGENT_DATA = pd.DataFrame(
+  [
+    [1, MISSING_VALUE, "+02:00"],
+    [2, "Paul"],
+    [3, OPTIONAL_VALUE],
+    [4],
+    [5, "Jacques"],
+    [6],
+    [np.nan, OPTIONAL_VALUE],
+    [8, np.nan, "+01:00"],
+    [9],
+    [10]
+  ],
+  columns=["a", "b", "tz"],
+  index=pd.date_range("20130101", periods=10, freq="D").tz_localize("Europe/Paris")
 )

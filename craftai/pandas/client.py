@@ -5,19 +5,11 @@ from six.moves import range
 from .. import Client as VanillaClient
 from ..errors import CraftAiBadRequestError
 from .interpreter import Interpreter
-from .utils import is_valid_property_value
-from .constants import MISSING_VALUE, OPTIONAL_VALUE
+from .utils import format_input, is_valid_property_value
 
 def chunker(to_be_chunked_df, chunk_size):
   return (to_be_chunked_df[pos:pos + chunk_size]
           for pos in range(0, len(to_be_chunked_df), chunk_size))
-
-def format_input(val):
-  if val == MISSING_VALUE:
-    return None
-  if val == OPTIONAL_VALUE:
-    return {}
-  return val
 
 class Client(VanillaClient):
   """Client class for craft ai's API using pandas dataframe types"""

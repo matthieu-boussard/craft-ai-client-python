@@ -10,6 +10,13 @@ from .constants import MISSING_VALUE, OPTIONAL_VALUE
 
 DUMMY_COLUMN_NAME = "CraftGeneratedDummy"
 
+def format_input(val):
+  if val == MISSING_VALUE:
+    return None
+  if val == OPTIONAL_VALUE:
+    return {}
+  return val
+
 def is_valid_property_value(key, value):
   # From https://stackoverflow.com/a/19773559
   # https://pythonhosted.org/six/#six.text_type for unicode in Python 2
