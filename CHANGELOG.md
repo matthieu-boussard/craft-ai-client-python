@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Predictions now return min and max information for continuous output values.
 - For continuous output values, it is now possible to get the mean and standard deviation values from any node in a tree.
+- `craftai.pandas` can now fully use missing values and optional values features.
 
 ### Fixed
 
