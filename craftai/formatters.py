@@ -62,9 +62,17 @@ PROPERTY_FORMATTER = {
 def format_property(property_type, value=None):
   formatter = (PROPERTY_FORMATTER[property_type] if property_type in PROPERTY_FORMATTER
                else PROPERTY_FORMATTER[TYPE_ANY])
-  if value is not None:
+  def extended_formatter(value):
+    if value is None:
+      return "null"
+    if value == {}:
+      return "N/A"
     return formatter(value)
-  return formatter
+
+  if value is not None:
+    return extended_formatter(value)
+
+  return extended_formatter
 
 def _is_formatter(property_name, operand, operand_formatter):
   if property_name:
