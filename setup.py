@@ -60,7 +60,8 @@ setup(
     "datetime~=4.1.1",
     "semver~=2.7.7",
     "tzlocal~=1.2.2",
-    "python-dateutil~=2.7.2"
+    "python-dateutil~=2.7.2",
+    "IPython~=5.8.0"
   ],
   extras_require = {
     "pandas_support":  [
