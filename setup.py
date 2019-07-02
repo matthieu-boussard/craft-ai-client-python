@@ -61,16 +61,9 @@ setup(
     "semver~=2.7.7",
     "tzlocal~=1.2.2",
     "python-dateutil~=2.7.2",
-    "IPython~=5.8.0"
-  ],
-  extras_require = {
-    "pandas_support":  [
-      "pandas~=0.24.2"
-    ],
-    "sklearn_support": [
-      "scikit-learn~=0.20.3"
-    ]
-  },
-
+    "IPython~=5.8.0",
+    "pandas~=0.24.2",
+    "scikit-learn~=0.20.3"
+  ]
   include_package_data=True
 )
