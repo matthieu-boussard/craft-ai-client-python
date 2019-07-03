@@ -52,7 +52,6 @@ setup(
     "Programming Language :: Python :: 3.5",
   ],
   keywords="ai craft-ai",
-
   packages=["craftai"],
   install_requires=[
     "requests~=2.20.1",
@@ -64,6 +63,6 @@ setup(
     "IPython~=5.8.0",
     "pandas~=0.24.2",
     "scikit-learn~=0.20.3"
-  ]
+  ],
   include_package_data=True
 )
