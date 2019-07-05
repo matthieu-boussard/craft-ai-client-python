@@ -6,11 +6,11 @@ from .utils import is_valid_property_value, create_timezone_df, DUMMY_COLUMN_NAM
 
 def decide_from_row(tree, row, tz_col):
   context = {
-    index: format_input(value) for index, value in row.iteritems() 
+    index: format_input(value) for index, value in row.iteritems()
     if is_valid_property_value(index, value)
   }
   time = Time(
-    t=row.name.value // 10 ** 9, # Timestamp.value returns nanoseconds
+    t=row.name.value // 1_000_000_000, # Timestamp.value returns nanoseconds
     timezone=row[tz_col] if tz_col else row.name.tz
   )
   try:
@@ -40,9 +40,10 @@ class Interpreter(VanillaInterpreter):
     if tz_col:
       df[tz_col] = create_timezone_df(df, tz_col).iloc[:, 0]
 
-    d_predictions = {}
-    for index, row in df.iterrows():
-      d_predictions[index] = decide_from_row(tree, row, tz_col)
-    predictions_df = pd.DataFrame(d_predictions).T
+    l_predictions = []
+    for _, row in df.iterrows():
+      prediction = decide_from_row(tree, row, tz_col)
+      l_predictions.append(prediction)
+    predictions_df = pd.DataFrame(l_predictions, index=df.index)
 
     return predictions_df
