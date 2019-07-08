@@ -2,7 +2,7 @@ import pandas as pd
 
 from .. import Interpreter as VanillaInterpreter, Time
 from ..errors import CraftAiNullDecisionError
-from .utils import is_valid_property_value, create_timezone_df, DUMMY_COLUMN_NAME, format_input
+from .utils import is_valid_property_value, create_timezone_df, format_input
 
 def decide_from_row(tree, row, tz_col):
   context = {
@@ -10,7 +10,7 @@ def decide_from_row(tree, row, tz_col):
     if is_valid_property_value(index, value)
   }
   time = Time(
-    t=row.name.value // 1_000_000_000, # Timestamp.value returns nanoseconds
+    t=row.name.value // 1000000000, # Timestamp.value returns nanoseconds
     timezone=row[tz_col] if tz_col else row.name.tz
   )
   try:
@@ -40,10 +40,7 @@ class Interpreter(VanillaInterpreter):
     if tz_col:
       df[tz_col] = create_timezone_df(df, tz_col).iloc[:, 0]
 
-    l_predictions = []
-    for _, row in df.iterrows():
-      prediction = decide_from_row(tree, row, tz_col)
-      l_predictions.append(prediction)
-    predictions_df = pd.DataFrame(l_predictions, index=df.index)
+    i_predictions = (decide_from_row(tree, row, tz_col) for _, row in df.iterrows())
+    predictions_df = pd.DataFrame(i_predictions, index=df.index)
 
     return predictions_df
