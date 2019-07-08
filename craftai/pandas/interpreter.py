@@ -17,7 +17,7 @@ def decide_from_row(tree, row, tz_col):
     decision = VanillaInterpreter.decide(tree, [context, time])
 
     return {
-      f"{output}_{key}": value
+      "{}_{}".format(output, key): value
       for output, output_decision in decision["output"].items()
       for key, value in output_decision.items()
     }
