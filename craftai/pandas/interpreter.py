@@ -32,15 +32,16 @@ class Interpreter(VanillaInterpreter):
 
     tz_col = [key for key, value in configuration["context"].items()
               if value["type"] == "timezone"]
-    if tz_col:
-      tz_col = tz_col[0]
     # If a timezone is needed create a timezone dataframe which will
     # store the timezone to use. It can either be the DatetimeIndex
     # timezone or the timezone column if provided.
     if tz_col:
-      df[tz_col] = create_timezone_df(df, tz_col).iloc[:, 0]
+      tz_col = tz_col[0]
+      df[tz_col] = create_timezone_df(contexts_df, tz_col).iloc[:, 0]
 
-    i_predictions = (decide_from_row(tree, row, tz_col) for _, row in df.iterrows())
-    predictions_df = pd.DataFrame(i_predictions, index=df.index)
+    predictions_iter = (
+      decide_from_row(tree, row, tz_col) for _, row in df.iterrows()
+    )
+    predictions_df = pd.DataFrame(predictions_iter, index=df.index)
 
     return predictions_df
