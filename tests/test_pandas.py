@@ -166,19 +166,6 @@ def test_decide_from_contexts_df_zero_rows():
   assert_equal(len(df), 0)
   assert_true(test_df.equals(test_df_copy))
 
-@with_setup(setup_complex_agent_with_data, teardown)
-def test_decide_from_contexts_df_duplicated_index():
-  tree = CLIENT.get_decision_tree(AGENT_ID, COMPLEX_AGENT_DATA.last_valid_index().value // 10 ** 9)
-  #test_df = COMPLEX_AGENT_DATA.iloc[[1, 1, 1, 2], :] # make the test fail
-  test_df = COMPLEX_AGENT_DATA.iloc[[0, 0, 0, 1], :]
-  test_df_copy = test_df.copy(deep=True)
-  df = CLIENT.decide_from_contexts_df(tree, test_df)
-
-  assert_true(isinstance(df, pd.DataFrame))
-  assert_equal(len(df), 4)
-  assert_true(df.iloc[0, :].equals(df.iloc[1, :]))
-  assert_true(test_df.equals(test_df_copy))
-
 def setup_complex_agent_2_with_data():
   setup_complex_agent_2()
   CLIENT.add_operations(AGENT_ID, COMPLEX_AGENT_DATA)
