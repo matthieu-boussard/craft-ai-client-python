@@ -171,7 +171,6 @@ def test_decide_from_contexts_df_duplicated_index():
   tree = CLIENT.get_decision_tree(AGENT_ID, COMPLEX_AGENT_DATA.last_valid_index().value // 10 ** 9)
   #test_df = COMPLEX_AGENT_DATA.iloc[[1, 1, 1, 2], :] # make the test fail
   test_df = COMPLEX_AGENT_DATA.iloc[[0, 0, 0, 1], :]
-  print(test_df)
   test_df_copy = test_df.copy(deep=True)
   df = CLIENT.decide_from_contexts_df(tree, test_df)
 
