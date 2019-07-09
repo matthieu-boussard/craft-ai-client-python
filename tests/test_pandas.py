@@ -4,6 +4,7 @@ from numpy.random import randn
 from nose.tools import assert_equal, assert_raises, with_setup, assert_true
 
 import craftai.pandas
+from craftai.pandas.constants import MISSING_VALUE
 from .data import pandas_valid_data
 
 from . import settings
@@ -154,6 +155,30 @@ def test_decide_from_contexts_df():
   })
 
   assert_equal(output["output"]["b"]["predicted_value"], "Pierre")
+
+@with_setup(setup_complex_agent_with_data, teardown)
+def test_decide_from_contexts_df_zero_rows():
+  tree = CLIENT.get_decision_tree(AGENT_ID, COMPLEX_AGENT_DATA.last_valid_index().value // 10 ** 9)
+  test_df = COMPLEX_AGENT_DATA.iloc[:0, :]
+  test_df_copy = test_df.copy(deep=True)
+  df = CLIENT.decide_from_contexts_df(tree, test_df)
+
+  assert_true(isinstance(df, pd.DataFrame))
+  assert_equal(len(df), 0)
+  assert_true(test_df.equals(test_df_copy))
+
+@with_setup(setup_complex_agent_with_data, teardown)
+def test_decide_from_contexts_df_duplicated_index():
+  tree = CLIENT.get_decision_tree(AGENT_ID, COMPLEX_AGENT_DATA.last_valid_index().value // 10 ** 9)
+  #test_df = COMPLEX_AGENT_DATA.iloc[[1, 1, 1, 2], :] # make the test fail
+  test_df = COMPLEX_AGENT_DATA.iloc[[0, 0, 0, 1], :]
+  print(test_df)
+  test_df_copy = test_df.copy(deep=True)
+  df = CLIENT.decide_from_contexts_df(tree, test_df)
+
+  assert_true(isinstance(df, pd.DataFrame))
+  assert_equal(len(df), 4)
+  assert_true(test_df.equals(test_df_copy))
 
 def setup_complex_agent_2_with_data():
   setup_complex_agent_2()
