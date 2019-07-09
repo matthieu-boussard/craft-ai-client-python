@@ -4,7 +4,6 @@ from numpy.random import randn
 from nose.tools import assert_equal, assert_raises, with_setup, assert_true
 
 import craftai.pandas
-from craftai.pandas.constants import MISSING_VALUE
 from .data import pandas_valid_data
 
 from . import settings
