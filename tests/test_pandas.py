@@ -178,6 +178,7 @@ def test_decide_from_contexts_df_duplicated_index():
 
   assert_true(isinstance(df, pd.DataFrame))
   assert_equal(len(df), 4)
+  assert_true(df.iloc[0, :].equals(df.iloc[1, :]))
   assert_true(test_df.equals(test_df_copy))
 
 def setup_complex_agent_2_with_data():
