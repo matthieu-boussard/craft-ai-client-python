@@ -4,30 +4,6 @@ from .. import Interpreter as VanillaInterpreter, Time
 from ..errors import CraftAiNullDecisionError
 from .utils import is_valid_property_value, create_timezone_df, format_input
 
-def decide_from_row(bare_tree, row, tz_col, configuration, interpreter):
-  context = {
-    index: format_input(value) for index, value in row._asdict().items()
-    if is_valid_property_value(index, value)
-  }
-  time = Time(
-    t=row[0].value // 1000000000, # Timestamp.value returns nanoseconds
-    timezone=context[tz_col] if tz_col else row[0].tz
-  )
-  try:
-    decision = VanillaInterpreter._decide(
-      configuration,
-      bare_tree,
-      (context, time),
-      interpreter)
-
-    return {
-      "{}_{}".format(output, key): value
-      for output, output_decision in decision["output"].items()
-      for key, value in output_decision.items()
-    }
-  except CraftAiNullDecisionError as e:
-    return {"error": e.message}
-
 class Interpreter(VanillaInterpreter):
   @staticmethod
   def decide_from_contexts_df(tree, contexts_df):
@@ -46,7 +22,32 @@ class Interpreter(VanillaInterpreter):
       df[tz_col] = create_timezone_df(contexts_df, tz_col).iloc[:, 0]
 
     predictions_iter = (
-      decide_from_row(bare_tree, row, tz_col, configuration, interpreter)
+      Interpreter.decide_from_row(bare_tree, row, tz_col, configuration, interpreter)
       for row in df.itertuples()
     )
     return pd.DataFrame(predictions_iter, index=df.index)
+
+  @staticmethod
+  def decide_from_row(bare_tree, row, tz_col, configuration, interpreter):
+    context = {
+      index: format_input(value) for index, value in row._asdict().items()
+      if is_valid_property_value(index, value)
+    }
+    time = Time(
+      t=row[0].value // 1000000000, # Timestamp.value returns nanoseconds
+      timezone=context[tz_col] if tz_col else row[0].tz
+    )
+    try:
+      decision = VanillaInterpreter._decide(
+        configuration,
+        bare_tree,
+        (context, time),
+        interpreter)
+
+      return {
+        "{}_{}".format(output, key): value
+        for output, output_decision in decision["output"].items()
+        for key, value in output_decision.items()
+      }
+    except CraftAiNullDecisionError as e:
+      return {"error": e.message}
