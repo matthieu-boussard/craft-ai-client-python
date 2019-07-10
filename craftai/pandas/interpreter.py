@@ -4,17 +4,21 @@ from .. import Interpreter as VanillaInterpreter, Time
 from ..errors import CraftAiNullDecisionError
 from .utils import is_valid_property_value, create_timezone_df, format_input
 
-def decide_from_row(tree, row, tz_col):
+def decide_from_row(bare_tree, row, tz_col, configuration, interpreter):
   context = {
-    index: format_input(value) for index, value in row.iteritems()
+    index: format_input(value) for index, value in row._asdict().items()
     if is_valid_property_value(index, value)
   }
   time = Time(
-    t=row.name.value // 1000000000, # Timestamp.value returns nanoseconds
-    timezone=row[tz_col] if tz_col else row.name.tz
+    t=row[0].value // 1000000000, # Timestamp.value returns nanoseconds
+    timezone=context[tz_col] if tz_col else row[0].tz
   )
   try:
-    decision = VanillaInterpreter.decide(tree, [context, time])
+    decision = VanillaInterpreter._decide(
+      configuration,
+      bare_tree,
+      (context, time),
+      interpreter)
 
     return {
       "{}_{}".format(output, key): value
@@ -27,7 +31,9 @@ def decide_from_row(tree, row, tz_col):
 class Interpreter(VanillaInterpreter):
   @staticmethod
   def decide_from_contexts_df(tree, contexts_df):
-    _, configuration, _ = VanillaInterpreter._parse_tree(tree)
+    bare_tree, configuration, tree_version = VanillaInterpreter._parse_tree(tree)
+    interpreter = VanillaInterpreter._get_interpreter(tree_version)
+
     df = contexts_df.copy(deep=True)
 
     tz_col = [key for key, value in configuration["context"].items()
@@ -40,8 +46,7 @@ class Interpreter(VanillaInterpreter):
       df[tz_col] = create_timezone_df(contexts_df, tz_col).iloc[:, 0]
 
     predictions_iter = (
-      decide_from_row(tree, row, tz_col) for _, row in df.iterrows()
+      decide_from_row(bare_tree, row, tz_col, configuration, interpreter)
+      for row in df.itertuples()
     )
-    predictions_df = pd.DataFrame(predictions_iter, index=df.index)
-
-    return predictions_df
+    return pd.DataFrame(predictions_iter, index=df.index)
