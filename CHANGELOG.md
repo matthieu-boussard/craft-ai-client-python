@@ -8,14 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.2...HEAD) ##
 ##
 
-### Added
+### Changed
 
-- Some tests to pandas client.
-- Some subfunctions in `craftai.interpreter`.
-
-### Fixed
-
-- `craftai.pandas.decide_from_contexts_df` take ~10 times less time.
+- Improve `craftai.pandas.decide_from_contexts_df` performances.
 
 ## [1.15.2](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.1...v1.15.2) - 2019-07-03 ##
 

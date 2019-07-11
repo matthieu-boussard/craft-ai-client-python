@@ -48,7 +48,6 @@ class Interpreter(object):
         """Invalid decision tree format, "{}" is currently not a valid version.""".
         format(tree_version)
       )
-    return interpreter
 
   @staticmethod
   def _rebuild_context(configuration, state, time=None):
