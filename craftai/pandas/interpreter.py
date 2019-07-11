@@ -42,7 +42,8 @@ class Interpreter(VanillaInterpreter):
         configuration,
         bare_tree,
         (context, time),
-        interpreter)
+        interpreter
+      )
 
       return {
         "{}_{}".format(output, key): value
