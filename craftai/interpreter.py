@@ -12,34 +12,42 @@ class Interpreter(object):
   @staticmethod
   def decide(tree, args):
     bare_tree, configuration, tree_version = Interpreter._parse_tree(tree)
+    interpreter = Interpreter._get_interpreter(tree_version)
+
+    return Interpreter._decide(configuration, bare_tree, args, interpreter)
+
+  ####################
+  # Internal helpers #
+  ####################
+
+  @staticmethod
+  def _decide(configuration, bare_tree, args, interpreter):
     if configuration != {}:
       time = None if len(args) == 1 else args[1]
       context_result = Interpreter._rebuild_context(configuration, args[0], time)
       context = context_result["context"]
     else:
       context = Interpreter.join_decide_args(args)
-
     # Convert timezones as integers into standard +/hh:mm format
     # This should only happen when no time generated value is required
     context = Interpreter._convert_timezones_to_standard_format(configuration, context)
 
+    decision = interpreter.decide(configuration, bare_tree, context)
+    decision["context"] = context
+
+    return decision
+
+  @staticmethod
+  def _get_interpreter(tree_version):
     if semver.match(tree_version, ">=1.0.0") and semver.match(tree_version, "<2.0.0"):
-      decision = InterpreterV1.decide(configuration, bare_tree, context)
+      return InterpreterV1
     elif semver.match(tree_version, ">=2.0.0") and semver.match(tree_version, "<3.0.0"):
-      decision = InterpreterV2.decide(configuration, bare_tree, context)
+      return InterpreterV2
     else:
       raise CraftAiDecisionError(
         """Invalid decision tree format, "{}" is currently not a valid version.""".
         format(tree_version)
       )
-
-    decision["context"] = context
-
-    return decision
-
-  ####################
-  # Internal helpers #
-  ####################
 
   @staticmethod
   def _rebuild_context(configuration, state, time=None):

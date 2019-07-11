@@ -26,7 +26,7 @@ def is_valid_property_value(key, value):
             or isinstance(value, (str, six.text_type)) \
             or value == MISSING_VALUE \
             or value == OPTIONAL_VALUE) \
-           and pd.notnull(value) \
+           and not pd.isna(value) \
          )
 
 # Helper
