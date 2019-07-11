@@ -40,9 +40,9 @@ class Interpreter(object):
   @staticmethod
   def _get_interpreter(tree_version):
     if semver.match(tree_version, ">=1.0.0") and semver.match(tree_version, "<2.0.0"):
-      interpreter = InterpreterV1
+      return InterpreterV1
     elif semver.match(tree_version, ">=2.0.0") and semver.match(tree_version, "<3.0.0"):
-      interpreter = InterpreterV2
+      return InterpreterV2
     else:
       raise CraftAiDecisionError(
         """Invalid decision tree format, "{}" is currently not a valid version.""".
