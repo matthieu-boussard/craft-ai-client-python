@@ -81,7 +81,7 @@ def create_tree_html(tree_object, height=500):
       """Invalid decision tree format, "{}" is not a valid version.""".
       format(tree_version)
     )
-  elif semver.match(tree_version, ">=1.0.0") and semver.match(tree_version, "<2.0.0"):
+  elif semver.match(tree_version, ">=1.0.0") and semver.match(tree_version, "<3.0.0"):
     if tree_object.get("configuration") is None:
       raise CraftAiError(
         """Invalid decision tree format, no configuration found"""
