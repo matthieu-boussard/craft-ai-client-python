@@ -121,8 +121,8 @@ class InterpreterV2(object):
                                                path)
     except CraftAiDecisionError as err:
       metadata = err.metadata
-      if node.get('decision_rule'):
-        metadata["decision_rules"].insert(0, node['decision_rule'])
+      if node.get("decision_rule"):
+        metadata["decision_rules"].insert(0, node["decision_rule"])
       raise CraftAiDecisionError(err.message, metadata)
 
     new_predicates = [{

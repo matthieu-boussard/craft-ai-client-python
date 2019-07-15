@@ -92,8 +92,8 @@ class InterpreterV1(object):
       result = InterpreterV1._decide_recursion(matching_child, context)
     except CraftAiDecisionError as err:
       metadata = err.metadata
-      if node.get('decision_rule'):
-        metadata["decision_rules"].insert(0, node['decision_rule'])
+      if node.get("decision_rule"):
+        metadata["decision_rules"].insert(0, node["decision_rule"])
       raise CraftAiDecisionError(err.message, metadata)
 
     new_predicates = [{
