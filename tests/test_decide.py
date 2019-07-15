@@ -52,7 +52,7 @@ def check_expectation(tree, expectation):
     tree["configuration"].update(configuration)
 
   if expectation.get("error"):
-    with assert_raises(craft_err.CraftAiDecisionError) as context_manager:
+    with assert_raises(craft_err.CraftAiError) as context_manager:
       CLIENT.decide(tree, exp_context, timestamp)
 
     exception = context_manager.exception
@@ -62,6 +62,10 @@ def check_expectation(tree, expectation):
     else:
       expected_message = expectation["error"]["message"].encode("utf8")
     assert_equal(exception.message, expected_message)
+    #print(dir(exception))
+    print(exception.metadata)
+    print(expectation["error"].get("metadata", None))
+    assert_equal(exception.metadata, expectation["error"].get("metadata", None))
   else:
     expected_decision = expectation["output"]
     decision = CLIENT.decide(tree, exp_context, time)
