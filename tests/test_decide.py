@@ -62,9 +62,6 @@ def check_expectation(tree, expectation):
     else:
       expected_message = expectation["error"]["message"].encode("utf8")
     assert_equal(exception.message, expected_message)
-    #print(dir(exception))
-    print(exception.metadata)
-    print(expectation["error"].get("metadata", None))
     assert_equal(exception.metadata, expectation["error"].get("metadata", None))
   else:
     expected_decision = expectation["output"]
