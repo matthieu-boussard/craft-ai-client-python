@@ -95,7 +95,7 @@ def test_add_operations_df_unexpected_property():
   )
 
 @with_setup(setup_complex_agent, teardown)
-def test_add_operations_df_complex_agent_without_timezone_column():
+def test_add_operations_df_without_tz():
   test_df = COMPLEX_AGENT_DATA.drop(columns="tz")
   CLIENT.add_operations(AGENT_ID, test_df)
   agent = CLIENT.get_agent(AGENT_ID)
