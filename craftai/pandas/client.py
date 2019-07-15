@@ -5,7 +5,7 @@ from six.moves import range
 from .. import Client as VanillaClient
 from ..errors import CraftAiBadRequestError
 from .interpreter import Interpreter
-from .utils import format_input, is_valid_property_value
+from .utils import format_input, is_valid_property_value, create_timezone_df
 
 def chunker(to_be_chunked_df, chunk_size):
   return (to_be_chunked_df[pos:pos + chunk_size]
@@ -21,6 +21,14 @@ class Client(VanillaClient):
       if operations.index.tz is None:
         raise CraftAiBadRequestError("""tz-naive DatetimeIndex are not supported,
                                      it must be tz-aware.""")
+      agent = super(Client, self).get_agent(agent_id)
+      operations = operations.copy(deep=True)
+
+      tz_col = [key for key, value in agent["configuration"]["context"].items()
+                if value["type"] == "timezone"]
+      if tz_col:
+        tz_col = tz_col[0]
+        operations[tz_col] = create_timezone_df(operations, tz_col).iloc[:, 0]
 
       chunk_size = self.config["operationsChunksSize"]
       for chunk in chunker(operations, chunk_size):

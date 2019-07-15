@@ -94,6 +94,14 @@ def test_add_operations_df_unexpected_property():
     df
   )
 
+@with_setup(setup_complex_agent, teardown)
+def test_add_operations_df_without_tz():
+  test_df = COMPLEX_AGENT_DATA.drop(columns="tz")
+  CLIENT.add_operations(AGENT_ID, test_df)
+  agent = CLIENT.get_agent(AGENT_ID)
+  assert_equal(agent["firstTimestamp"], COMPLEX_AGENT_DATA.first_valid_index().value // 10 ** 9)
+  assert_equal(agent["lastTimestamp"], COMPLEX_AGENT_DATA.last_valid_index().value // 10 ** 9)
+
 def setup_simple_agent_with_data():
   setup_simple_agent()
   CLIENT.add_operations(AGENT_ID, SIMPLE_AGENT_DATA)
