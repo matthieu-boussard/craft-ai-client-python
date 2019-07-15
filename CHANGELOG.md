@@ -10,7 +10,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
-- Improve `craftai.pandas.decide_from_contexts_df` performances.
+- Improve `craftai.pandas.client.decide_from_contexts_df` performances.
+- `craftai.pandas.client.add_operations` has now the same behavior than `craftai.pandas.client.decide_from_contexts_df`. If there is no timezone column, the function use the timezone of the index (`pandas.DateTimeIndex`).
 
 ## [1.15.2](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.1...v1.15.2) - 2019-07-03 ##
 
