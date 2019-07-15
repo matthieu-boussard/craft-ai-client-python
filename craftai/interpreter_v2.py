@@ -124,6 +124,7 @@ class InterpreterV2(object):
       if node.get('decision_rule'):
         metadata["decision_rules"].insert(0, node['decision_rule'])
       raise CraftAiDecisionError(err.message, metadata)
+
     new_predicates = [{
       "property": matching_child["decision_rule"]["property"],
       "operator": matching_child["decision_rule"]["operator"],
