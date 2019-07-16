@@ -41,22 +41,23 @@ def create_timezone_df(df, name):
 # Return a html version of the given tree
 def create_tree_html(tree_object, height=500):
   html_template = """ <html>
+  <head>
+    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin>
+    </script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin>
+    </script>
+    <script src="https://unpkg.com/react-craft-ai-decision-tree@0.0.23" crossorigin>
+    </script>
+  </head>
   <body>
     <div id="tree-div">
     </div>
-    <script src=“https://unpkg.com/react@16/umd/react.development.js” crossorigin>
-    </script>
-    <script src=“https://unpkg.com/react-dom@16/umd/react-dom.development.js” crossorigin>
-    </script>
-    <script src=“https://d3js.org/d3.v4.min.js” crossorigin>
-    </script>
-   <script src=“https://unpkg.com/react-craft-ai-decision-tree@0.0.23" crossorigin></script>
     <script>
-    var tree = "json_arbre_ici"
-  ReactDOM.render(
-          React.createElement(DecisionTree, {{height: {height}, data: {tree}}}),
-          document.getElementById('tree-div')
-        );
+  setTimeout(
+    () => ReactDOM.render(
+      React.createElement(DecisionTree, {{height: {height}, data: {tree}}}),
+      document.getElementById('tree-div')
+    ), 100);
     </script>
   </body>
   </html>"""
