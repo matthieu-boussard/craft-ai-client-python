@@ -44,12 +44,13 @@ def create_tree_html(tree_object, height=500):
   <body>
     <div id="tree-div">
     </div>
-    <script src="https://unpkg.com/react@15/dist/react.min.js">
+    <script src=“https://unpkg.com/react@16/umd/react.development.js” crossorigin>
     </script>
-    <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js">
+    <script src=“https://unpkg.com/react-dom@16/umd/react-dom.development.js” crossorigin>
     </script>
-    <script src="https://unpkg.com/react-craft-ai-decision-tree@{version}">
+    <script src=“https://d3js.org/d3.v4.min.js” crossorigin>
     </script>
+   <script src=“https://unpkg.com/react-craft-ai-decision-tree@0.0.23" crossorigin></script>
     <script>
     var tree = "json_arbre_ici"
   ReactDOM.render(
