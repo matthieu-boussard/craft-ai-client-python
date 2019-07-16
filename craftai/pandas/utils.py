@@ -41,21 +41,22 @@ def create_timezone_df(df, name):
 # Return a html version of the given tree
 def create_tree_html(tree_object, height=500):
   html_template = """ <html>
+  <head>
+    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin defer>
+    </script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin defer>
+    </script>
+    <script src="https://unpkg.com/react-craft-ai-decision-tree@0.0.23" crossorigin defer>
+    </script>
+  </head>
   <body>
     <div id="tree-div">
     </div>
-    <script src="https://unpkg.com/react@15/dist/react.min.js">
-    </script>
-    <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js">
-    </script>
-    <script src="https://unpkg.com/react-craft-ai-decision-tree@{version}">
-    </script>
-    <script>
-    var tree = "json_arbre_ici"
+    <script async=false>
   ReactDOM.render(
-          React.createElement(DecisionTree, {{height: {height}, data: {tree}}}),
-          document.getElementById('tree-div')
-        );
+    React.createElement(DecisionTree, {{height: {height}, data: {tree}}}),
+    document.getElementById('tree-div')
+  );
     </script>
   </body>
   </html>"""
@@ -81,7 +82,7 @@ def create_tree_html(tree_object, height=500):
       """Invalid decision tree format, "{}" is not a valid version.""".
       format(tree_version)
     )
-  elif semver.match(tree_version, ">=1.0.0") and semver.match(tree_version, "<2.0.0"):
+  elif semver.match(tree_version, ">=1.0.0") and semver.match(tree_version, "<3.0.0"):
     if tree_object.get("configuration") is None:
       raise CraftAiError(
         """Invalid decision tree format, no configuration found"""

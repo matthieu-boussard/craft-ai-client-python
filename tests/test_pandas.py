@@ -150,7 +150,7 @@ def test_decide_from_contexts_df():
   df = CLIENT.decide_from_contexts_df(tree, test_df)
 
   assert_equal(len(df), 10)
-  assert_equal(len(df.dtypes), 3)
+  assert_equal(len(df.dtypes), 5)
   assert_true(test_df.equals(test_df_copy))
   assert_equal(df.first_valid_index(), pd.Timestamp("2013-01-01 00:00:00", tz="Europe/Paris"))
   assert_equal(df.last_valid_index(), pd.Timestamp("2013-01-10 00:00:00", tz="Europe/Paris"))
@@ -281,7 +281,7 @@ def test_datetime_decide_from_contexts_df():
 
   df = CLIENT.decide_from_contexts_df(tree, test_df)
   assert_equal(len(df), 3)
-  assert_equal(len(df.dtypes), 3)
+  assert_equal(len(df.dtypes), 5)
   assert_equal(df["b_predicted_value"].tolist(), ["Pierre", "Paul", "Jacques"])
   assert_true(test_df.equals(test_df_copy))
 
