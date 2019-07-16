@@ -42,22 +42,21 @@ def create_timezone_df(df, name):
 def create_tree_html(tree_object, height=500):
   html_template = """ <html>
   <head>
-    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin>
+    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin defer>
     </script>
-    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin defer>
     </script>
-    <script src="https://unpkg.com/react-craft-ai-decision-tree@0.0.23" crossorigin>
+    <script src="https://unpkg.com/react-craft-ai-decision-tree@0.0.23" crossorigin defer>
     </script>
   </head>
   <body>
     <div id="tree-div">
     </div>
-    <script>
-  setTimeout(
-    () => ReactDOM.render(
-      React.createElement(DecisionTree, {{height: {height}, data: {tree}}}),
-      document.getElementById('tree-div')
-    ), 100);
+    <script defer>
+  ReactDOM.render(
+    React.createElement(DecisionTree, {{height: {height}, data: {tree}}}),
+    document.getElementById('tree-div')
+  );
     </script>
   </body>
   </html>"""
