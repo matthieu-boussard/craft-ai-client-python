@@ -52,7 +52,7 @@ def create_tree_html(tree_object, height=500):
   <body>
     <div id="tree-div">
     </div>
-    <script defer>
+    <script async=false>
   ReactDOM.render(
     React.createElement(DecisionTree, {{height: {height}, data: {tree}}}),
     document.getElementById('tree-div')
