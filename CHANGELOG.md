@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - `craftai.pandas.client.add_operations` has now the same behavior than `craftai.pandas.client.decide_from_contexts_df`. If there is no timezone column, the function use the timezone of the index (`pandas.DateTimeIndex`).
 - The client retrieves V2 trees by default.
 
+### Fixed
+
+- `craftai.pandas.utils.display_tree` now works on Firefox.
+
 ## [1.15.2](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.1...v1.15.2) - 2019-07-03 ##
 
 ## [1.15.1](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.0...v1.15.1) - 2019-07-03 ##
