@@ -48,12 +48,14 @@ class InterpreterV2(object):
                                                                           bare_tree[output].get(
                                                                             "output_values"),
                                                                           output_type,
-                                                                          deactivate_missing_values)
+                                                                          deactivate_missing_values,
+                                                                          ["0"])
     decision_result["_version"] = _DECISION_VERSION
     return decision_result
 
+  #pylint: disable-msg=too-many-arguments, too-many-locals
   @staticmethod
-  def _decide_recursion(node, context, output_values, output_type, deactivate_missing_values):
+  def _decide_recursion(node, context, output_values, output_type, deactivate_missing_values, path):
     # If we are on a leaf
     if not (node.get("children") is not None and len(node.get("children"))):
       # We check if a leaf has the key 'prediction' corresponging to a v2 tree
@@ -72,7 +74,8 @@ class InterpreterV2(object):
         "predicted_value": predicted_value,
         "confidence": prediction.get("confidence") or 0,
         "decision_rules": [],
-        "nb_samples": prediction["nb_samples"]
+        "nb_samples": prediction["nb_samples"],
+        "decision_path": "-".join(path)
       }
 
       distribution = prediction.get("distribution")
@@ -86,22 +89,26 @@ class InterpreterV2(object):
       return leaf
     # Finding the first element in this node's childrens matching the
     # operator condition with given context
-    matching_child = InterpreterV2._find_matching_child(node, context, deactivate_missing_values)
+    matching_child_i, matching_child = InterpreterV2._find_matching_child(node,
+                                                                          context,
+                                                                          deactivate_missing_values)
 
     # If there is no child corresponding matching the operators then we compute
     # the probabilistic distribution from this node.
     if not matching_child:
       if not deactivate_missing_values:
-        return InterpreterV2.compute_distribution(node, output_values, output_type)
+        return InterpreterV2.compute_distribution(node, output_values, output_type, path)
       prop = node.get("children")[0].get("decision_rule").get("property")
       raise CraftAiNullDecisionError(
         """Unable to take decision: value '{}' for property '{}' doesn't"""
         """ validate any of the decision rules.""".format(context.get(prop), prop)
         )
-
+    # Add the matching child index to the path
+    path.append(str(matching_child_i))
     # If a matching child is found, recurse
     result = InterpreterV2._decide_recursion(matching_child, context, output_values,
-                                             output_type, deactivate_missing_values)
+                                             output_type, deactivate_missing_values,
+                                             path)
     new_predicates = [{
       "property": matching_child["decision_rule"]["property"],
       "operator": matching_child["decision_rule"]["operator"],
@@ -113,6 +120,7 @@ class InterpreterV2(object):
       "confidence": result["confidence"],
       "decision_rules": new_predicates + result["decision_rules"],
       "nb_samples": result["nb_samples"],
+      "decision_path": result["decision_path"]
     }
 
     if result.get("standard_deviation", None) is not None:
@@ -130,7 +138,7 @@ class InterpreterV2(object):
     return final_result
 
   @staticmethod
-  def compute_distribution(node, output_values, output_type):
+  def compute_distribution(node, output_values, output_type, path):
     result = InterpreterV2._distribution(node, output_type)
     if output_type == "enum":
       distribution, nb_samples = result
@@ -148,6 +156,7 @@ class InterpreterV2(object):
       }
     final_result["decision_rules"] = []
     final_result["confidence"] = None
+    final_result["decision_path"] = "-".join(path)
 
     return final_result
 
@@ -235,7 +244,7 @@ class InterpreterV2(object):
 
   @staticmethod
   def _find_matching_child(node, context, deactivate_missing_values=True):
-    for child in node["children"]:
+    for child_index, child in enumerate(node["children"]):
       property_name = child["decision_rule"]["property"]
       operand = child["decision_rule"]["operand"]
       operator = child["decision_rule"]["operator"]
@@ -256,8 +265,8 @@ class InterpreterV2(object):
         )
 
       if OPERATORS_FUNCTION[operator](context_value, operand):
-        return child
-    return {}
+        return child_index, child
+    return None, {}
 
   @staticmethod
   def _check_context(configuration, context, deactivate_missing_values=True):
