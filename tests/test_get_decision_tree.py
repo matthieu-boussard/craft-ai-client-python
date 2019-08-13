@@ -1,11 +1,11 @@
 import random
-import semver
 import datetime
+import semver
 
 from nose.tools import assert_equal, assert_is_instance, assert_not_equal, assert_raises, with_setup
+import pandas as pd
 import craftai
 from craftai.constants import DEFAULT_DECISION_TREE_VERSION
-import pandas as pd
 
 from . import settings
 from .data import valid_data
