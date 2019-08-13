@@ -30,9 +30,10 @@ class Interpreter(object):
       context = Interpreter.join_decide_args(args)
     # Convert timezones as integers into standard +/hh:mm format
     # This should only happen when no time generated value is required
-    context = Interpreter._convert_timezones_to_standard_format(configuration, context)
+    decide_context = Interpreter._convert_timezones_to_standard_format(configuration,
+                                                                       context.copy())
 
-    decision = interpreter.decide(configuration, bare_tree, context)
+    decision = interpreter.decide(configuration, bare_tree, decide_context)
     decision["context"] = context
 
     return decision
