@@ -1,9 +1,11 @@
 import random
 import semver
+import datetime
 
 from nose.tools import assert_equal, assert_is_instance, assert_not_equal, assert_raises, with_setup
 import craftai
 from craftai.constants import DEFAULT_DECISION_TREE_VERSION
+import pandas as pd
 
 from . import settings
 from .data import valid_data
@@ -105,6 +107,40 @@ def test_get_decision_tree_without_timestamp():
   # test if we get the latest decision tree
   decision_tree = CLIENT.get_decision_tree(AGENT_ID)
   ground_truth_decision_tree = decision_tree = CLIENT.get_decision_tree(AGENT_ID, 1458741230 + 505)
+  assert_is_instance(decision_tree, dict)
+  assert_not_equal(decision_tree.get("_version"), None)
+  assert_not_equal(decision_tree.get("configuration"), None)
+  assert_not_equal(decision_tree.get("trees"), None)
+  assert_equal(decision_tree, ground_truth_decision_tree)
+
+@with_setup(setup_agent_w_operations, teardown)
+def test_get_decision_tree_with_pdtimestamp():
+  # test if we get the same decision tree
+  decision_tree = CLIENT.get_decision_tree(
+    AGENT_ID,
+    pd.Timestamp(valid_data.VALID_TIMESTAMP, unit="s", tz="UTC")
+  )
+  ground_truth_decision_tree = CLIENT.get_decision_tree(
+    AGENT_ID,
+    valid_data.VALID_TIMESTAMP
+  )
+  assert_is_instance(decision_tree, dict)
+  assert_not_equal(decision_tree.get("_version"), None)
+  assert_not_equal(decision_tree.get("configuration"), None)
+  assert_not_equal(decision_tree.get("trees"), None)
+  assert_equal(decision_tree, ground_truth_decision_tree)
+
+@with_setup(setup_agent_w_operations, teardown)
+def test_get_decision_tree_with_datetimedatetime():
+  # test if we get the same decision tree
+  decision_tree = CLIENT.get_decision_tree(
+    AGENT_ID,
+    datetime.datetime.fromtimestamp(valid_data.VALID_TIMESTAMP)
+  )
+  ground_truth_decision_tree = CLIENT.get_decision_tree(
+    AGENT_ID,
+    valid_data.VALID_TIMESTAMP
+  )
   assert_is_instance(decision_tree, dict)
   assert_not_equal(decision_tree.get("_version"), None)
   assert_not_equal(decision_tree.get("configuration"), None)
