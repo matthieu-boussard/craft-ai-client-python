@@ -4,11 +4,13 @@ from __future__ import absolute_import
 
 import json
 import time
+import datetime
 
 from platform import python_implementation, python_version
 
 import requests
 import six
+import pandas as pd
 
 from craftai import __version__ as pkg_version
 from craftai.constants import AGENT_ID_PATTERN, DEFAULT_DECISION_TREE_VERSION
@@ -535,6 +537,12 @@ class CraftAIClient(object):
     """
     if isinstance(version, int):
       version = str(version)
+
+    # Convert datetime to timestamp
+    if isinstance(timestamp, pd.Timestamp):
+      timestamp = timestamp.value // 10 ** 9
+    elif isinstance(timestamp, datetime.datetime):
+      timestamp = time.mktime(timestamp.timetuple())
 
     # Raises an error when agent_id is invalid
     self._check_agent_id(agent_id)

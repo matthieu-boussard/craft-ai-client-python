@@ -5,21 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.2...HEAD) ##
+## [Unreleased](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.2...HEAD)
 
 ### Changed
 
 - Improve `craftai.pandas.client.decide_from_contexts_df` performances.
 - `craftai.pandas.client.add_operations` has now the same behavior than `craftai.pandas.client.decide_from_contexts_df`. If there is no timezone column, the function use the timezone of the index (`pandas.DateTimeIndex`).
 - The client retrieves V2 trees by default.
+- `craftai.get_decision_tree` accepts pd.Timestamp and datetime.datetime now
 
 ### Fixed
 
 - `craftai.pandas.utils.display_tree` now works on Firefox.
 
-## [1.15.2](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.1...v1.15.2) - 2019-07-03 ##
+## [1.15.2](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.1...v1.15.2) - 2019-07-03
 
-## [1.15.1](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.0...v1.15.1) - 2019-07-03 ##
+## [1.15.1](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.0...v1.15.1) - 2019-07-03
 
 ### Added
 
@@ -31,7 +32,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - `craftai.pandas.decide_from_contexts_df` can take decisions on contexts with the same timestamp.
 
-## [1.15.0](https://github.com/craft-ai/craft-ai-client-python/compare/v1.14.1...v1.15.0) - 2019-02-25 ##
+## [1.15.0](https://github.com/craft-ai/craft-ai-client-python/compare/v1.14.1...v1.15.0) - 2019-02-25
 
 ### Added
 
