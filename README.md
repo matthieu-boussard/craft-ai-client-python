@@ -50,7 +50,7 @@ client = craftai.Client({
 
 An agent is an independent module that stores the history of the **context** of its user or device's context, and learns which **decision** to take based on the evolution of this context in the form of a **decision tree**.
 
-In this example, we will create an agent that learns the **decision model** of a light bulb based on the time of the day and the number of people in the room. In practice, it means the agent's context have 4 properties:
+In this example, we will create an agent that learns the **decision model** of a light bulb based on the time of the day and the number of people in the room. This dataset is treated as continuous context updates. If your data is more like events, please refer to the [Advanced Configuration section](#advanced-configuration) to know how to configure your agent. Here, the agent's context has 4 properties:
 
 - `peopleCount` which is a `continuous` property,
 - `timeOfDay` which is a `time_of_day` property,
@@ -214,29 +214,38 @@ print("The full decision tree at timestamp", dt_timestamp, "is the following:")
 print(decision_tree)
 """ Outputted tree is the following
   {
-    "_version":"1.1.0",
+    "_version":"2.0.0",
     "trees":{
       "lightbulbState":{
+        "output_values" : ["OFF", "ON"],
         "children":[
           {
             "children":[
               {
-                "confidence":0.6774609088897705,
+                "prediction":{
+                  "confidence":0.6774609088897705,
+                  "distribution":[0.8, 0.2],
+                  "value":"OFF",
+                  "nb_samples": 5
+                },
                 "decision_rule":{
                   "operand":0.5,
                   "operator":"<",
                   "property":"peopleCount"
-                },
-                "predicted_value":"OFF"
+                }
               },
               {
-                "confidence":0.8630361557006836,
+                "prediction":{
+                  "confidence":0.8630361557006836,
+                  "distribution":[0.1, 0.9],
+                  "value":"ON",
+                  "nb_samples": 10
+                },
                 "decision_rule":{
                   "operand":0.5,
                   "operator":">=",
                   "property":"peopleCount"
-                },
-                "predicted_value":"ON"
+                }
               }
             ],
             "decision_rule":{
@@ -251,7 +260,12 @@ print(decision_tree)
           {
             "children":[
               {
-                "confidence":0.9947378635406494,
+                "prediction":{
+                  "confidence":0.9947378635406494,
+                  "distribution":[1.0, 0.0],
+                  "value":"ON",
+                  "nb_samples": 10
+                },
                 "decision_rule":{
                   "operand":[
                     5.6666665,
@@ -259,28 +273,35 @@ print(decision_tree)
                   ],
                   "operator":"[in[",
                   "property":"timeOfDay"
-                },
-                "predicted_value":"OFF"
+                }
               },
               {
                 "children":[
                   {
-                    "confidence":0.969236433506012,
+                    "prediction":{
+                      "confidence":0.969236433506012,
+                      "distribution":[0.95, 0.05],
+                      "value":"OFF",
+                      "nb_samples": 10
+                    },
                     "decision_rule":{
                       "operand":1,
                       "operator":"<",
                       "property":"peopleCount"
-                    },
-                    "predicted_value":"OFF"
+                    }
                   },
                   {
-                    "confidence":0.8630361557006836,
+                    "prediction":{
+                      "confidence":0.8630361557006836,
+                      "distribution":[0.2, 0.8],
+                      "value":"ON",
+                      "nb_samples": 15
+                    },
                     "decision_rule":{
                       "operand":1,
                       "operator":">=",
                       "property":"peopleCount"
-                    },
-                    "predicted_value":"ON"
+                    }
                   }
                 ],
                 "decision_rule":{
@@ -401,14 +422,93 @@ Each agent has a configuration defining:
 
 #### Context properties types
 
-##### Base types: `enum` and `continuous`
+##### Base types: `enum`, `continuous` and `boolean`
 
-`enum` and `continuous` are the two base **craft ai** types:
+`enum`, `continuous` and `boolean` are the three base **craft ai** types:
 
 - an `enum` property is a string;
 - a `continuous` property is a real number.
+- a `boolean` property is a boolean value: `true` or `false`
 
 > :warning: the absolute value of a `continuous` property must be less than 10<sup>20</sup>.
+
+#### Missing Values
+
+If one of these properties value is **missing**, this latter can be handled if the key *deactivate_missing_values: false* is added to the agent configuration. In this configuration, you can send a `null` value for a context attribute value to tell **craft ai** that the value is missing. **craft ai** will take into account as much as possible from this incomplete context.
+
+A context with a missing value looks like:
+```json
+{
+  "timestamp": 1469415720,
+  "context": {
+    "timezone": "+02:00",
+    "temperature": null,
+    "lightbulbState": "OFF"
+  }
+}
+```
+
+And its associated configuration would be:
+```json
+{
+  "context": {
+    "timezone": {
+      "type": "enum"
+    },
+    "temperature": {
+      "type": "continuous"
+    },
+    "lightbulbState": {
+      "type": "enum"
+    }
+  },
+  "output": ["lightbulbState"],
+  "time_quantum": 100,
+  "learning_period": 108000,
+  "deactivate_missing_values": false
+}
+```
+
+#### Optional Values
+
+An `enum`, `continuous` or `boolean` property is defined as *optional* if this latter is explicitely known as being non applicable. For instance, a sensor measuring the ambient temperature can sometimes be *offline* on purpose, and this behavior must be considered as normal and not as a missing property. To tackle this kind of problem, we introduce *optional* values. A property is be defined as optional by adding `is_optional: true` to the types properties in your configuration. Then, in a context, an **optional** value is defined as `{}`, the empty JSON Object:
+
+A context with an optional value looks like:
+```json
+{
+  {
+      "timestamp": 1469415720,
+      "context": {
+        "timezone": "+02:00",
+        "temperature": {},
+        "lightbulbState": "OFF"
+      }
+  },
+  ...
+}
+```
+
+And its associated configuration would be:
+```json
+{
+  "context": {
+    "timezone": {
+      "type": "enum"
+    },
+    "temperature": {
+      "type": "continuous",
+      "is_optional": true
+    },
+    "lightbulbState": {
+      "type": "enum"
+    }
+  },
+  "output": ["lightbulbState"],
+  "time_quantum": 100,
+  "learning_period": 108000,
+  "deactivate_missing_values": false
+}
+```
 
 ##### Time types: `timezone`, `time_of_day`, `day_of_week`, `day_of_month` and `month_of_year`
 
@@ -479,11 +579,7 @@ Each agent has a configuration defining:
 
 ##### Examples
 
-Let's take a look at the following configuration. It is designed to model the **color**
-of a lightbulb (the `lightbulbColor` property, defined as an output) depending
-on the **outside light intensity** (the `lightIntensity` property), the **time
-of the day** (the `time` property) and the **day of the week** (the `day`
-property).
+Let's take a look at the following configuration. It is designed to model the **color** of a lightbulb (the `lightbulbColor` property, defined as an output) depending on the **outside light intensity** (the `lightIntensity` property), the **TV status** (the `TVactivated` property) the **time of the day** (the `time` property) and the **day of the week** (the `day` property). Since `TVactivated` doesn't make any sense if the TV isn't here, we also specify this property as `is_optional: true`.
 
 `day` and `time` values will be generated automatically, hence the need for
 `timezone`, the current Time Zone, to compute their value from given
@@ -503,6 +599,10 @@ the decision model.
   "context": {
     "lightIntensity": {
       "type": "continuous"
+    },
+    "TVactivated": {
+      "type": "boolean",
+      "is_optional": true
     },
     "time": {
       "type": "time_of_day"
@@ -537,6 +637,9 @@ provided continuously.
     "lightIntensity": {
       "type": "continuous"
     },
+      "TVactivated": {
+      "type": "boolean"
+    },
     "lightbulbColor": {
       "type": "enum"
     }
@@ -551,7 +654,7 @@ provided continuously.
 
 **craft ai** API heavily relies on `timestamps`. A `timestamp` is an instant represented as a [Unix time](https://en.wikipedia.org/wiki/Unix_time), that is to say the amount of seconds elapsed since Thursday, 1 January 1970 at midnight UTC. In most programming languages this representation is easy to retrieve, you can refer to [**this page**](https://github.com/techgaun/unix-time/blob/master/README.md) to find out how.
 
-#### `craftai.Time` ####
+#### `craftai.Time` #####
 
 The `craftai.Time` class facilitates the handling of time types in **craft ai**. It is able to extract the different **craft ai** formats from various _datetime_ representations, thanks to [datetime](https://docs.python.org/3.5/library/datetime.html).
 
@@ -818,6 +921,204 @@ client.get_decision_tree(
 
 > :information_source: To take a decision, first compute the decision tree then use the **offline interpreter**.
 
+### Bulk
+
+The craft ai API includes a bulk route which provides a programmatic option to perform asynchronous operations on agents. It allows the user to create, delete, add operations and compute decision trees for several agents at once.
+
+> :warning: the bulk API is a quite advanced feature. It comes on top of the basic routes to create, delete, add context operations and compute decision tree. If messages are not self-explanatory, please refer to the basic routes that does the same operation for a single agent.
+
+
+
+#### Bulk - Create
+
+To create several agents at once, use the method `create_agents_bulk` as the following:
+  ```python
+  agent_id_1 = 'my_first_agent'
+  agent_id_2 = 'my_second_agent'
+ 
+  configuration_1 = {
+    "context": {
+      "peopleCount": {
+        "type": "continuous"
+      },
+      "timeOfDay": {
+        "type": "time_of_day"
+      },
+      "timezone": {
+        "type": "timezone"
+      },
+      "lightbulbState": {
+        "type": "enum"
+      }
+    },
+    "output": ["lightbulbState"]
+  }
+  configuration_2 = { ... }
+  
+  creation_bulk_payload = [
+    {'id': agent_id_1, 'configuration': configuration_1},
+    {'id': agent_id_2, 'configuration': configuration_2}
+  ]
+  
+  created_agents = client.create_agents_bulk(creation_bulk_payload)
+  print(created_agents)
+  ```
+  The variable `created_agents` is an **array of responses**. If an agent has been successfully created, the corresponding response is an object similar to the classic `create_agent()` response. When there are **mixed results**, `created_agents` should looks like:
+  ```python
+  [
+    {'_version': '2.0.0',                                 # creation succeeded
+     'configuration': {
+        'context': {
+          ...
+        },
+        'output': ...,
+        'learning_period': 1500000,
+        'time_quantum': 100
+     },
+     'id': 'my_first_agent'},
+    {'error': CraftAiBadRequestError('error-message'),    # creation failed
+     'id': 'my_second_agent'
+    }
+  ]
+  ```
+
+#### Bulk - Delete
+
+To delete several agents at once, use the method `delete_agents_bulk` as the following:
+  ```python
+  agent_id_1 = 'my_first_agent'
+  agent_id_2 = 'my_second_agent'
+  
+  deletion_bulk_payload = [
+    {'id': agent_id_1},
+    {'id': agent_id_2}
+  ]
+  
+  deleted_agents = client.delete_agents_bulk(creation_bulk_payload)
+  print(agents_deleted)
+  ```
+  The variable `deleted_agents` is an **array of responses**. If an agent has been successfully deleted, the corresponding response is an object similar to the classic `delete_agent()` response. When there are **mixed results**, `deleted_agents` should looks like:
+  
+  ```python
+  [
+    {'id': 'my_first_agent',                              # deletion succeeded
+     'creationDate': 1557492944277,
+     'lastContextUpdate': 1557492944277,
+     'lastTreeUpdate': 1557492944277,
+     'configuration': {
+        'context': {
+          ...
+        },
+        'output': ...,
+        'learning_period': 1500000,
+        'time_quantum': 100
+     },
+     '_version': '2.0.0'
+    },
+    {'error': CraftAiBadRequestError('error-message'),    # deletion failed
+     'id': 'my_second_agent'
+    },
+    {'id': 'my_unknown_agent'}                            # deletion succeeded
+  ]
+  ```
+
+#### Bulk - Add context Operations
+
+To add operations to several agents at once, use the method `add_operations_bulk` as the following:
+  ```python
+  agent_id_1 = 'my_first_agent'
+  agent_id_2 = 'my_second_agent'
+  
+  operations_agent_1 = [
+    {
+    'timestamp': 1469410200,
+    'context': {
+      'timezone': '+02:00',
+      'peopleCount': 0,
+      'lightbulbState': 'OFF'
+    },
+    {
+    'timestamp': 1469410200,
+    'context': {
+      'peopleCount': 1,
+      'lightbulbState': 'ON' 
+    },
+    {
+    'timestamp': 1469410200,
+    'context': {
+      'peopleCount': 2
+    },
+    {
+    'timestamp': 1469410200,
+    'context': {
+      'lightbulbState': 'OFF'
+    }
+  ]
+  operations_agent_2 = [ ... ]
+  
+  addition_operations_bulk_payload = [
+    {'id': agent_id_1, 'operations': operations_agent_1},
+    {'id': agent_id_2, 'operations': operations_agent_2}
+  ]
+  
+  agents = client.addAgentContextOperationsBulk(addition_operations_bulk_payload)
+  ```
+  The variable `agents` is an **array of responses**. If an agent has successfully received operations, the corresponding response is an object similar to the classic `add_operations()` response. When there are **mixed results**, `agents` should looks like:
+  
+  ```python
+  [
+    {
+    'status': 201,                                # Addition of operation succeeded
+    'message': 'message',
+    'id': 'my_first_agent'
+    }
+    {
+    'status': 500,                                 # Addition of operation failed
+    'error': CraftAiBadRequestError('error_message'),
+    'id': 'my_second_agent'
+    } 
+  ]
+  ```
+
+#### Bulk - Compute decision trees
+
+To get the tree of several agents at once, use the method `get_decision_trees_bulk` as the following:
+  
+  ```python
+  agent_id_1 = 'my_first_agent'
+  agent_id_2 = 'my_second_agent'
+  
+  decision_tree_bulk_payload =  [
+    {'id': agent_id_1},
+    {'id': agent_id_2}
+  ]
+  
+  trees = client.get_decision_trees_bulk(decision_tree_bulk_payload)
+  ```
+  The variable `trees` is an **array of responses**. If an agent’s model has successfully been created, the corresponding response is an object similar to the classic `get_decision_trees_bulk()` response. When there are **mixed results**, trees should looks like:
+  
+  ```python
+  [
+    {'id': 'my_first_agent',                              # Getting of the tree succeeded
+     'tree': {
+       'trees': { ... }
+       '_version': '1.1.0',
+       'configuration': { ... }
+     }
+     'timestamp': 1458741735
+     },
+     {
+     'error': CraftAiBadRequestError('error_message'),  # Getting of the tree failed
+     'id': 'my_second_agent'
+     }
+     {
+     'error': CraftAiNotFoundError('error_message'),    # Getting of the tree failed
+     'id': 'my_unknown_agent'
+     }
+  ]
+  
+  ```
+
 ### Advanced client configuration ###
 
 The simple configuration to create the `client` is just the token. For special needs, additional advanced configuration can be provided.
@@ -928,7 +1229,10 @@ A computed `decision` on an `enum` output type would look like:
           "operator": ">=",
           "operand": 2
         }
-      ]
+      ],
+      "nb_samples": 25,
+      "distribution": [0.05, 0.95],
+      "decision_path" "0-1-1"
     },
   }
 }
@@ -941,8 +1245,27 @@ A `decision` for a numerical output type would look like:
     "lightbulbIntensity": {
       "predicted_value": 10.5,
       "standard_deviation": 1.25, // For numerical types, this field is returned in decisions.
+      "min": 8.0,
+      "max": 11,
+      "nb_samples": 25,
       "decision_rules": [ ... ],
-      "confidence": ...
+      "confidence": ...,
+      "decision_path" ...
+    }
+  }
+```
+
+A `decision` for a categorical output type would look like:
+
+```python
+  "output": {
+    "lightbulbState": {
+      "predicted_value": "OFF",
+      "nb_samples": 25,
+      "distribution" : [ ... ], // Distribution of the output classes normalized by the number of samples in the reached node.
+      "decision_rules": [ ... ],
+      "confidence": ...,
+      "decision_path" ...
     }
   }
 ```
@@ -953,8 +1276,10 @@ A `decision` in a case where the tree cannot make a prediction:
   "output": {
     "lightbulbState": {
       "predicted_value": None,
-      "confidence": 0 // Zero confidence if the decision is null
-      "decision_rules": [ ... ]
+      "distribution" : [ ... ], // Distribution of the output classes normalized by the number of samples in the reached node.
+      "confidence": 0, // Zero confidence if the decision is null
+      "decision_rules": [ ... ],
+      "decision_path" ...
     }
   }
 ```
@@ -981,7 +1306,7 @@ minimal_decision_rules = reduce_decision_rules(decisionRules)
 From a list of decision rules, compute a _human readable_ version of these rules, in english.
 
 ```python
-from craftai import reduce_decision_rules
+from craftai import format_decision_rules
 
 # `decision` is the decision tree as retrieved from taking a decision
 decision = craftai.Interpreter.decide( ... )
@@ -1065,7 +1390,33 @@ df = pd.DataFrame(
 client.add_operations("my_new_agent", df)
 ```
 
-Given something that is not a `DataFrame` this method behave like the _vanilla_ `craftai.Client.add_operations`.
+Given an object that is not a `DataFrame` this method behave like the _vanilla_ `craftai.Client.add_operations`.
+
+Furthermore, missing values and optional values can be handled by the craft ai pandas client. To do so, we introduce two new types that are `craftai.pandas.MISSING_VALUE` for [missing values](#missing-values) and `craftai.pandas.OPTIONAL_VALUE` for [optional values](#optional-values).
+To send your `DataFrame` with actual missing values or optional values, you must use one of these types:
+
+```python
+import MISSING_VALUE, OPTIONAL_VALUE from craft.pandas
+
+df = pd.DataFrame(
+  [
+    [0, "+02:00"],
+    [1, MISSING_VALUE],
+    [2, MISSING_VALUE],
+    [1, OPTIONAL_VALUE],
+    [0, np.nan]
+  ],
+  columns=['peopleCount', 'timezone'],
+  index=pd.date_range('20130101', periods=5, freq='D').tz_localize("UTC")
+)
+client.add_operations("my_new_agent", df)
+```
+
+To ensure that all the missing values contained in your `DataFrame` are to the right format and can be handled by the craft ai pandas client, it is suggested to preprocess this latter by replacing all `na` values by the desired one:
+
+```python
+contexts_df.fillna(MISSING_VALUE) # Or OPTIONAL_VALUE
+```
 
 #### `craftai.pandas.Client.get_state_history` #####
 
@@ -1091,16 +1442,15 @@ df = client.get_state_history("my_new_agent")
 #### `craftai.pandas.Client.decide_from_contexts_df` #####
 
 Take multiple decisions on a given `DataFrame` following the same format as above.
-Missing values are not accepted for expected properties here.
 
 ```python
 decisions_df = client.decide_from_contexts_df(tree, pd.DataFrame(
   [
     [0, "+02:00"],
-    [1, np.nan],
-    [2, np.nan],
-    [1, np.nan],
-    [0, np.nan]
+    [1, "+02:00"],
+    [2, "+02:00"],
+    [1, "+02:00"],
+    [0, "+02:00"]
   ],
   columns=['peopleCount', 'timezone'],
   index=pd.date_range('20130101', periods=5, freq='D').tz_localize("UTC")
@@ -1115,11 +1465,29 @@ decisions_df = client.decide_from_contexts_df(tree, pd.DataFrame(
 # 2013-01-05 00:00:00+00:00   OFF                              0.999449                  ...
 ```
 
+This function also accepts craft ai missing values and optional values types, `craftai.pandas.MISSING_VALUE` and `craftai.pandas.OPTIONAL_VALUE`.
+
+```python
+import MISSING_VALUE, OPTIONAL_VALUE from craft.pandas
+
+decisions_df = client.decide_from_contexts_df(tree, pd.DataFrame(
+  [
+    [0, "+02:00"],
+    [MISSING_VALUE, "+02:00"],
+    [2, "+02:00"],
+    [MISSING_VALUE, "+02:00"],
+    [0, "+02:00"]
+  ],
+  columns=['peopleCount', 'timezone'],
+  index=pd.date_range('20130101', periods=5, freq='D').tz_localize("UTC")
+))
+```
+
 This function never raises `CraftAiNullDecisionError`, instead it inserts these errors in the result `Dataframe` in a specific `error` column.
 
 #### `craftai.pandas.utils.create_tree_html` #####
 
-Returns a HTML version of the given decision tree. If this latter is saved in a `.html` file, it can be opened in 
+Returns a HTML version of the given decision tree. If this latter is saved in a `.html` file, it can be opened in
 a browser to be visualized.
 
 ```python
@@ -1140,10 +1508,8 @@ html = create_tree_html(tree)
 
 #### `craftai.pandas.utils.display_tree` #####
 
-Display a decision tree in a **JupyterLab** Notebook. 
+Display a decision tree in a Jupyter Notebook.
 This function can be useful for analyzing the induced decision trees.
-
-:warning: This feature does not work yet on **Jupyter** Notebooks.
 
 ```python
 
@@ -1156,3 +1522,33 @@ tree = client.get_decision_tree(
 
 display_tree(tree)
 ```
+
+#### `craftai.pandas.client.add_operations_bulk` #####
+
+Add operations to several agents at once.
+```python
+agent_id_1 = 'my_first_agent'
+agent_id_2 = 'my_second_agent'
+
+operations_agent_1 = pd.DataFrame(
+  [
+    [0, "OFF", "+02:00"],
+    [1, "ON", np.nan], # timezone will be "+02:00"
+    [2, np.nan, np.nan],
+    [np.nan, "OFF", np.nan],
+    [0, np.nan, np.nan]
+  ],
+  columns=['peopleCount', 'lightbulbState', 'timezone'],
+  index=pd.date_range('20130101', periods=5, freq='D').tz_localize("UTC")
+)
+operations_agent_2 = pd.DataFrame([...])
+
+addition_operations_bulk_payload = [
+    {'id': agent_id_1, 'operations': operations_agent_1},
+    {'id': agent_id_2, 'operations': operations_agent_2}
+]
+
+client.add_operations_bulk(addition_operations_bulk_payload)
+```
+Given an object that is not a `DataFrame` this method behave like the _vanilla_ `craftai.Client.add_operations_bulk`.
+
