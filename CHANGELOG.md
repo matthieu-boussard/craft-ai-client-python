@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.2...HEAD)
 
+### Added
+
+- `client.decide` now returns the path to the reached node.
+
 ### Changed
 
 - Improve `craftai.pandas.client.decide_from_contexts_df` performances.
