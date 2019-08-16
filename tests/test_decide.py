@@ -52,7 +52,7 @@ def check_expectation(tree, expectation):
     tree["configuration"].update(configuration)
 
   if expectation.get("error"):
-    with assert_raises(craft_err.CraftAiError) as context_manager:
+    with assert_raises(craft_err.CraftAiDecisionError) as context_manager:
       CLIENT.decide(tree, exp_context, timestamp)
 
     exception = context_manager.exception
