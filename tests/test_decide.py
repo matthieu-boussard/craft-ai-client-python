@@ -62,6 +62,7 @@ def check_expectation(tree, expectation):
     else:
       expected_message = expectation["error"]["message"].encode("utf8")
     assert_equal(exception.message, expected_message)
+    assert_equal(exception.metadata, expectation["error"].get("metadata", None))
   else:
     expected_decision = expectation["output"]
     decision = CLIENT.decide(tree, exp_context, time)

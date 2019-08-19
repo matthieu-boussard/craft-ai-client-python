@@ -34,3 +34,8 @@ ignored-classes=dict
 [REPORTS]
 
 output-format=colorized
+
+[DESIGN]
+
+max-branches=15
+max-locals=20

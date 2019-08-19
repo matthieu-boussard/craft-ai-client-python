@@ -35,8 +35,8 @@ class InterpreterV1(object):
     decision_result = {}
     decision_result["output"] = {}
     for output in configuration.get("output"):
-      decision_result["output"][output] = InterpreterV1._decide_recursion(bare_tree[output],
-                                                                          context)
+      decision = InterpreterV1._decide_recursion(bare_tree[output], context)
+      decision_result["output"][output] = decision
 
     decision_result["_version"] = _DECISION_VERSION
     return decision_result
@@ -53,7 +53,8 @@ class InterpreterV1(object):
       if predicted_value is None:
         raise CraftAiNullDecisionError(
           """Unable to take decision: the decision tree has no valid"""
-          """ predicted value for the given context."""
+          """ predicted value for the given context.""",
+          {"decision_rules": [node.get("decision_rule")]}
         )
 
       leaf = {
@@ -73,13 +74,28 @@ class InterpreterV1(object):
 
     if not matching_child:
       prop = node.get("children")[0].get("decision_rule").get("property")
+      operand_list = [child["decision_rule"]["operand"] for child in node["children"]]
+      decision_rule = [node["decision_rule"]] if not node.get("decision_rule") is None else []
       raise CraftAiNullDecisionError(
         """Unable to take decision: value '{}' for property '{}' doesn't"""
-        """ validate any of the decision rules.""".format(context.get(prop), prop)
+        """ validate any of the decision rules.""".format(context.get(prop), prop),
+        {
+          "decision_rules": decision_rule,
+          "expected_values": operand_list,
+          "property": prop,
+          "value": context.get(prop),
+        }
       )
 
     # If a matching child is found, recurse
-    result = InterpreterV1._decide_recursion(matching_child, context)
+    try:
+      result = InterpreterV1._decide_recursion(matching_child, context)
+    except CraftAiDecisionError as err:
+      metadata = err.metadata
+      if node.get("decision_rule"):
+        metadata["decision_rules"].insert(0, node["decision_rule"])
+      raise CraftAiDecisionError(err.message, metadata)
+
     new_predicates = [{
       "property": matching_child["decision_rule"]["property"],
       "operator": matching_child["decision_rule"]["operator"],
@@ -108,8 +124,7 @@ class InterpreterV1(object):
       if context_value is None:
         raise CraftAiDecisionError(
           """Unable to take decision, property '{}' is missing from the given context.""".
-          format(property_name)
-        )
+          format(property_name))
       if (not isinstance(operator, six.string_types) or
           not operator in OPERATORS.values()):
         raise CraftAiDecisionError(
@@ -168,7 +183,16 @@ class InterpreterV1(object):
           message = "".join((message, ", ", error))
         message = message + "."
 
-        raise CraftAiDecisionError(message)
+        metadata = {}
+        if bad_properties:
+          metadata["badProperties"] = [
+            {"property": p, "type": configuration["context"][p]["type"], "value": context[p]}
+            for p in bad_properties
+          ]
+        if missing_properties:
+          metadata["missingProperties"] = missing_properties
+
+        raise CraftAiDecisionError(message, metadata)
 
   @staticmethod
   def validate_property_value(configuration, context, property_name):
