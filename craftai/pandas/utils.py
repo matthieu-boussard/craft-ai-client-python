@@ -39,14 +39,14 @@ def create_timezone_df(df, name):
   return timezone_df
 
 # Return a html version of the given tree
-def create_tree_html(tree_object, height=500):
+def create_tree_html(tree_object, decision_path, folded_nodes, height=500):
   html_template = """ <html>
   <head>
     <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin defer>
     </script>
     <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin defer>
     </script>
-    <script src="https://unpkg.com/react-craft-ai-decision-tree@0.0.23" crossorigin defer>
+    <script src="https://unpkg.com/react-craft-ai-decision-tree@0.0.26" crossorigin defer>
     </script>
   </head>
   <body>
@@ -54,8 +54,14 @@ def create_tree_html(tree_object, height=500):
     </div>
     <script async=false>
   ReactDOM.render(
-    React.createElement(DecisionTree, {{height: {height}, data: {tree}}}),
-    document.getElementById('tree-div')
+    React.createElement(DecisionTree,
+      {{
+        height: {height},
+        data: {tree},
+        selectedNode: {selectedNode},
+        foldedNodes= {foldedNodes}
+      }}
+    ),document.getElementById('tree-div')
   );
     </script>
   </body>
@@ -97,12 +103,15 @@ def create_tree_html(tree_object, height=500):
       """ version.""".
       format(tree_version)
     )
-
+  if folded_nodes is None:
+    folded_nodes = []
   return html_template.format(height=height,
                               tree=json.dumps(tree_object),
-                              version=REACT_CRAFT_AI_DECISION_TREE_VERSION)
+                              version=REACT_CRAFT_AI_DECISION_TREE_VERSION,
+                              selectedNode=decision_path,
+                              foldedNodes=folded_nodes)
 
 # Display the given decision tree
-def display_tree(tree_object, height=500):
-  tree_html = create_tree_html(tree_object, height)
+def display_tree(tree_object, decision_path, folded_nodes, height=500):
+  tree_html = create_tree_html(tree_object, decision_path, folded_nodes, height)
   display(HTML(tree_html))
