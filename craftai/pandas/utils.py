@@ -9,6 +9,7 @@ from ..constants import REACT_CRAFT_AI_DECISION_TREE_VERSION
 from .constants import MISSING_VALUE, OPTIONAL_VALUE
 
 DUMMY_COLUMN_NAME = "CraftGeneratedDummy"
+FOLDED_NODES_REGEX = "^0(-\\d*)*$"
 
 def format_input(val):
   if val == MISSING_VALUE:
@@ -39,7 +40,7 @@ def create_timezone_df(df, name):
   return timezone_df
 
 # Return a html version of the given tree
-def create_tree_html(tree_object, decision_path, folded_nodes, height=500):
+def create_tree_html(tree_object, selected_node, folded_nodes, height=500):
   html_template = """ <html>
   <head>
     <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin defer>
@@ -103,12 +104,33 @@ def create_tree_html(tree_object, decision_path, folded_nodes, height=500):
       """ version.""".
       format(tree_version)
     )
+
   if folded_nodes is None:
     folded_nodes = []
+  elif not isinstance(folded_nodes, list):
+    raise CraftAiError(
+      """Invalid folded nodes format given, it should be an array, found: {}""".
+      format(folded_nodes)
+    )
+  else:
+    for folded_node in folded_nodes:
+      if not isinstance(folded_node, str) and not re.compile(FOLDED_NODES_REGEX).match(folded_node):
+        raise CraftAiError(
+          """Invalid folded node format given, tt should be a"""
+          """String following this regex: {}, found: {}""".
+          format(FOLDED_NODES_REGEX, folded_nodes)
+        )
+  if not isinstance(selected_node, str) and not re.compile(FOLDED_NODES_REGEX).match(selected_node):
+    raise CraftAiError(
+      """Invalid selected node format given, tt should be a"""
+      """String following this regex: {}, found: {}""".
+      format(FOLDED_NODES_REGEX, selected_node)
+    )
+
   return html_template.format(height=height,
                               tree=json.dumps(tree_object),
                               version=REACT_CRAFT_AI_DECISION_TREE_VERSION,
-                              selectedNode=decision_path,
+                              selectedNode=selected_node,
                               foldedNodes=folded_nodes)
 
 # Display the given decision tree
