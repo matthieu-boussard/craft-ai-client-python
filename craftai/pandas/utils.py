@@ -1,5 +1,7 @@
 import json
 import re
+import string
+from random import choice
 import pandas as pd
 import six
 from IPython.core.display import display, HTML
@@ -9,7 +11,7 @@ from ..constants import REACT_CRAFT_AI_DECISION_TREE_VERSION
 from .constants import MISSING_VALUE, OPTIONAL_VALUE
 
 DUMMY_COLUMN_NAME = "CraftGeneratedDummy"
-FOLDED_NODES_REGEX = "^0(-\\d*)*$"
+SELECTED_NODE_REGEX = "^0(-\\d*)*$"
 
 def format_input(val):
   if val == MISSING_VALUE:
@@ -39,6 +41,9 @@ def create_timezone_df(df, name):
     timezone_df[name] = df.index.strftime("%z")
   return timezone_df
 
+def random_string(length=20):
+  return "".join(choice(string.ascii_letters) for x in range(length))
+
 # Return a html version of the given tree
 def create_tree_html(tree_object, selected_node, folded_nodes, height=500):
   html_template = """ <html>
@@ -51,7 +56,7 @@ def create_tree_html(tree_object, selected_node, folded_nodes, height=500):
     </script>
   </head>
   <body>
-    <div id="tree-div">
+    <div id={{"{idDiv}"}}>
     </div>
     <script async=false>
   ReactDOM.render(
@@ -59,8 +64,8 @@ def create_tree_html(tree_object, selected_node, folded_nodes, height=500):
       {{
         height: {height},
         data: {tree},
-        selectedNode: {selectedNode},
-        foldedNodes= {foldedNodes}
+        selectedNode: "{selectedNode}",
+        foldedNodes: "{foldedNodes}"
       }}
     ),document.getElementById('tree-div')
   );
@@ -114,24 +119,28 @@ def create_tree_html(tree_object, selected_node, folded_nodes, height=500):
     )
   else:
     for folded_node in folded_nodes:
-      if not isinstance(folded_node, str) and not re.compile(FOLDED_NODES_REGEX).match(folded_node):
+      if not isinstance(folded_node, str) and not \
+        re.compile(SELECTED_NODE_REGEX).match(folded_node):
         raise CraftAiError(
           """Invalid folded node format given, tt should be a"""
           """String following this regex: {}, found: {}""".
-          format(FOLDED_NODES_REGEX, folded_nodes)
+          format(SELECTED_NODE_REGEX, folded_nodes)
         )
-  if not isinstance(selected_node, str) and not re.compile(FOLDED_NODES_REGEX).match(selected_node):
+
+  if not isinstance(selected_node, str) and not \
+    re.compile(SELECTED_NODE_REGEX).match(selected_node):
     raise CraftAiError(
       """Invalid selected node format given, tt should be a"""
       """String following this regex: {}, found: {}""".
-      format(FOLDED_NODES_REGEX, selected_node)
+      format(SELECTED_NODE_REGEX, selected_node)
     )
 
   return html_template.format(height=height,
                               tree=json.dumps(tree_object),
                               version=REACT_CRAFT_AI_DECISION_TREE_VERSION,
                               selectedNode=selected_node,
-                              foldedNodes=folded_nodes)
+                              foldedNodes=folded_nodes,
+                              idDiv=random_string())
 
 # Display the given decision tree
 def display_tree(tree_object, decision_path, folded_nodes, height=500):
