@@ -67,7 +67,7 @@ def create_tree_html(tree_object, selected_node, folded_nodes, height=500):
         selectedNode: "{selectedNode}",
         foldedNodes: "{foldedNodes}"
       }}
-    ),document.getElementById('tree-div')
+    ),document.getElementById({{"{idDiv}"}})
   );
     </script>
   </body>
