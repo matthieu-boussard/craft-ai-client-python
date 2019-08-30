@@ -1,7 +1,7 @@
 import json
+from random import choice
 import re
 import string
-from random import choice
 import pandas as pd
 import six
 from IPython.core.display import display, HTML
