@@ -56,18 +56,18 @@ def create_tree_html(tree_object, selected_node, folded_nodes, height=500):
     </script>
   </head>
   <body>
-    <div id={{"{idDiv}"}}>
+    <div id="{idDiv}">
     </div>
     <script async=false>
   ReactDOM.render(
     React.createElement(DecisionTree,
       {{
-        height: {height},
+        style: {{ height: {height} }},
         data: {tree},
         selectedNode: "{selectedNode}",
-        foldedNodes: "{foldedNodes}"
+        foldedNodes: {foldedNodes}
       }}
-    ),document.getElementById({{"{idDiv}"}})
+    ),document.getElementById("{idDiv}")
   );
     </script>
   </body>
@@ -143,6 +143,6 @@ def create_tree_html(tree_object, selected_node, folded_nodes, height=500):
                               idDiv=random_string())
 
 # Display the given decision tree
-def display_tree(tree_object, decision_path, folded_nodes, height=500):
+def display_tree(tree_object, decision_path='', folded_nodes=[], height=500):
   tree_html = create_tree_html(tree_object, decision_path, folded_nodes, height)
   display(HTML(tree_html))
