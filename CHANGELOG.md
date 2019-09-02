@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.3...HEAD) ##
 
+### Added
+
+- `craftai.pandas.utils.display_tree` has new inputs: `decision_path` to select a specific node via its path and `folded_nodes` to fold multiple nodes using their paths.
+
+### Fixed
+
+- `craftai.pandas.utils.display_tree` can be called multiple times in the same cell.
+
 ## [1.15.3](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.2...v1.15.3) - 2019-08-14 ##
 
 ### Added
