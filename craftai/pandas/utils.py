@@ -54,6 +54,10 @@ def create_tree_html(tree_object, selected_node, folded_nodes, height=500):
     </script>
     <script src="https://unpkg.com/react-craft-ai-decision-tree@0.0.26" crossorigin defer>
     </script>
+    <style>
+      .jp-RenderedHTMLCommon table {{ table-layout: inherit; }}
+      .jp-RenderedHTMLCommon ul {{ padding-left: none; }}
+    </style>
   </head>
   <body>
     <div id="{idDiv}">
