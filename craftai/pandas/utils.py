@@ -45,7 +45,7 @@ def random_string(length=20):
   return "".join(choice(string.ascii_letters) for x in range(length))
 
 # Return a html version of the given tree
-def create_tree_html(tree_object, selected_node, folded_nodes, height=500):
+def create_tree_html(tree_object, selected_node, edge_type, folded_nodes, height=500):
   html_template = """ <html>
   <head>
     <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin defer>
@@ -69,7 +69,8 @@ def create_tree_html(tree_object, selected_node, folded_nodes, height=500):
         style: {{ height: {height} }},
         data: {tree},
         selectedNode: "{selectedNode}",
-        foldedNodes: {foldedNodes}
+        foldedNodes: {foldedNodes},
+        edgeType: {edgeType}
       }}
     ),document.getElementById("{idDiv}")
   );
@@ -144,9 +145,12 @@ def create_tree_html(tree_object, selected_node, folded_nodes, height=500):
                               version=REACT_CRAFT_AI_DECISION_TREE_VERSION,
                               selectedNode=selected_node,
                               foldedNodes=folded_nodes,
+                              edgeType=edge_type,
                               idDiv=random_string())
 
 # Display the given decision tree
-def display_tree(tree_object, decision_path="", folded_nodes=None, height=500):
-  tree_html = create_tree_html(tree_object, decision_path, folded_nodes, height)
+def display_tree(tree_object, decision_path="",
+                 edge_type="constant", folded_nodes=None,
+                 height=500):
+  tree_html = create_tree_html(tree_object, decision_path, edge_type, folded_nodes, height)
   display(HTML(tree_html))
