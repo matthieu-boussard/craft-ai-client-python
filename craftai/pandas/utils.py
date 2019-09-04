@@ -70,7 +70,7 @@ def create_tree_html(tree_object, selected_node, edge_type, folded_nodes, height
         data: {tree},
         selectedNode: "{selectedNode}",
         foldedNodes: {foldedNodes},
-        edgeType: {edgeType}
+        edgeType: "{edgeType}"
       }}
     ),document.getElementById("{idDiv}")
   );
@@ -131,6 +131,13 @@ def create_tree_html(tree_object, selected_node, edge_type, folded_nodes, height
           """String following this regex: {}, found: {}""".
           format(SELECTED_NODE_REGEX, folded_nodes)
         )
+
+  if not edge_type in ["constant", "absolute", "relative"]:
+    raise CraftAiError(
+      """Invalid edge type given, its value should be a "constant", """
+      """"absolute" or "relative", found: {}""".
+      format(edge_type)
+    )
 
   if not isinstance(selected_node, str) and not \
     re.compile(SELECTED_NODE_REGEX).match(selected_node):
