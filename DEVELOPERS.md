@@ -12,13 +12,18 @@
   CRAFT_TOKEN=<retrieved_token>
   ```
 
-4. Install the dependencies.
+4. Init the git submodules (needed for the interpreter tests)
+  ```console
+  $ git submodule init
+  $ git submodule update
+  ```
+5. Install the dependencies.
 
   ```console
   $ make init
   ```
 
-5. Run the tests!
+6. Run the tests!
 
   ```console
   $ make test
