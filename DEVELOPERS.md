@@ -17,6 +17,7 @@
   $ git submodule init
   $ git submodule update
   ```
+
 5. Install the dependencies.
 
   ```console
