@@ -1,14 +1,18 @@
+from .constants import MISSING_VALUE, OPTIONAL_VALUE
+from ..constants import REACT_CRAFT_AI_DECISION_TREE_VERSION
+from ..errors import CraftAiError
+from IPython.core.display import display, HTML
 import json
+import pandas as pd
+from .private_methods import _extract_tree
+from .private_methods import _get_paths
+from .private_methods import _get_neightbours
 from random import choice
 import re
 import string
-import pandas as pd
 import six
-from IPython.core.display import display, HTML
 import semver
-from ..errors import CraftAiError
-from ..constants import REACT_CRAFT_AI_DECISION_TREE_VERSION
-from .constants import MISSING_VALUE, OPTIONAL_VALUE
+
 
 DUMMY_COLUMN_NAME = "CraftGeneratedDummy"
 SELECTED_NODE_REGEX = "^0(-\\d*)*$"
@@ -161,3 +165,30 @@ def display_tree(tree_object, decision_path="",
                  height=500):
   tree_html = create_tree_html(tree_object, decision_path, edge_type, folded_nodes, height)
   display(HTML(tree_html))
+
+def get_paths(tree):
+  """ return a set of all decision paths in a craftai tree """
+  return _get_paths(_extract_tree(tree))
+    
+def get_neightbours(tree, decision_path, level=None, include_self=False):
+  """  
+  collect all neightbours decision paths of the given decision path
+  param: tree: craftai tree or simple tree
+  param: decision_path: string tree path eg. '0-2-1'
+  param: level: int filter neightbours on their depth
+  param: include_self: boolean. include the given decision_path to the neightbours.
+  """
+  paths = _get_paths(_extract_tree(tree))
+  if decision_path not in paths:
+    raise CraftAiError(
+      """Invalid decision path given. """
+      """{} not found in tree""".format(decision_path)
+    )
+  neightbours = _get_neightbours(paths, decision_path)
+  if level == None:
+    level = len(decision_path.split('-'))
+
+  filtered = [n for n in neightbours if len(n.split('-')) <= level]
+  if include_self:
+    filtered.append(decision_path)
+  return filtered
