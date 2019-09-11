@@ -1,17 +1,16 @@
-from .constants import MISSING_VALUE, OPTIONAL_VALUE
-from ..constants import REACT_CRAFT_AI_DECISION_TREE_VERSION
-from ..errors import CraftAiError
-from IPython.core.display import display, HTML
+from copy import deepcopy
 import json
-import pandas as pd
-from .private_methods import _extract_tree
-from .private_methods import _get_paths
-from .private_methods import _get_neightbours
 from random import choice
 import re
 import string
+from IPython.core.display import display, HTML
+
+import pandas as pd
 import six
 import semver
+from .constants import MISSING_VALUE, OPTIONAL_VALUE
+from ..constants import REACT_CRAFT_AI_DECISION_TREE_VERSION
+from ..errors import CraftAiError
 
 
 DUMMY_COLUMN_NAME = "CraftGeneratedDummy"
@@ -166,17 +165,72 @@ def display_tree(tree_object, decision_path="",
   tree_html = create_tree_html(tree_object, decision_path, edge_type, folded_nodes, height)
   display(HTML(tree_html))
 
+def _flatten(arr, flat=None):
+  """ flatten deep an array of lists """
+  if flat is None:
+    flat = []
+  for value in arr:
+    if not isinstance(value, list) and value not in flat:
+      flat.append(value)
+  if sum([isinstance(value, list) for value in arr]) > 0:
+    return _flatten([x for y in arr for x in y if isinstance(y, list)], deepcopy(flat))
+  return deepcopy(flat)
+
+def _update_paths(paths, idx):
+  """ add new path build on idx to all paths """
+  if paths:
+    return paths + ["{}-{}".format(paths[-1], idx)]
+  return [str(idx)]
+
+def _paths(tree, paths=None):
+  """ return a raw list of all paths in a tree """
+  if paths is None:
+    paths = ["0"]
+  if "children" in tree.keys():
+    return [_paths(child, _update_paths(paths, i)) for i, child in enumerate(tree["children"])]
+  return paths
+
+def _get_paths(tree):
+  """ return a set of all paths in a tree """
+  return set(_flatten(_paths(tree)))
+
+def _is_neighbour(path0, path1):
+  """
+  Boolean function. A neighbour has exactly the same path excepted for the last node
+  """
+  return path0[:-1] == path1[:-1] and path0 != path1
+
+def _get_neighbours(paths, decision_path):
+  """
+  Recursively collect all neighbours paths of the given decision path
+  param: paths: paths aggregator
+  param: decision_path: decision path to get neighbours from
+  """
+  split = decision_path.split("-")
+  return [p for p in paths for i in range(1, len(split)) if _is_neighbour(p, "-".join(split[:i]))]
+
+def _extract_tree(tree):
+  if not isinstance(tree, dict):
+    raise CraftAiError(
+      """Invalid input given. The tree should be a dict, """
+      """but a {} has been received.""".format(type(tree))
+    )
+  if "trees" in tree.keys():
+    target = list(tree["trees"].keys())[0]
+    tree = tree["trees"][target]
+  return tree
+
 def get_paths(tree):
   """ return a set of all decision paths in a craftai tree """
   return _get_paths(_extract_tree(tree))
-    
-def get_neightbours(tree, decision_path, level=None, include_self=False):
-  """  
-  collect all neightbours decision paths of the given decision path
+
+def get_neighbours(tree, decision_path, max_depth=None, include_self=False):
+  """
+  collect all neighbours decision paths of the given decision path
   param: tree: craftai tree or simple tree
-  param: decision_path: string tree path eg. '0-2-1'
-  param: level: int filter neightbours on their depth
-  param: include_self: boolean. include the given decision_path to the neightbours.
+  param: decision_path: string tree path eg. "0-2-1"
+  param: max_depth: positive int filter neighbours on their depth
+  param: include_self: boolean. include the given decision_path to the neighbours.
   """
   paths = _get_paths(_extract_tree(tree))
   if decision_path not in paths:
@@ -184,11 +238,17 @@ def get_neightbours(tree, decision_path, level=None, include_self=False):
       """Invalid decision path given. """
       """{} not found in tree""".format(decision_path)
     )
-  neightbours = _get_neightbours(paths, decision_path)
-  if level == None:
-    level = len(decision_path.split('-'))
 
-  filtered = [n for n in neightbours if len(n.split('-')) <= level]
+  dp_depth = len(decision_path.split("-"))
+  neighbours = _get_neighbours(paths, decision_path)
+  if max_depth is None:
+    max_depth = dp_depth
+  if max_depth < 0:
+    raise CraftAiError(
+      """Invalid max depth given: {} should be None or a positive integer """.
+      format(max_depth)
+    )
+  filtered = [n for n in neighbours if len(n.split("-")) <= max_depth]
   if include_self:
     filtered.append(decision_path)
   return filtered
