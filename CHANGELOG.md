@@ -5,7 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.3...HEAD) ##
+## [Unreleased](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.5...HEAD) ##
+
+## [1.15.5](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.4...v1.15.5) - 2019-09-05 ##
+
+### Added
+
+- `craftai.pandas.utils.display_tree` supports `edge_type` property that can take `constant`, `relative` or `absolute` values.
+
+## [1.15.4](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.3...v1.15.4) - 2019-09-02 ##
+
+### Added
+
+- `craftai.pandas.utils.display_tree` has new inputs: `decision_path` to select a specific node via its path and `folded_nodes` to fold multiple nodes using their paths.
+
+### Fixed
+
+- `craftai.pandas.utils.display_tree` can be called multiple times in the same cell.
 
 ## [1.15.3](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.2...v1.15.3) - 2019-08-14 ##
 

@@ -935,7 +935,7 @@ To create several agents at once, use the method `create_agents_bulk` as the fol
   ```python
   agent_id_1 = 'my_first_agent'
   agent_id_2 = 'my_second_agent'
- 
+
   configuration_1 = {
     "context": {
       "peopleCount": {
@@ -954,12 +954,12 @@ To create several agents at once, use the method `create_agents_bulk` as the fol
     "output": ["lightbulbState"]
   }
   configuration_2 = { ... }
-  
+
   creation_bulk_payload = [
     {'id': agent_id_1, 'configuration': configuration_1},
     {'id': agent_id_2, 'configuration': configuration_2}
   ]
-  
+
   created_agents = client.create_agents_bulk(creation_bulk_payload)
   print(created_agents)
   ```
@@ -988,17 +988,17 @@ To delete several agents at once, use the method `delete_agents_bulk` as the fol
   ```python
   agent_id_1 = 'my_first_agent'
   agent_id_2 = 'my_second_agent'
-  
+
   deletion_bulk_payload = [
     {'id': agent_id_1},
     {'id': agent_id_2}
   ]
-  
+
   deleted_agents = client.delete_agents_bulk(creation_bulk_payload)
   print(agents_deleted)
   ```
   The variable `deleted_agents` is an **array of responses**. If an agent has been successfully deleted, the corresponding response is an object similar to the classic `delete_agent()` response. When there are **mixed results**, `deleted_agents` should looks like:
-  
+
   ```python
   [
     {'id': 'my_first_agent',                              # deletion succeeded
@@ -1028,7 +1028,7 @@ To add operations to several agents at once, use the method `add_operations_bulk
   ```python
   agent_id_1 = 'my_first_agent'
   agent_id_2 = 'my_second_agent'
-  
+
   operations_agent_1 = [
     {
     'timestamp': 1469410200,
@@ -1041,7 +1041,7 @@ To add operations to several agents at once, use the method `add_operations_bulk
     'timestamp': 1469410200,
     'context': {
       'peopleCount': 1,
-      'lightbulbState': 'ON' 
+      'lightbulbState': 'ON'
     },
     {
     'timestamp': 1469410200,
@@ -1055,16 +1055,16 @@ To add operations to several agents at once, use the method `add_operations_bulk
     }
   ]
   operations_agent_2 = [ ... ]
-  
+
   addition_operations_bulk_payload = [
     {'id': agent_id_1, 'operations': operations_agent_1},
     {'id': agent_id_2, 'operations': operations_agent_2}
   ]
-  
+
   agents = client.addAgentContextOperationsBulk(addition_operations_bulk_payload)
   ```
   The variable `agents` is an **array of responses**. If an agent has successfully received operations, the corresponding response is an object similar to the classic `add_operations()` response. When there are **mixed results**, `agents` should looks like:
-  
+
   ```python
   [
     {
@@ -1076,27 +1076,27 @@ To add operations to several agents at once, use the method `add_operations_bulk
     'status': 500,                                 # Addition of operation failed
     'error': CraftAiBadRequestError('error_message'),
     'id': 'my_second_agent'
-    } 
+    }
   ]
   ```
 
 #### Bulk - Compute decision trees
 
 To get the tree of several agents at once, use the method `get_decision_trees_bulk` as the following:
-  
+
   ```python
   agent_id_1 = 'my_first_agent'
   agent_id_2 = 'my_second_agent'
-  
+
   decision_tree_bulk_payload =  [
     {'id': agent_id_1},
     {'id': agent_id_2}
   ]
-  
+
   trees = client.get_decision_trees_bulk(decision_tree_bulk_payload)
   ```
   The variable `trees` is an **array of responses**. If an agent’s model has successfully been created, the corresponding response is an object similar to the classic `get_decision_trees_bulk()` response. When there are **mixed results**, trees should looks like:
-  
+
   ```python
   [
     {'id': 'my_first_agent',                              # Getting of the tree succeeded
@@ -1116,7 +1116,7 @@ To get the tree of several agents at once, use the method `get_decision_trees_bu
      'id': 'my_unknown_agent'
      }
   ]
-  
+
   ```
 
 ### Advanced client configuration ###
@@ -1396,7 +1396,7 @@ Furthermore, missing values and optional values can be handled by the craft ai p
 To send your `DataFrame` with actual missing values or optional values, you must use one of these types:
 
 ```python
-import MISSING_VALUE, OPTIONAL_VALUE from craft.pandas
+from craftai.pandas import MISSING_VALUE, OPTIONAL_VALUE
 
 df = pd.DataFrame(
   [
@@ -1468,7 +1468,7 @@ decisions_df = client.decide_from_contexts_df(tree, pd.DataFrame(
 This function also accepts craft ai missing values and optional values types, `craftai.pandas.MISSING_VALUE` and `craftai.pandas.OPTIONAL_VALUE`.
 
 ```python
-import MISSING_VALUE, OPTIONAL_VALUE from craft.pandas
+from craftai.pandas import MISSING_VALUE, OPTIONAL_VALUE
 
 decisions_df = client.decide_from_contexts_df(tree, pd.DataFrame(
   [
@@ -1499,7 +1499,13 @@ tree = client.get_decision_tree(
   timestamp # The timestamp at which the decision tree is retrieved
 )
 
-html = create_tree_html(tree)
+html = create_tree_html(
+  tree, # The decision tree
+  decision_path, # (Optional) The path to a node. This will plot the tree with this node already selected. Default: ""
+  edge_type, # (Optional) The way the decision tree edges are plotted - ("constant", "absolute" or "relative"). Default: "constant"
+  folded_nodes, # (Optional) An array of nodes path to fold when the tree is plotted. Default: None
+  height # (Optional) The height in pixel of the created plot. Default: 500.
+)
 
 # ...
 # ... save the html string to visualize it in a browser
@@ -1520,7 +1526,13 @@ tree = client.get_decision_tree(
   timestamp # The timestamp at which the decision tree is retrieved
 )
 
-display_tree(tree)
+display_tree(
+  tree, # The decision tree
+  decision_path, # (Optional) The path to a node. This will plot the tree with this node already selected. Default: ""
+  edge_type, # (Optional) The way the decision tree edges are plotted - ("constant", "absolute" or "relative"). Default: "constant"
+  folded_nodes, # (Optional) An array of nodes path to fold when the tree is plotted. Default: None
+  height # (Optional) The height in pixel of the created plot. Default: 500.
+)
 ```
 
 #### `craftai.pandas.client.add_operations_bulk` #####

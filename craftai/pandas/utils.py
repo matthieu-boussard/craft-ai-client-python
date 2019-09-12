@@ -1,5 +1,7 @@
 import json
+from random import choice
 import re
+import string
 import pandas as pd
 import six
 from IPython.core.display import display, HTML
@@ -9,6 +11,7 @@ from ..constants import REACT_CRAFT_AI_DECISION_TREE_VERSION
 from .constants import MISSING_VALUE, OPTIONAL_VALUE
 
 DUMMY_COLUMN_NAME = "CraftGeneratedDummy"
+SELECTED_NODE_REGEX = "^0(-\\d*)*$"
 
 def format_input(val):
   if val == MISSING_VALUE:
@@ -38,24 +41,38 @@ def create_timezone_df(df, name):
     timezone_df[name] = df.index.strftime("%z")
   return timezone_df
 
+def random_string(length=20):
+  return "".join(choice(string.ascii_letters) for x in range(length))
+
 # Return a html version of the given tree
-def create_tree_html(tree_object, height=500):
+def create_tree_html(tree_object, selected_node, edge_type, folded_nodes, height=500):
   html_template = """ <html>
   <head>
     <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin defer>
     </script>
     <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin defer>
     </script>
-    <script src="https://unpkg.com/react-craft-ai-decision-tree@0.0.23" crossorigin defer>
+    <script src="https://unpkg.com/react-craft-ai-decision-tree@0.0.26" crossorigin defer>
     </script>
+    <style>
+      .jp-RenderedHTMLCommon table {{ table-layout: inherit; }}
+      .jp-RenderedHTMLCommon ul {{ padding-left: none; }}
+    </style>
   </head>
   <body>
-    <div id="tree-div">
+    <div id="{idDiv}">
     </div>
     <script async=false>
   ReactDOM.render(
-    React.createElement(DecisionTree, {{height: {height}, data: {tree}}}),
-    document.getElementById('tree-div')
+    React.createElement(DecisionTree,
+      {{
+        style: {{ height: {height} }},
+        data: {tree},
+        selectedNode: "{selectedNode}",
+        foldedNodes: {foldedNodes},
+        edgeType: "{edgeType}"
+      }}
+    ),document.getElementById("{idDiv}")
   );
     </script>
   </body>
@@ -98,11 +115,49 @@ def create_tree_html(tree_object, height=500):
       format(tree_version)
     )
 
+  if folded_nodes is None:
+    folded_nodes = []
+  elif not isinstance(folded_nodes, list):
+    raise CraftAiError(
+      """Invalid folded nodes format given, it should be an array, found: {}""".
+      format(folded_nodes)
+    )
+  else:
+    for folded_node in folded_nodes:
+      if not isinstance(folded_node, str) and not \
+        re.compile(SELECTED_NODE_REGEX).match(folded_node):
+        raise CraftAiError(
+          """Invalid folded node format given, tt should be a"""
+          """String following this regex: {}, found: {}""".
+          format(SELECTED_NODE_REGEX, folded_nodes)
+        )
+
+  if not edge_type in ["constant", "absolute", "relative"]:
+    raise CraftAiError(
+      """Invalid edge type given, its value should be a "constant", """
+      """"absolute" or "relative", found: {}""".
+      format(edge_type)
+    )
+
+  if not isinstance(selected_node, str) and not \
+    re.compile(SELECTED_NODE_REGEX).match(selected_node):
+    raise CraftAiError(
+      """Invalid selected node format given, tt should be a"""
+      """String following this regex: {}, found: {}""".
+      format(SELECTED_NODE_REGEX, selected_node)
+    )
+
   return html_template.format(height=height,
                               tree=json.dumps(tree_object),
-                              version=REACT_CRAFT_AI_DECISION_TREE_VERSION)
+                              version=REACT_CRAFT_AI_DECISION_TREE_VERSION,
+                              selectedNode=selected_node,
+                              foldedNodes=folded_nodes,
+                              edgeType=edge_type,
+                              idDiv=random_string())
 
 # Display the given decision tree
-def display_tree(tree_object, height=500):
-  tree_html = create_tree_html(tree_object, height)
+def display_tree(tree_object, decision_path="",
+                 edge_type="constant", folded_nodes=None,
+                 height=500):
+  tree_html = create_tree_html(tree_object, decision_path, edge_type, folded_nodes, height)
   display(HTML(tree_html))
