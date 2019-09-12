@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.5...HEAD) ##
 
+### Added
+
+- `craftai.pandas.utils.get_paths` to list all paths of a craftai tree.
+- `craftai.pandas.utils.get_neighbours` to list all neighbours paths of a given decision path.
+
 ## [1.15.5](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.4...v1.15.5) - 2019-09-05 ##
 
 ### Added
