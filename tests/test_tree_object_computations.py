@@ -20,14 +20,14 @@ def test_path():
      Trees located in data/interpreter/decide/trees/
   """
   for version in os.listdir(PATH_DIR):
-    for file in os.listdir(os.path.join(PATH_DIR, version)):
+    for filename in os.listdir(os.path.join(PATH_DIR, version)):
       # Loading the json tree
-      with open(os.path.join(TREES_DIR, version, file)) as f:
+      with open(os.path.join(TREES_DIR, version, filename)) as f:
         results = get_paths(json.load(f))
       # Loading the expectation for this tree
-      with open(os.path.join(PATH_DIR, version, file)) as f:
+      with open(os.path.join(PATH_DIR, version, filename)) as f:
         expectation = json.load(f)
-      print(version, file, sorted(list(results)) == expectation)
+      print(version, filename, sorted(list(results)) == expectation)
 
       assert_true(sorted(list(results)) == expectation)
 
@@ -37,13 +37,13 @@ def test_neighbours():
      Trees located in data/interpreter/decide/trees/
   """
   for version in os.listdir(NEIGHBOURS_DIR):
-    for file in os.listdir(os.path.join(NEIGHBOURS_DIR, version)):
+    for filename in os.listdir(os.path.join(NEIGHBOURS_DIR, version)):
       # Loading the json tree
-      with open(os.path.join(TREES_DIR, version, file)) as f:
+      with open(os.path.join(TREES_DIR, version, filename)) as f:
         tree = json.load(f)
 
       # Loading expectations for this tree
-      with open(os.path.join(NEIGHBOURS_DIR, version, file)) as f:
+      with open(os.path.join(NEIGHBOURS_DIR, version, filename)) as f:
         expectations = json.load(f)
 
       for expect in expectations:
