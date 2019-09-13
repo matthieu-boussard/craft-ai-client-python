@@ -24,9 +24,9 @@ USER_AGENT = "craft-ai-client-python/{} [{} {}]".format(pkg_version,
                                                         python_implementation(),
                                                         python_version())
 
-ERROR_ID_MESSAGE = ("Invalid agent id given.\n"
-                    "It must be a string containing only\n"
-                    "characters in \"a-zA-Z0-9_-\" \n"
+ERROR_ID_MESSAGE = ("Invalid agent id given. "
+                    "It must be a string containing only "
+                    "characters in \"a-zA-Z0-9_-\" "
                     "and must be between 1 and 36 characters.")
 
 def current_time_ms():
@@ -725,7 +725,7 @@ class CraftAIClient(object):
     elif status_code == 500:
       err = CraftAiInternalError(message)
     elif status_code == 503:
-      err = CraftAiNetworkError("""Service momentarily unavailable, please try"""
+      err = CraftAiNetworkError("""Service momentarily unavailable, please try """
                                 """again in a few minutes. If the problem """
                                 """persists please contact us at support@craft.ai""")
     elif status_code == 504:
