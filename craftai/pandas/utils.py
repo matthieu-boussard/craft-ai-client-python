@@ -194,12 +194,17 @@ def _is_neighbour(path0, path1):
 
 def _get_neighbours(paths, decision_path):
   """
-  Recursively collect all neighbours paths of the given decision path
+  Collect all neighbours paths of the given decision path
   param: paths: paths aggregator
   param: decision_path: decision path to get neighbours from
   """
   split = decision_path.split("-")
-  return [p for p in paths for i in range(1, len(split) + 1) if _is_neighbour(p, "-".join(split[:i]))]
+  neighbours = []
+  for step in range(1, len(split) + 1):
+    for path in paths:
+      if _is_neighbour(p, "-".join(split[:i])):
+        neighbours.extend(p)
+  return neighbours
 
 def _extract_tree(tree):
   if not isinstance(tree, dict):
