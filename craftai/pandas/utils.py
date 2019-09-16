@@ -199,7 +199,7 @@ def _get_neighbours(paths, decision_path):
   param: decision_path: decision path to get neighbours from
   """
   split = decision_path.split("-")
-  return [p for p in paths for i in range(1, len(split)) if _is_neighbour(p, "-".join(split[:i]))]
+  return [p for p in paths for i in range(1, len(split) + 1) if _is_neighbour(p, "-".join(split[:i]))]
 
 def _extract_tree(tree):
   if not isinstance(tree, dict):
