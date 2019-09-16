@@ -1,4 +1,4 @@
-from copy import deepcopy
+from copy import copy
 import json
 from random import choice
 import re
@@ -165,17 +165,6 @@ def display_tree(tree_object, decision_path="",
   tree_html = create_tree_html(tree_object, decision_path, edge_type, folded_nodes, height)
   display(HTML(tree_html))
 
-def _flatten(arr, flat=None):
-  """ flatten deep an array of lists """
-  if flat is None:
-    flat = []
-  for value in arr:
-    if not isinstance(value, list) and value not in flat:
-      flat.append(value)
-  if sum([isinstance(value, list) for value in arr]) > 0:
-    return _flatten([x for y in arr for x in y if isinstance(y, list)], deepcopy(flat))
-  return deepcopy(flat)
-
 def _update_paths(paths, idx):
   """ add new path build on idx to all paths """
   if paths:
@@ -187,7 +176,10 @@ def _paths(tree, paths=None):
   if paths is None:
     paths = ["0"]
   if "children" in tree.keys():
-    return [_paths(child, _update_paths(paths, i)) for i, child in enumerate(tree["children"])]
+    current_paths = copy(paths)
+    for i, child in enumerate(tree["children"]):
+      paths.extend(_paths(child, _update_paths(current_paths, i)))
+    return paths
   return paths
 
 def _get_paths(tree):
