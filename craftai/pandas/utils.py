@@ -175,7 +175,7 @@ def _paths(tree, paths=None):
   """ return a raw list of all paths in a tree """
   if paths is None:
     paths = ["0"]
-  if "children" in tree.keys():
+  if "children" in tree:
     current_paths = copy(paths)
     for i, child in enumerate(tree["children"]):
       paths.extend(_paths(child, _update_paths(current_paths, i)))
@@ -207,8 +207,8 @@ def _extract_tree(tree):
       """Invalid input given. The tree should be a dict, """
       """but a {} has been received.""".format(type(tree))
     )
-  if "trees" in tree.keys():
-    target = list(tree["trees"].keys())[0]
+  if "trees" in tree:
+    target = list(tree["trees"])[0]
     tree = tree["trees"][target]
   return tree
 
