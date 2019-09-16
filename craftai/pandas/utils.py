@@ -184,7 +184,7 @@ def _paths(tree, paths=None):
 
 def _get_paths(tree):
   """ return a set of all paths in a tree """
-  return set(_flatten(_paths(tree)))
+  return set(_paths(tree))
 
 def _is_neighbour(path0, path1):
   """
