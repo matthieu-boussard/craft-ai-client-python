@@ -203,7 +203,7 @@ def _get_neighbours(paths, decision_path):
   for step in range(1, len(split) + 1):
     for path in paths:
       if _is_neighbour(path, "-".join(split[:step])):
-        neighbours.extend(path)
+        neighbours.append(path)
   return neighbours
 
 def _extract_tree(tree):
