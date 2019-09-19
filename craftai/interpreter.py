@@ -10,18 +10,18 @@ from craftai.interpreter_v2 import InterpreterV2
 class Interpreter(object):
 
   @staticmethod
-  def decide(tree, args):
+  def decide(tree, *args, **kwargs):
     bare_tree, configuration, tree_version = Interpreter._parse_tree(tree)
     interpreter = Interpreter._get_interpreter(tree_version)
 
-    return Interpreter._decide(configuration, bare_tree, args, interpreter)
+    return Interpreter._decide(configuration, bare_tree, interpreter, *args, **kwargs)
 
   ####################
   # Internal helpers #
   ####################
 
   @staticmethod
-  def _decide(configuration, bare_tree, args, interpreter):
+  def _decide(configuration, bare_tree, interpreter, *args, **kwargs):
     if configuration != {}:
       time = None if len(args) == 1 else args[1]
       context_result = Interpreter._rebuild_context(configuration, args[0], time)
@@ -33,7 +33,7 @@ class Interpreter(object):
     decide_context = Interpreter._convert_timezones_to_standard_format(configuration,
                                                                        context.copy())
 
-    decision = interpreter.decide(configuration, bare_tree, decide_context)
+    decision = interpreter.decide(configuration, bare_tree, decide_context, **kwargs)
     decision["context"] = context
 
     return decision
@@ -52,7 +52,6 @@ class Interpreter(object):
 
   @staticmethod
   def _rebuild_context(configuration, state, time=None):
-
     missings = []
     # Model should come from _parse_tree and is assumed to be checked
     # upon already
@@ -98,6 +97,7 @@ class Interpreter(object):
     # Rebuild the context with generated and non-generated values
     context = {
       feature: state.get(feature) for feature, properties in configuration_ctx.items()
+      if feature in state
     }
 
     return {
@@ -123,7 +123,7 @@ class Interpreter(object):
   @staticmethod
   def _convert_timezones_to_standard_format(configuration, context):
     timezone_key = get_timezone_key(configuration["context"])
-    if timezone_key:
+    if timezone_key and timezone_key in context:
       context[timezone_key] = timezone_offset_in_standard_format(context[timezone_key])
     return context
 

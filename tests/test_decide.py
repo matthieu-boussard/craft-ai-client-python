@@ -48,12 +48,13 @@ def check_expectation(tree, expectation):
   exp_time = expectation.get("time")
   time = Time(exp_time["t"], exp_time["tz"]) if exp_time else {}
   configuration = expectation.get("configuration")
+  allow_not_matching = expectation.get("allow_not_matching", False)
   if configuration:
     tree["configuration"].update(configuration)
 
   if expectation.get("error"):
     with assert_raises(craft_err.CraftAiDecisionError) as context_manager:
-      CLIENT.decide(tree, exp_context, timestamp)
+      CLIENT.decide(tree, exp_context, timestamp, allow_not_matching=allow_not_matching)
 
     exception = context_manager.exception
     expected_message = ""
@@ -65,7 +66,7 @@ def check_expectation(tree, expectation):
     assert_equal(exception.metadata, expectation["error"].get("metadata", None))
   else:
     expected_decision = expectation["output"]
-    decision = CLIENT.decide(tree, exp_context, time)
+    decision = CLIENT.decide(tree, exp_context, time, allow_not_matching=allow_not_matching)
     assert_equal(decision, expected_decision)
 
 def test_rebuild_context():

@@ -26,8 +26,7 @@ SIMPLE_AGENT_CONFIGURATION = {
   },
   "output": ["a"],
   "time_quantum": 100,
-  "deactivate_missing_values": True,
-  "min_samples_per_leaf": 1,
+  "min_samples_per_leaf": 1
 }
 
 SIMPLE_AGENT_DATA = pd.DataFrame(
@@ -113,7 +112,6 @@ COMPLEX_AGENT_CONFIGURATION = {
   },
   "output": ["b"],
   "time_quantum": 100,
-  "deactivate_missing_values": True,
   "min_samples_per_leaf": 1,
 }
 
@@ -131,7 +129,6 @@ COMPLEX_AGENT_CONFIGURATION_2 = {
   },
   "output": ["a"],
   "time_quantum": 100,
-  "deactivate_missing_values": True,
   "min_samples_per_leaf": 1,
 }
 
@@ -186,7 +183,6 @@ DATETIME_AGENT_CONFIGURATION = {
   },
   "output": ["b"],
   "time_quantum": 3600,
-  "deactivate_missing_values": True,
   "min_samples_per_leaf": 1,
 }
 
@@ -210,8 +206,7 @@ DATETIME_AGENT_DATA = pd.DataFrame(
 MISSING_AGENT_CONFIGURATION = {
   "context": {
     "a": {
-      "type": "continuous",
-      "is_optional": True
+      "type": "continuous"
     },
     "b": {
       "type": "enum",
@@ -223,8 +218,8 @@ MISSING_AGENT_CONFIGURATION = {
   },
   "output": ["a"],
   "time_quantum": 100,
-  "deactivate_missing_values": False,
   "min_samples_per_leaf": 1,
+  "deactivate_missing_values": False
 }
 
 MISSING_AGENT_DATA = pd.DataFrame(

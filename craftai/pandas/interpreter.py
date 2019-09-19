@@ -41,8 +41,9 @@ class Interpreter(VanillaInterpreter):
       decision = VanillaInterpreter._decide(
         configuration,
         bare_tree,
-        (context, time),
-        interpreter
+        interpreter,
+        context,
+        time,
       )
 
       return {

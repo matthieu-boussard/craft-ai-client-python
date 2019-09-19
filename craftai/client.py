@@ -634,8 +634,8 @@ class CraftAIClient(object):
         continue
 
   @staticmethod
-  def decide(tree, *args):
-    return Interpreter.decide(tree, args)
+  def decide(tree, *args, **kwargs):
+    return Interpreter.decide(tree, *args, **kwargs)
 
   @staticmethod
   def _parse_body(response):
