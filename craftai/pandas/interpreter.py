@@ -29,10 +29,12 @@ class Interpreter(VanillaInterpreter):
 
   @staticmethod
   def decide_from_row(bare_tree, row, tz_col, configuration, interpreter):
+    print(row)
     context = {
       index: format_input(value) for index, value in row._asdict().items()
       if is_valid_property_value(index, value)
     }
+    print(context)
     time = Time(
       t=row[0].value // 1000000000, # Timestamp.value returns nanoseconds
       timezone=context[tz_col] if tz_col else row[0].tz

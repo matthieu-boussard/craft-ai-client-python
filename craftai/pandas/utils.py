@@ -24,6 +24,7 @@ def format_input(val):
   return val
 
 def is_valid_property_value(key, value):
+  print(value, value is None)
   # From https://stackoverflow.com/a/19773559
   # https://pythonhosted.org/six/#six.text_type for unicode in Python 2
   return key != DUMMY_COLUMN_NAME and \
@@ -31,7 +32,8 @@ def is_valid_property_value(key, value):
            (not hasattr(value, "__len__") \
             or isinstance(value, (str, six.text_type)) \
             or value == MISSING_VALUE \
-            or value == OPTIONAL_VALUE) \
+            or value == OPTIONAL_VALUE
+            or value is None) \
            and not pd.isna(value) \
          )
 
