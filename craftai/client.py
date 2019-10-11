@@ -280,6 +280,150 @@ class CraftAIClient(object):
 
     return decoded_resp
 
+  ####################
+  # Generator method #
+  ####################
+
+  def create_generator(self, configuration, filter, generator_id=""):
+    """ Create a generator.
+
+    :param dict configuration: Form given by the craftai documentation.
+    :param list filter: A list of valid agent id. It must be a list of 
+    containing only characters in "a-zA-Z0-9_-" and must be between 
+    1 and 36 characters.
+    :param str generator_id: The id of the generator to delete. It must be
+    an str containing only characters in "a-zA-Z0-9_-" and must be
+    between 1 and 36 characters. It must referenced an existing generator.
+    :param default generator_id : "" In this case the generator_id is 
+    generated
+    """
+    # Extra header in addition to the main session's
+    ct_header = {"Content-Type": "application/json; charset=utf-8"}
+
+    # Building payload and checking that it is valid for a JSON
+    # serialization
+    payload = {
+      "configuration": configuration,
+      "filter": filter
+    }
+
+    if generator_id != "":
+      # Raises an error when generator_id is invalid
+      self._check_agent_id(generator_id)
+
+      payload["id"] = generator_id
+
+    try:
+      json_pl = json.dumps(payload)
+    except TypeError as err:
+      raise CraftAiBadRequestError("Invalid configuration or agent id given. {}"
+                                   .format(err.__str__()))
+
+    req_url = "{}/generators".format(self._base_url)
+    resp = self._requests_session.post(req_url, headers=ct_header, data=json_pl)
+
+    agent = self._decode_response(resp)
+
+    return agent
+
+  def delete_generator(self, generator_id):
+    """ Delete a generator
+
+    :param str generator_id: The id of the generator to delete. It must be
+    an str containing only characters in "a-zA-Z0-9_-" and must be
+    between 1 and 36 characters. It must referenced an existing generator.
+    :param default generator_id : "" In this case the generator_id is 
+    generated
+    """
+
+    # Raises an error when agent_id is invalid
+    self._check_agent_id(generator_id)
+
+    req_url = "{}/generators/{}".format(self._base_url, generator_id)
+    resp = self._requests_session.delete(req_url)
+
+    decoded_resp = self._decode_response(resp)
+
+    return decoded_resp
+
+  def _get_generator_decision_tree(self, generator_id, timestamp, version=DEFAULT_DECISION_TREE_VERSION):
+    """Tool for the function get_decision_tree.
+
+    :param str generator_id: the id of the agent to get the tree. It
+    must be an str containing only characters in "a-zA-Z0-9_-" and
+    must be between 1 and 36 characters.
+    :param int timestamp: Optional. The decision tree is comptuted
+    at this timestamp.
+    :default timestamp: None, means that we get the tree computed
+    with all its context history.
+    :param version: version of the tree to get.
+    :type version: str or int.
+    :default version: default version of the tree.
+
+    :return: decision tree.
+    :rtype: dict.
+    """
+    self._requests_session.headers["x-craft-ai-tree-version"] = version
+
+    # If we give no timestamp the default behaviour is to give the tree from the latest timestamp
+    if timestamp is None:
+      req_url = "{}/generators/{}/tree?".format(self._base_url, generator_id)
+    else:
+      req_url = "{}/generators/{}/tree?t={}".format(self._base_url, generator_id, timestamp)
+
+    resp = self._requests_session.get(req_url)
+
+    decision_tree = self._decode_response(resp)
+
+    return decision_tree
+
+  def get_generator_decision_tree(self, generator_id, timestamp=None, version=DEFAULT_DECISION_TREE_VERSION):
+    """Get generator decision tree.
+
+    :param str generator_id: the id of the agent to get the tree. It
+    must be an str containing only characters in "a-zA-Z0-9_-" and
+    must be between 1 and 36 characters.
+    :param int timestamp: Optional. The decision tree is comptuted
+    at this timestamp.
+    :default timestamp: None, means that we get the tree computed
+    with all its context history.
+    :param version: version of the tree to get.
+    :type version: str or int.
+    :default version: default version of the tree.
+
+    :return: decision tree.
+    :rtype: dict.
+
+    :raises CraftAiLongRequestTimeOutError: if the API doesn't get
+    the tree in the time given by the configuration.
+    """
+    if isinstance(version, int):
+      version = str(version)
+
+    # Convert datetime to timestamp
+    if isinstance(timestamp, pd.Timestamp):
+      timestamp = timestamp.value // 10 ** 9
+    elif isinstance(timestamp, datetime.datetime):
+      timestamp = time.mktime(timestamp.timetuple())
+
+    # Raises an error when generator_id is invalid
+    self._check_agent_id(generator_id)
+    if self._config["decisionTreeRetrievalTimeout"] is False:
+      # Don't retry
+      return self._get_generator_decision_tree(generator_id, timestamp, version)
+
+    start = current_time_ms()
+    while True:
+      now = current_time_ms()
+      if now - start > self._config["decisionTreeRetrievalTimeout"]:
+        # Client side timeout
+        raise CraftAiLongRequestTimeOutError()
+      try:
+        return self._get_generator_decision_tree(generator_id, timestamp, version)
+      except CraftAiLongRequestTimeOutError:
+        # Do nothing and continue.
+        continue
+
   ###################
   # Context methods #
   ###################
