@@ -1,5 +1,4 @@
 import unittest
-import six
 
 from craftai import Client, errors as craft_err
 
@@ -23,8 +22,8 @@ class TestCreateGeneratorSuccess(unittest.TestCase):
     #   valid_data.VALID_CONFIGURATION,
     #   self.agent_id
     # )
-    resp = self.client.delete_agent(self.agent_id)
-    resp = self.client.delete_generator(self.generator_id)
+    self.client.delete_agent(self.agent_id)
+    self.client.delete_generator(self.generator_id)
     self.client.create_agent(
       valid_data.VALID_CONFIGURATION,
       self.agent_id
@@ -65,13 +64,11 @@ class TestCreateGeneratorFailure(unittest.TestCase):
 
   def setUp(self):
     # Makes sure that no agent with the same ID already exists
-    resp = self.client.delete_agent(self.agent_id)
-    resp = self.client.create_agent(
+    self.client.delete_agent(self.agent_id)
+    self.client.create_agent(
       valid_data.VALID_CONFIGURATION,
       self.agent_id
     )
-    print(resp)
-
 
   def clean_up_generator(self, generator_id):
     # Makes sure that no agent with the standard ID remains
@@ -180,7 +177,7 @@ class TestCreateGeneratorFailure(unittest.TestCase):
       self.addCleanup(
         self.clean_up_generator,
         self.generator_id)
-  
+
   def test_create_generator_with_invalid_agent_name_in_filter(self):
     """create_generator should fail when given an invalid filter
 

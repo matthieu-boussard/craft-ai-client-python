@@ -7,12 +7,13 @@ disable=missing-docstring,locally-enabled,locally-disabled,duplicate-code,unnece
 good-names=i,j,k,Run,_,e,f,df
 bad-names=foo,bar,baz,toto,tutu,tata
 
-function-rgx=(test_)?[a-z_][a-z0-9_]{2,40}$
-method-rgx=(test_)?[a-z_][a-z0-9_]{2,40}$
+function-rgx=(test_)?[a-z_][a-z0-9_]{2,50}$
+method-rgx=(test_)?[a-z_][a-z0-9_]{2,50}$
 
 [FORMAT]
 
 max-line-length=100
+max-module-lines=1200
 
 no-space-check=trailing-comma,dict-separator
 

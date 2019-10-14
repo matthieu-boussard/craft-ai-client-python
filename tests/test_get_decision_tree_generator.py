@@ -1,4 +1,3 @@
-import random
 import datetime
 import semver
 
@@ -82,7 +81,10 @@ def test_get_generator_decision_tree_with_specific_version2():
 def test_get_generator_decision_tree_without_timestamp():
   # test if we get the latest decision tree
   decision_tree = CLIENT.get_generator_decision_tree(GENERATOR_ID)
-  ground_truth_decision_tree = decision_tree = CLIENT.get_generator_decision_tree(GENERATOR_ID, 1458741230 + 505)
+  ground_truth_decision_tree = decision_tree = CLIENT.get_generator_decision_tree(
+    GENERATOR_ID,
+    1458741230 + 505
+  )
   assert_is_instance(decision_tree, dict)
   assert_not_equal(decision_tree.get("_version"), None)
   assert_not_equal(decision_tree.get("configuration"), None)

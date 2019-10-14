@@ -86,6 +86,6 @@ INVALID_OPS_SET = {
 }
 
 INVALID_FILTER = {
-  "invalid_agent_name_in_filter" : ['ajdjd%&', 'tata'],
+  "invalid_agent_name_in_filter" : ["ajdjd%&", "tata"],
   "invalid_filter_type" : 0
 }
