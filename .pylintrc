@@ -40,3 +40,4 @@ output-format=colorized
 
 max-branches=15
 max-locals=20
+max-public-methods=25

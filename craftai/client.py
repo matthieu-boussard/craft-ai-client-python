@@ -346,6 +346,15 @@ class CraftAIClient(object):
 
     return decoded_resp
 
+  def list_generators(self):
+
+    req_url = "{}/generators".format(self._base_url)
+    resp = self._requests_session.get(req_url)
+
+    generators = self._decode_response(resp)
+
+    return generators["generatorsList"]
+
   def _get_generator_decision_tree(
       self,
       generator_id,
