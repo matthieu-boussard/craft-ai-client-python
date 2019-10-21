@@ -21,21 +21,26 @@ class Interpreter(VanillaInterpreter):
       tz_col = tz_col[0]
       df[tz_col] = create_timezone_df(contexts_df, tz_col).iloc[:, 0]
 
-    predictions_iter = (
-      Interpreter.decide_from_row(bare_tree, row, tz_col, configuration, interpreter)
-      for row in df.itertuples()
-    )
-    return pd.DataFrame(predictions_iter, index=df.index)
+    timestamps = df.index
+    contexts = df.to_dict("records")
+    del df
+
+    predictions = [Interpreter.decide_from_row(
+      bare_tree,
+      context, timestamp, tz_col,
+      configuration, interpreter) for context, timestamp in zip(contexts, timestamps)]
+
+    return pd.DataFrame(predictions, index=df.index)
 
   @staticmethod
-  def decide_from_row(bare_tree, row, tz_col, configuration, interpreter):
+  def decide_from_row(bare_tree, row, timestamp, tz_col, configuration, interpreter):
     context = {
-      index: format_input(value) for index, value in row._asdict().items()
+      index: format_input(value) for index, value in row.items()
       if is_valid_property_value(index, value)
     }
     time = Time(
-      t=row[0].value // 1000000000, # Timestamp.value returns nanoseconds
-      timezone=context[tz_col] if tz_col else row[0].tz
+      t=timestamp.value // 1000000000, # Timestamp.value returns nanoseconds
+      timezone=context[tz_col] if tz_col else timestamp.tz
     )
     try:
       decision = VanillaInterpreter._decide(
