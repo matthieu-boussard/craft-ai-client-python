@@ -27,7 +27,6 @@ def test_path():
       # Loading the expectation for this tree
       with open(os.path.join(PATH_DIR, version, filename)) as f:
         expectation = json.load(f)
-      print(version, filename, sorted(list(results)) == expectation)
 
       assert_true(sorted(list(results)) == expectation)
 

@@ -282,6 +282,8 @@ class InterpreterV2(object):
       if not p in configuration["output"]
     ]
 
+    print('context', context)
+
     if not allow_not_matching:
       # Retrieve the missing properties
       missing_properties = [p for p in expected_properties if not p in context]

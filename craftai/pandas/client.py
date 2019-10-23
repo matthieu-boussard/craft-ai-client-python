@@ -119,7 +119,7 @@ class Client(VanillaClient):
     )
 
   @staticmethod
-  def decide_from_contexts_df(tree, contexts_df):
+  def decide_from_contexts_df(tree, contexts_df, **kwargs):
     if isinstance(contexts_df, pd.DataFrame):
       if not isinstance(contexts_df.index, pd.DatetimeIndex):
         raise CraftAiBadRequestError("Invalid dataframe given, it is not time indexed.")
@@ -128,4 +128,4 @@ class Client(VanillaClient):
                                      it must be tz-aware.""")
     else:
       raise CraftAiBadRequestError("Invalid data given, it is not a DataFrame.")
-    return Interpreter.decide_from_contexts_df(tree, contexts_df)
+    return Interpreter.decide_from_contexts_df(tree, contexts_df, **kwargs)
