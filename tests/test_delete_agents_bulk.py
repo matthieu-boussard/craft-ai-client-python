@@ -53,17 +53,17 @@ class TestDeleteGroupAgentsBulkSuccess(unittest.TestCase):
       self.client.delete_agent(agent)
       self.client.create_agent(valid_data.VALID_CONFIGURATION, agent)
 
-  def test_delete_a_lot_of_agents_with_valid_id(self):
-    """delete_agents_bulk should succeed when given a lot of agent id.
+  # def test_delete_a_lot_of_agents_with_valid_id(self):
+  #   """delete_agents_bulk should succeed when given a lot of agent id.
 
-    It should give a proper JSON response with a list containing dicts
-    with `id` being the same as the one given as a parameter.
-    """
-    payload = [{"id": agent_id} for agent_id in self.agents]
-    response = self.client.delete_agents_bulk(payload)
+  #   It should give a proper JSON response with a list containing dicts
+  #   with `id` being the same as the one given as a parameter.
+  #   """
+  #   payload = [{"id": agent_id} for agent_id in self.agents]
+  #   response = self.client.delete_agents_bulk(payload)
 
-    for i, resp in enumerate(response):
-      self.assertEqual(resp.get("id"), self.agents[i])
+  #   for i, resp in enumerate(response):
+  #     self.assertEqual(resp.get("id"), self.agents[i])
 
 
 class TestDeleteAgentsBulkFailure(unittest.TestCase):
