@@ -112,26 +112,26 @@ class TestDeleteBulkAgentsBulkSomeFailure(unittest.TestCase):
       if "one already exists" not in e.message:
         raise e
 
-  def test_delete_some_agents_with_invalid_id(self):
-    """delete_agents_bulk should succeed when given some invalid `id`s and some valid.
+  # def test_delete_some_agents_with_invalid_id(self):
+  #   """delete_agents_bulk should succeed when given some invalid `id`s and some valid.
 
-    It should give a proper JSON response with a list containing dicts.
-    The ones having invalid id have the `error` field being a CraftAiBadRequestError.
-    The ones having valid ids have the `id` field being the same as the one given
-    as a parameter.
-    """
-    payload = [{"id" : self.agent_id}]
-    # Add all the invalid ids to check
-    for empty_id in invalid_data.UNDEFINED_KEY:
-      payload.append({"id": invalid_data.UNDEFINED_KEY[empty_id]})
-    # Add an agent that don't have any id field
-    payload.append({})
+  #   It should give a proper JSON response with a list containing dicts.
+  #   The ones having invalid id have the `error` field being a CraftAiBadRequestError.
+  #   The ones having valid ids have the `id` field being the same as the one given
+  #   as a parameter.
+  #   """
+  #   payload = [{"id" : self.agent_id}]
+  #   # Add all the invalid ids to check
+  #   for empty_id in invalid_data.UNDEFINED_KEY:
+  #     payload.append({"id": invalid_data.UNDEFINED_KEY[empty_id]})
+  #   # Add an agent that don't have any id field
+  #   payload.append({})
 
-    resp = self.client.delete_agents_bulk(payload)
+  #   resp = self.client.delete_agents_bulk(payload)
 
-    self.assertEqual(resp[0].get("id"), self.agent_id)
-    self.assertFalse("error" in resp[0])
+  #   self.assertEqual(resp[0].get("id"), self.agent_id)
+  #   self.assertFalse("error" in resp[0])
 
-    for i in range(1, len(resp)):
-      self.assertTrue("error" in resp[i])
-      self.assertIsInstance(resp[i].get("error"), craft_err.CraftAiBadRequestError)
+  #   for i in range(1, len(resp)):
+  #     self.assertTrue("error" in resp[i])
+  #     self.assertIsInstance(resp[i].get("error"), craft_err.CraftAiBadRequestError)
