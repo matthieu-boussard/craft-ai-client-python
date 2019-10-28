@@ -238,7 +238,7 @@ def test_decide_from_missing_contexts_df():
                                   MISSING_AGENT_DATA.last_valid_index().value // 10 ** 9,
                                   "2")
 
-  df = CLIENT.decide_from_contexts_df(tree, MISSING_AGENT_DATA, allow_not_matching=True)
+  df = CLIENT.decide_from_contexts_df(tree, MISSING_AGENT_DATA)
 
   assert_equal(len(df), 10)
   assert_equal(df.first_valid_index(), pd.Timestamp("2013-01-01 00:00:00", tz="Europe/Paris"))

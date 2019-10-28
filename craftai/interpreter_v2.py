@@ -31,9 +31,8 @@ _VALUE_VALIDATORS = {
 class InterpreterV2(object):
 
   @staticmethod
-  def decide(configuration, bare_tree, context, **kwargs):
-    allow_not_matching = kwargs.get("allow_not_matching", False)
-    InterpreterV2._check_context(configuration, context, allow_not_matching)
+  def decide(configuration, bare_tree, context):
+    InterpreterV2._check_context(configuration, context)
 
     decision_result = {}
     decision_result["output"] = {}
@@ -44,14 +43,13 @@ class InterpreterV2(object):
                                                                           bare_tree[output].get(
                                                                             "output_values"),
                                                                           output_type,
-                                                                          ["0"],
-                                                                          allow_not_matching)
+                                                                          ["0"])
     decision_result["_version"] = _DECISION_VERSION
     return decision_result
 
   #pylint: disable-msg=too-many-arguments, too-many-locals
   @staticmethod
-  def _decide_recursion(node, context, output_values, output_type, path, allow_not_matching):
+  def _decide_recursion(node, context, output_values, output_type, path):
     # If we are on a leaf
     if not (node.get("children") is not None and len(node.get("children"))):
       # We check if a leaf has the key 'prediction' corresponging to a v2 tree
@@ -91,21 +89,8 @@ class InterpreterV2(object):
     # If there is no child corresponding matching the operators then we compute
     # the probabilistic distribution from this node.
     if not matching_child:
-      if allow_not_matching:
-        return InterpreterV2.compute_distribution(node, output_values, output_type, path)
-      prop = node.get("children")[0].get("decision_rule").get("property")
-      operand_list = [child["decision_rule"]["operand"] for child in node["children"]]
-      decision_rule = [node["decision_rule"]] if not node.get("decision_rule") is None else []
-      raise CraftAiNullDecisionError(
-        """Unable to take decision: value '{}' for property '{}' doesn't"""
-        """ validate any of the decision rules.""".format(context.get(prop), prop),
-        {
-          "decision_rules": decision_rule,
-          "expected_values": operand_list,
-          "property": prop,
-          "value": context.get(prop)
-        }
-      )
+      return InterpreterV2.compute_distribution(node, output_values, output_type, path)
+
     # Add the matching child index to the path
     path.append(str(matching_child_i))
     # If a matching child is found, recurse
@@ -114,8 +99,7 @@ class InterpreterV2(object):
                                                context,
                                                output_values,
                                                output_type,
-                                               path,
-                                               allow_not_matching)
+                                               path)
     except CraftAiDecisionError as err:
       metadata = err.metadata
       if node.get("decision_rule"):
@@ -275,20 +259,12 @@ class InterpreterV2(object):
     return None, {}
 
   @staticmethod
-  def _check_context(configuration, context, allow_not_matching):
+  def _check_context(configuration, context):
     # Extract the required properties (i.e. those that are not the output)
     expected_properties = [
       p for p in configuration["context"]
       if not p in configuration["output"]
     ]
-
-    print('context', context)
-
-    if not allow_not_matching:
-      # Retrieve the missing properties
-      missing_properties = [p for p in expected_properties if not p in context]
-    else:
-      missing_properties = []
 
     # Validate the values
     bad_properties = [
@@ -296,19 +272,14 @@ class InterpreterV2(object):
       if not InterpreterV2.validate_property_value(configuration, context, p)
     ]
 
-    if missing_properties or bad_properties:
-      missing_properties = sorted(missing_properties)
-      missing_properties_messages = [
-        "expected property '{}' is not defined"
-        .format(p) for p in missing_properties
-      ]
+    if bad_properties:
       bad_properties = sorted(bad_properties)
       bad_properties_messages = [
         "'{}' is not a valid value for property '{}' of type '{}'"
         .format(context.get(p), p, configuration["context"][p]["type"]) for p in bad_properties
       ]
 
-      errors = missing_properties_messages + bad_properties_messages
+      errors = bad_properties_messages
 
       # deal with missing properties
       if errors:
@@ -324,9 +295,6 @@ class InterpreterV2(object):
             {"property": p, "type": configuration["context"][p]["type"], "value": context.get(p)}
             for p in bad_properties
           ]
-
-        if missing_properties:
-          metadata["missingProperties"] = missing_properties
 
         raise CraftAiDecisionError(message, metadata)
 
