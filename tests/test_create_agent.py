@@ -123,6 +123,7 @@ class TestCreateAgentFailure(unittest.TestCase):
         self.clean_up_agent,
         self.agent_id)
 
+  # this test is commented because current agent creation fails with no configuration key.
   # def should fail when given no configuration key in the request body(self):
   #   """create_agent should fail when given no configuration key in the request body
 

@@ -53,6 +53,7 @@ class TestDeleteGroupAgentsBulkSuccess(unittest.TestCase):
       self.client.delete_agent(agent)
       self.client.create_agent(valid_data.VALID_CONFIGURATION, agent)
 
+  # This test is commented because there are currently some problems in the bulk.
   # def test_delete_a_lot_of_agents_with_valid_id(self):
   #   """delete_agents_bulk should succeed when given a lot of agent id.
 
@@ -112,6 +113,7 @@ class TestDeleteBulkAgentsBulkSomeFailure(unittest.TestCase):
       if "one already exists" not in e.message:
         raise e
 
+  # This test is commented because there are currently some problems in the bulk.
   # def test_delete_some_agents_with_invalid_id(self):
   #   """delete_agents_bulk should succeed when given some invalid `id`s and some valid.
 

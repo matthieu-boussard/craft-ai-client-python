@@ -264,6 +264,7 @@ def test_datetime_state_history_df():
   assert_equal(len(df.dtypes), 4)
   assert_equal(df["myTimeOfDay"].tolist(), [2, 3, 6, 7, 4, 5, 14, 15, 16, 19])
 
+# This test is commented because of the current non-deterministic behavior of craft ai.
 # @with_setup(setup_datetime_agent_with_data, teardown)
 # def test_datetime_decide_from_contexts_df():
 #   tree = CLIENT.get_decision_tree(AGENT_ID,
