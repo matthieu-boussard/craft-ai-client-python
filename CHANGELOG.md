@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.6...HEAD) ##
 
+### Fixed
+
+- `craftai.decide` properly returns result information when the `standard_deviation` is `0`.
+
 ## [1.15.6](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.5...v1.15.6) - 2019-09-19 ##
 
 ### Added

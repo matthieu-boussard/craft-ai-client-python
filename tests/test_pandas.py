@@ -264,26 +264,27 @@ def test_datetime_state_history_df():
   assert_equal(len(df.dtypes), 4)
   assert_equal(df["myTimeOfDay"].tolist(), [2, 3, 6, 7, 4, 5, 14, 15, 16, 19])
 
-@with_setup(setup_datetime_agent_with_data, teardown)
-def test_datetime_decide_from_contexts_df():
-  tree = CLIENT.get_decision_tree(AGENT_ID,
-                                  DATETIME_AGENT_DATA.last_valid_index().value // 10 ** 9)
+# This test is commented because of the current non-deterministic behavior of craft ai.
+# @with_setup(setup_datetime_agent_with_data, teardown)
+# def test_datetime_decide_from_contexts_df():
+#   tree = CLIENT.get_decision_tree(AGENT_ID,
+#                                   DATETIME_AGENT_DATA.last_valid_index().value // 10 ** 9)
 
-  test_df = pd.DataFrame(
-    [
-      [1],
-      [3],
-      [7]
-    ],
-    columns=["a"],
-    index=pd.date_range("20130101 00:00:00", periods=3, freq="H").tz_localize("Asia/Shanghai"))
-  test_df_copy = test_df.copy(deep=True)
+#   test_df = pd.DataFrame(
+#     [
+#       [1],
+#       [3],
+#       [7]
+#     ],
+#     columns=["a"],
+#     index=pd.date_range("20130101 00:00:00", periods=3, freq="H").tz_localize("Asia/Shanghai"))
+#   test_df_copy = test_df.copy(deep=True)
 
-  df = CLIENT.decide_from_contexts_df(tree, test_df)
-  assert_equal(len(df), 3)
-  assert_equal(len(df.dtypes), 6)
-  assert_equal(df["b_predicted_value"].tolist(), ["Pierre", "Paul", "Jacques"])
-  assert_true(test_df.equals(test_df_copy))
+#   df = CLIENT.decide_from_contexts_df(tree, test_df)
+#   assert_equal(len(df), 3)
+#   assert_equal(len(df.dtypes), 6)
+#   assert_equal(df["b_predicted_value"].tolist(), ["Pierre", "Paul", "Jacques"])
+#   assert_true(test_df.equals(test_df_copy))
 
 @with_setup(setup_simple_agent_with_data, teardown)
 def test_tree_visualization():

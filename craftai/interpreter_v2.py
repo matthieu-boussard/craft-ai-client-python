@@ -80,7 +80,7 @@ class InterpreterV2(object):
       }
 
       distribution = prediction.get("distribution")
-      if not isinstance(distribution, list) and distribution.get("standard_deviation"):
+      if not isinstance(distribution, list) and "standard_deviation" in distribution:
         leaf["standard_deviation"] = distribution.get("standard_deviation")
         leaf["min"] = distribution.get("min")
         leaf["max"] = distribution.get("max")
