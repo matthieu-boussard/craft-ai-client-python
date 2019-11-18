@@ -266,20 +266,31 @@ class InterpreterV2(object):
       if not p in configuration["output"]
     ]
 
+    # Retrieve the missing properties
+    missing_properties = [
+      p for p in expected_properties if not p in context
+    ]
+
     # Validate the values
     bad_properties = [
       p for p in expected_properties
       if not InterpreterV2.validate_property_value(configuration, context, p)
     ]
 
-    if bad_properties:
+
+    if missing_properties or bad_properties:
+      missing_properties = sorted(missing_properties)
+      missing_properties_messages = [
+        "expected property '{}' is not defined"
+        .format(p) for p in missing_properties
+      ]
       bad_properties = sorted(bad_properties)
       bad_properties_messages = [
         "'{}' is not a valid value for property '{}' of type '{}'"
         .format(context.get(p), p, configuration["context"][p]["type"]) for p in bad_properties
       ]
 
-      errors = bad_properties_messages
+      errors = missing_properties_messages + bad_properties_messages
 
       # deal with missing properties
       if errors:
@@ -295,6 +306,8 @@ class InterpreterV2(object):
             {"property": p, "type": configuration["context"][p]["type"], "value": context.get(p)}
             for p in bad_properties
           ]
+        if missing_properties:
+          metadata["missingProperties"] = missing_properties
 
         raise CraftAiDecisionError(message, metadata)
 
