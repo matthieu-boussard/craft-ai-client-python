@@ -239,3 +239,12 @@ MISSING_AGENT_DATA = pd.DataFrame(
   columns=["a", "b", "tz"],
   index=pd.date_range("20130101", periods=10, freq="D").tz_localize("Europe/Paris")
 )
+
+MISSING_AGENT_DATA_DECISION = pd.DataFrame(
+  [
+    [1, MISSING_VALUE, "+02:00"],
+    [3, OPTIONAL_VALUE],
+  ],
+  columns=["a", "b", "tz"],
+  index=pd.date_range("20130101", periods=2, freq="D").tz_localize("Europe/Paris")
+)
