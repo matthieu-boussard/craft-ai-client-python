@@ -6,7 +6,7 @@ from .utils import is_valid_property_value, create_timezone_df, format_input
 
 class Interpreter(VanillaInterpreter):
   @staticmethod
-  def decide_from_contexts_df(tree, contexts_df, **kwargs):
+  def decide_from_contexts_df(tree, contexts_df):
     bare_tree, configuration, tree_version = VanillaInterpreter._parse_tree(tree)
     interpreter = VanillaInterpreter._get_interpreter(tree_version)
 
@@ -22,13 +22,13 @@ class Interpreter(VanillaInterpreter):
       df[tz_col] = create_timezone_df(contexts_df, tz_col).iloc[:, 0]
 
     predictions_iter = (
-      Interpreter.decide_from_row(bare_tree, row, tz_col, configuration, interpreter, **kwargs)
+      Interpreter.decide_from_row(bare_tree, row, tz_col, configuration, interpreter)
       for row in df.itertuples()
     )
     return pd.DataFrame(predictions_iter, index=df.index)
 
   @staticmethod
-  def decide_from_row(bare_tree, row, tz_col, configuration, interpreter, **kwargs):
+  def decide_from_row(bare_tree, row, tz_col, configuration, interpreter):
     context = {
       index: format_input(value) for index, value in row._asdict().items()
       if is_valid_property_value(index, value)
@@ -41,10 +41,8 @@ class Interpreter(VanillaInterpreter):
       decision = VanillaInterpreter._decide(
         configuration,
         bare_tree,
-        interpreter,
-        context,
-        time,
-        **kwargs
+        (context, time),
+        interpreter
       )
 
       return {

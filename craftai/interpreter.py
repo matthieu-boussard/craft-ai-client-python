@@ -10,18 +10,18 @@ from craftai.interpreter_v2 import InterpreterV2
 class Interpreter(object):
 
   @staticmethod
-  def decide(tree, *args, **kwargs):
+  def decide(tree, args):
     bare_tree, configuration, tree_version = Interpreter._parse_tree(tree)
     interpreter = Interpreter._get_interpreter(tree_version)
 
-    return Interpreter._decide(configuration, bare_tree, interpreter, *args, **kwargs)
+    return Interpreter._decide(configuration, bare_tree, args, interpreter)
 
   ####################
   # Internal helpers #
   ####################
 
   @staticmethod
-  def _decide(configuration, bare_tree, interpreter, *args, **kwargs):
+  def _decide(configuration, bare_tree, args, interpreter):
     if configuration != {}:
       time = None if len(args) == 1 else args[1]
       context_result = Interpreter._rebuild_context(configuration, args[0], time)
@@ -33,7 +33,7 @@ class Interpreter(object):
     decide_context = Interpreter._convert_timezones_to_standard_format(configuration,
                                                                        context.copy())
 
-    decision = interpreter.decide(configuration, bare_tree, decide_context, **kwargs)
+    decision = interpreter.decide(configuration, bare_tree, decide_context)
     decision["context"] = context
 
     return decision
@@ -52,6 +52,7 @@ class Interpreter(object):
 
   @staticmethod
   def _rebuild_context(configuration, state, time=None):
+
     missings = []
     # Model should come from _parse_tree and is assumed to be checked
     # upon already

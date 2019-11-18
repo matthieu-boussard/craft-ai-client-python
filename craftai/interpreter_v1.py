@@ -29,8 +29,7 @@ _VALUE_VALIDATORS = {
 class InterpreterV1(object):
 
   @staticmethod
-  #pylint: disable=unused-argument
-  def decide(configuration, bare_tree, context, **kwargs):
+  def decide(configuration, bare_tree, context):
     InterpreterV1._check_context(configuration, context)
 
     decision_result = {}
@@ -171,7 +170,7 @@ class InterpreterV1(object):
       bad_properties = sorted(bad_properties)
       bad_properties_messages = [
         "'{}' is not a valid value for property '{}' of type '{}'"
-        .format(context.get(p), p, configuration["context"][p]["type"]) for p in bad_properties
+        .format(context[p], p, configuration["context"][p]["type"]) for p in bad_properties
       ]
 
       errors = missing_properties_messages + bad_properties_messages
@@ -187,7 +186,7 @@ class InterpreterV1(object):
         metadata = {}
         if bad_properties:
           metadata["badProperties"] = [
-            {"property": p, "type": configuration["context"][p]["type"], "value": context.get(p)}
+            {"property": p, "type": configuration["context"][p]["type"], "value": context[p]}
             for p in bad_properties
           ]
         if missing_properties:
@@ -197,9 +196,6 @@ class InterpreterV1(object):
 
   @staticmethod
   def validate_property_value(configuration, context, property_name):
-    # if not property_name in context:
-    #   return False
-
     if context.get(property_name) is None:
       return True
 

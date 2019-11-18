@@ -219,8 +219,7 @@ MISSING_AGENT_CONFIGURATION = {
   },
   "output": ["a"],
   "time_quantum": 100,
-  "min_samples_per_leaf": 1,
-  "deactivate_missing_values": False
+  "min_samples_per_leaf": 1
 }
 
 MISSING_AGENT_DATA = pd.DataFrame(

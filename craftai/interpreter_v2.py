@@ -90,7 +90,6 @@ class InterpreterV2(object):
     # the probabilistic distribution from this node.
     if not matching_child:
       return InterpreterV2.compute_distribution(node, output_values, output_type, path)
-
     # Add the matching child index to the path
     path.append(str(matching_child_i))
     # If a matching child is found, recurse
@@ -276,8 +275,6 @@ class InterpreterV2(object):
       p for p in expected_properties
       if not InterpreterV2.validate_property_value(configuration, context, p)
     ]
-
-
     if missing_properties or bad_properties:
       missing_properties = sorted(missing_properties)
       missing_properties_messages = [
@@ -287,7 +284,7 @@ class InterpreterV2(object):
       bad_properties = sorted(bad_properties)
       bad_properties_messages = [
         "'{}' is not a valid value for property '{}' of type '{}'"
-        .format(context.get(p), p, configuration["context"][p]["type"]) for p in bad_properties
+        .format(context[p], p, configuration["context"][p]["type"]) for p in bad_properties
       ]
 
       errors = missing_properties_messages + bad_properties_messages
@@ -303,7 +300,7 @@ class InterpreterV2(object):
         metadata = {}
         if bad_properties:
           metadata["badProperties"] = [
-            {"property": p, "type": configuration["context"][p]["type"], "value": context.get(p)}
+            {"property": p, "type": configuration["context"][p]["type"], "value": context[p]}
             for p in bad_properties
           ]
         if missing_properties:
@@ -315,10 +312,6 @@ class InterpreterV2(object):
   def validate_property_value(configuration, context, property_name):
     if context.get(property_name) is None:
       return True
-
-    # if not property_name in context:
-    #   return False
-
     property_def = configuration["context"][property_name]
     property_type = property_def["type"]
     is_optional = property_def.get("is_optional")
