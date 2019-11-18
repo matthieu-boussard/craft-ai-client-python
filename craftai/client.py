@@ -664,7 +664,7 @@ class CraftAIClient(object):
     except (CraftAiInternalError, KeyError, TypeError):
       pass
 
-    if status_code in [200, 201, 202, 204, 207]:
+    if status_code in [200, 201, 204, 207]:
       return CraftAIClient._parse_body(response)
     else:
       raise CraftAIClient._get_error_from_status(status_code, message)
