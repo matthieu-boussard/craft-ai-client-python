@@ -135,7 +135,7 @@ class CraftAIClient(object):
 
     if agent_id != "":
       # Raises an error when agent_id is invalid
-      self._check_agent_id(agent_id)
+      self._check_entity_id(agent_id)
 
       payload["id"] = agent_id
 
@@ -168,7 +168,7 @@ class CraftAIClient(object):
     configurations are invalid.
     """
     # Check all ids, raise an error if all ids are invalid
-    valid_indices, invalid_indices, invalid_agents = self._check_agent_id_bulk(payload)
+    valid_indices, invalid_indices, invalid_agents = self._check_entity_id_bulk(payload)
 
     # Create the json file with the agents with valid id and send it
     valid_agents = self._create_and_send_json_bulk([payload[i] for i in valid_indices],
@@ -186,7 +186,7 @@ class CraftAIClient(object):
 
   def get_agent(self, agent_id):
     # Raises an error when agent_id is invalid
-    self._check_agent_id(agent_id)
+    self._check_entity_id(agent_id)
 
     req_url = "{}/agents/{}".format(self._base_url, agent_id)
     resp = self._requests_session.get(req_url)
@@ -215,7 +215,7 @@ class CraftAIClient(object):
     :rtype: dict.
     """
     # Raises an error when agent_id is invalid
-    self._check_agent_id(agent_id)
+    self._check_entity_id(agent_id)
 
     req_url = "{}/agents/{}".format(self._base_url, agent_id)
     resp = self._requests_session.delete(req_url)
@@ -239,7 +239,7 @@ class CraftAIClient(object):
     :raises CraftAiBadRequestError: If all of the ids are invalid.
     """
     # Check all ids, raise an error if all ids are invalid
-    valid_indices, invalid_indices, invalid_agents = self._check_agent_id_bulk(payload)
+    valid_indices, invalid_indices, invalid_agents = self._check_entity_id_bulk(payload)
 
     # Create the json file with the agents with valid id and send it
     valid_agents = self._create_and_send_json_bulk([payload[i] for i in valid_indices],
@@ -257,7 +257,7 @@ class CraftAIClient(object):
 
   def get_shared_agent_inspector_url(self, agent_id, timestamp=None):
     # Raises an error when agent_id is invalid
-    self._check_agent_id(agent_id)
+    self._check_entity_id(agent_id)
 
     req_url = "{}/agents/{}/shared".format(self._base_url, agent_id)
     resp = self._requests_session.get(req_url)
@@ -271,7 +271,7 @@ class CraftAIClient(object):
 
   def delete_shared_agent_inspector_url(self, agent_id):
     # Raises an error when agent_id is invalid
-    self._check_agent_id(agent_id)
+    self._check_entity_id(agent_id)
 
     req_url = "{}/agents/{}/shared".format(self._base_url, agent_id)
     resp = self._requests_session.delete(req_url)
@@ -284,11 +284,11 @@ class CraftAIClient(object):
   # Generator method #
   ####################
 
-  def create_generator(self, configuration, generator_filter, generator_id=""):
+  def create_generator(self, configuration, filter, generator_id=""):
     """ Create a generator.
 
     :param dict configuration: Form given by the craftai documentation.
-    :param list generator_filter: A list of valid agent id. It must be a list of
+    :param list filter: A list of valid agent id. It must be a list of
     containing only characters in "a-zA-Z0-9_-" and must be between
     1 and 36 characters.
     :param str generator_id: The id of the generator to delete. It must be
@@ -304,47 +304,38 @@ class CraftAIClient(object):
     # serialization
     payload = {
       "configuration": configuration,
-      "filter": generator_filter
+      "filter": filter
     }
 
     if generator_id != "":
       # Raises an error when generator_id is invalid
-      self._check_agent_id(generator_id)
+      self._check_entity_id(generator_id)
 
       payload["id"] = generator_id
 
     try:
       json_pl = json.dumps(payload)
     except TypeError as err:
-      raise CraftAiBadRequestError("Invalid configuration or agent id given. {}"
+      raise CraftAiBadRequestError("Invalid configuration or generator id given. {}"
                                    .format(err.__str__()))
 
     req_url = "{}/generators".format(self._base_url)
     resp = self._requests_session.post(req_url, headers=ct_header, data=json_pl)
 
-    agent = self._decode_response(resp)
+    generator = self._decode_response(resp)
 
-    return agent
+    return generator
 
-  def delete_generator(self, generator_id):
-    """ Delete a generator
-
-    :param str generator_id: The id of the generator to delete. It must be
-    an str containing only characters in "a-zA-Z0-9_-" and must be
-    between 1 and 36 characters. It must referenced an existing generator.
-    :param default generator_id : "" In this case the generator_id is
-    generated
-    """
-
-    # Raises an error when agent_id is invalid
-    self._check_agent_id(generator_id)
+  def get_generator(self, generator_id):
+    # Raises an error when generator_id is invalid
+    self._check_entity_id(generator_id)
 
     req_url = "{}/generators/{}".format(self._base_url, generator_id)
-    resp = self._requests_session.delete(req_url)
+    resp = self._requests_session.get(req_url)
 
-    decoded_resp = self._decode_response(resp)
+    generator = self._decode_response(resp)
 
-    return decoded_resp
+    return generator
 
   def list_generators(self):
 
@@ -353,13 +344,30 @@ class CraftAIClient(object):
 
     generators = self._decode_response(resp)
 
-    return generators["generatorsList"]
+    return generators
 
-  def _get_generator_decision_tree(
-      self,
-      generator_id,
-      timestamp,
-      version=DEFAULT_DECISION_TREE_VERSION):
+  # def get_generator(self):
+
+
+  def delete_generator(self, generator_id):
+    """ Delete a generator
+
+    :param str generator_id: The id of the generator to delete. It must be
+    an str containing only characters in "a-zA-Z0-9_-" and must be
+    between 1 and 36 characters. It must referenced an existing generator.
+    """
+
+    # Raises an error when agent_id is invalid
+    self._check_entity_id(generator_id)
+
+    req_url = "{}/generators/{}".format(self._base_url, generator_id)
+    resp = self._requests_session.delete(req_url)
+
+    decoded_resp = self._decode_response(resp)
+
+    return decoded_resp
+
+  def _get_generator_decision_tree(self, generator_id, timestamp, version=DEFAULT_DECISION_TREE_VERSION):
     """Tool for the function get_decision_tree.
 
     :param str generator_id: the id of the agent to get the tree. It
@@ -390,11 +398,7 @@ class CraftAIClient(object):
 
     return decision_tree
 
-  def get_generator_decision_tree(
-      self,
-      generator_id,
-      timestamp=None,
-      version=DEFAULT_DECISION_TREE_VERSION):
+  def get_generator_decision_tree(self, generator_id, timestamp=None, version=DEFAULT_DECISION_TREE_VERSION):
     """Get generator decision tree.
 
     :param str generator_id: the id of the agent to get the tree. It
@@ -424,7 +428,7 @@ class CraftAIClient(object):
       timestamp = time.mktime(timestamp.timetuple())
 
     # Raises an error when generator_id is invalid
-    self._check_agent_id(generator_id)
+    self._check_entity_id(generator_id)
     if self._config["decisionTreeRetrievalTimeout"] is False:
       # Don't retry
       return self._get_generator_decision_tree(generator_id, timestamp, version)
@@ -462,7 +466,7 @@ class CraftAIClient(object):
     the right form.
     """
     # Raises an error when agent_id is invalid
-    self._check_agent_id(agent_id)
+    self._check_entity_id(agent_id)
 
     # Extra header in addition to the main session's
     ct_header = {"Content-Type": "application/json; charset=utf-8"}
@@ -549,7 +553,7 @@ class CraftAIClient(object):
     referenced non existing agents or one of the operations is invalid.
     """
     # Check all ids, raise an error if all ids are invalid
-    valid_indices, _, _ = self._check_agent_id_bulk(payload)
+    valid_indices, _, _ = self._check_entity_id_bulk(payload)
     valid_payload = [payload[i] for i in valid_indices]
 
     chunked_data = []
@@ -587,7 +591,7 @@ class CraftAIClient(object):
 
   def get_operations_list(self, agent_id, start=None, end=None):
     # Raises an error when agent_id is invalid
-    self._check_agent_id(agent_id)
+    self._check_entity_id(agent_id)
 
     req_url = "{}/agents/{}/context".format(self._base_url, agent_id)
     req_params = {
@@ -614,7 +618,7 @@ class CraftAIClient(object):
 
   def get_state_history(self, agent_id, start=None, end=None):
     # Raises an error when agent_id is invalid
-    self._check_agent_id(agent_id)
+    self._check_entity_id(agent_id)
 
     req_url = "{}/agents/{}/context/state/history".format(self._base_url, agent_id)
     req_params = {
@@ -630,7 +634,7 @@ class CraftAIClient(object):
 
   def get_context_state(self, agent_id, timestamp):
     # Raises an error when agent_id is invalid
-    self._check_agent_id(agent_id)
+    self._check_entity_id(agent_id)
 
     req_url = "{}/agents/{}/context/state?t={}".format(self._base_url,
                                                        agent_id,
@@ -706,7 +710,7 @@ class CraftAIClient(object):
       timestamp = time.mktime(timestamp.timetuple())
 
     # Raises an error when agent_id is invalid
-    self._check_agent_id(agent_id)
+    self._check_entity_id(agent_id)
     if self._config["decisionTreeRetrievalTimeout"] is False:
       # Don't retry
       return self._get_decision_tree(agent_id, timestamp, version)
@@ -771,7 +775,7 @@ class CraftAIClient(object):
     self._requests_session.headers["x-craft-ai-tree-version"] = version
 
     # Check all ids, raise an error if all ids are invalid
-    valid_indices, invalid_indices, invalid_dts = self._check_agent_id_bulk(payload)
+    valid_indices, invalid_indices, invalid_dts = self._check_entity_id_bulk(payload)
 
     if self._config["decisionTreeRetrievalTimeout"] is False:
       # Don't retry
@@ -897,19 +901,19 @@ class CraftAIClient(object):
     return err
 
   @staticmethod
-  def _check_agent_id(agent_id):
-    """Checks that the given agent_id is a valid non-empty string.
+  def _check_entity_id(entity_id):
+    """Checks that the given entity_id is a valid non-empty string.
 
-    :param str agent_id: agent id to check.
+    :param str entity_id: entity id to check.
 
-    :raise CraftAiBadRequestError: If the given agent_id is not of
+    :raise CraftAiBadRequestError: If the given entity_id is not of
     type string or if it is an empty string.
     """
-    if (not isinstance(agent_id, six.string_types) or
-        AGENT_ID_PATTERN.match(agent_id) is None):
+    if (not isinstance(entity_id, six.string_types) or
+        AGENT_ID_PATTERN.match(entity_id) is None):
       raise CraftAiBadRequestError(ERROR_ID_MESSAGE)
 
-  def _check_agent_id_bulk(self, payload, check_serializable=True):
+  def _check_entity_id_bulk(self, payload, check_serializable=True):
     """Checks that all the given agent ids are valid non-empty strings
     and if the agents are serializable.
 
@@ -928,7 +932,7 @@ class CraftAIClient(object):
       # Check if the agent ID is valid
       try:
         if "id" in agent:
-          self._check_agent_id(agent["id"])
+          self._check_entity_id(agent["id"])
       except CraftAiBadRequestError:
         invalid_agent_indices.append(index)
         invalid_payload.append({"id": agent["id"],
