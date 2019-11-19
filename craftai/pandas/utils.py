@@ -31,7 +31,8 @@ def is_valid_property_value(key, value):
            (not hasattr(value, "__len__") \
             or isinstance(value, (str, six.text_type)) \
             or value == MISSING_VALUE \
-            or value == OPTIONAL_VALUE) \
+            or value == OPTIONAL_VALUE \
+            or value is None) \
            and not pd.isna(value) \
          )
 

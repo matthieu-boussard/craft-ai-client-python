@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - `craftai.decide` properly returns result information when the `standard_deviation` is `0`.
 
+### Changed
+
+- Delete `deactivate_missing_values` flag in the configuration.
+- `client.decide` now always computes the distributed decision when no matching nodes are found.
+
 ## [1.15.6](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.5...v1.15.6) - 2019-09-19 ##
 
 ### Added

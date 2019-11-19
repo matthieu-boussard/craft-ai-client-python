@@ -196,10 +196,7 @@ class InterpreterV1(object):
 
   @staticmethod
   def validate_property_value(configuration, context, property_name):
-    if not property_name in context:
-      return False
-
-    if context[property_name] is None:
+    if context.get(property_name) is None:
       return True
 
     property_type = configuration["context"][property_name]["type"]

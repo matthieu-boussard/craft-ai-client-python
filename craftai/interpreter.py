@@ -98,6 +98,7 @@ class Interpreter(object):
     # Rebuild the context with generated and non-generated values
     context = {
       feature: state.get(feature) for feature, properties in configuration_ctx.items()
+      if feature in state
     }
 
     return {
@@ -123,7 +124,7 @@ class Interpreter(object):
   @staticmethod
   def _convert_timezones_to_standard_format(configuration, context):
     timezone_key = get_timezone_key(configuration["context"])
-    if timezone_key:
+    if timezone_key and timezone_key in context:
       context[timezone_key] = timezone_offset_in_standard_format(context[timezone_key])
     return context
 

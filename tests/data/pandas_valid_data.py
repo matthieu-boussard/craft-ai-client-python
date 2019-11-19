@@ -26,8 +26,7 @@ SIMPLE_AGENT_CONFIGURATION = {
   },
   "output": ["a"],
   "time_quantum": 100,
-  "deactivate_missing_values": True,
-  "min_samples_per_leaf": 1,
+  "min_samples_per_leaf": 1
 }
 
 SIMPLE_AGENT_DATA = pd.DataFrame(
@@ -113,7 +112,6 @@ COMPLEX_AGENT_CONFIGURATION = {
   },
   "output": ["b"],
   "time_quantum": 100,
-  "deactivate_missing_values": True,
   "min_samples_per_leaf": 1,
 }
 
@@ -131,7 +129,6 @@ COMPLEX_AGENT_CONFIGURATION_2 = {
   },
   "output": ["a"],
   "time_quantum": 100,
-  "deactivate_missing_values": True,
   "min_samples_per_leaf": 1,
 }
 
@@ -186,7 +183,6 @@ DATETIME_AGENT_CONFIGURATION = {
   },
   "output": ["b"],
   "time_quantum": 3600,
-  "deactivate_missing_values": True,
   "min_samples_per_leaf": 1,
 }
 
@@ -223,8 +219,7 @@ MISSING_AGENT_CONFIGURATION = {
   },
   "output": ["a"],
   "time_quantum": 100,
-  "deactivate_missing_values": False,
-  "min_samples_per_leaf": 1,
+  "min_samples_per_leaf": 1
 }
 
 MISSING_AGENT_DATA = pd.DataFrame(
@@ -242,4 +237,13 @@ MISSING_AGENT_DATA = pd.DataFrame(
   ],
   columns=["a", "b", "tz"],
   index=pd.date_range("20130101", periods=10, freq="D").tz_localize("Europe/Paris")
+)
+
+MISSING_AGENT_DATA_DECISION = pd.DataFrame(
+  [
+    [1, MISSING_VALUE, "+02:00"],
+    [3, OPTIONAL_VALUE],
+  ],
+  columns=["a", "b", "tz"],
+  index=pd.date_range("20130101", periods=2, freq="D").tz_localize("Europe/Paris")
 )

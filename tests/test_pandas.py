@@ -20,6 +20,7 @@ DATETIME_AGENT_CONFIGURATION = pandas_valid_data.DATETIME_AGENT_CONFIGURATION
 DATETIME_AGENT_DATA = pandas_valid_data.DATETIME_AGENT_DATA
 MISSING_AGENT_CONFIGURATION = pandas_valid_data.MISSING_AGENT_CONFIGURATION
 MISSING_AGENT_DATA = pandas_valid_data.MISSING_AGENT_DATA
+MISSING_AGENT_DATA_DECISION = pandas_valid_data.MISSING_AGENT_DATA_DECISION
 
 CLIENT = craftai.pandas.Client(settings.CRAFT_CFG)
 
@@ -195,11 +196,9 @@ def test_decide_from_contexts_df_null_decisions():
   df = CLIENT.decide_from_contexts_df(tree, test_df)
   assert_equal(len(df), 2)
   assert_true(test_df.equals(test_df_copy))
-  assert pd.isnull(df["a_predicted_value"][0])
-  assert pd.notnull(df["error"][0])
 
+  assert pd.notnull(df["a_predicted_value"][0])
   assert pd.notnull(df["a_predicted_value"][1])
-  assert pd.isnull(df["error"][1])
 
 def setup_complex_agent_3_with_data():
   setup_complex_agent_2()
@@ -222,11 +221,8 @@ def test_decide_from_contexts_df_with_array():
   df = CLIENT.decide_from_contexts_df(tree, test_df)
   assert_equal(len(df), 2)
   assert_true(test_df.equals(test_df_copy))
-  assert pd.isnull(df["a_predicted_value"][0])
-  assert pd.notnull(df["error"][0])
-
+  assert pd.notnull(df["a_predicted_value"][0])
   assert pd.notnull(df["a_predicted_value"][1])
-  assert pd.isnull(df["error"][1])
 
 def setup_missing_agent_with_data():
   setup_missing_agent()
@@ -238,15 +234,23 @@ def test_decide_from_missing_contexts_df():
                                   MISSING_AGENT_DATA.last_valid_index().value // 10 ** 9,
                                   "2")
 
-  df = CLIENT.decide_from_contexts_df(tree, MISSING_AGENT_DATA)
+  df = CLIENT.decide_from_contexts_df(tree, MISSING_AGENT_DATA_DECISION)
 
-  assert_equal(len(df), 10)
+  assert_equal(len(df), 2)
   assert_equal(df.first_valid_index(), pd.Timestamp("2013-01-01 00:00:00", tz="Europe/Paris"))
-  assert_equal(df.last_valid_index(), pd.Timestamp("2013-01-10 00:00:00", tz="Europe/Paris"))
+  assert_equal(df.last_valid_index(), pd.Timestamp("2013-01-02 00:00:00", tz="Europe/Paris"))
 
   # Also works as before, with a context containing an optional value
   output = CLIENT.decide(tree, {
     "b": {},
+    "tz": "+02:00"
+  })
+
+  assert pd.notnull(output["output"]["a"]["predicted_value"])
+
+  # Also works as before, with a context containing a missing value
+  output = CLIENT.decide(tree, {
+    "b": None,
     "tz": "+02:00"
   })
 
