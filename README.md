@@ -434,7 +434,7 @@ Each agent has a configuration defining:
 
 #### Missing Values
 
-If one of these properties value is **missing**, this latter can be handled if the key *deactivate_missing_values: false* is added to the agent configuration. In this configuration, you can send a `null` value for a context attribute value to tell **craft ai** that the value is missing. **craft ai** will take into account as much as possible from this incomplete context.
+If one of these properties value is **missing**, you can send a `null` value for a context attribute value to tell **craft ai** that the value is missing. **craft ai** will take into account as much as possible from this incomplete context.
 
 A context with a missing value looks like:
 ```json
@@ -464,8 +464,7 @@ And its associated configuration would be:
   },
   "output": ["lightbulbState"],
   "time_quantum": 100,
-  "learning_period": 108000,
-  "deactivate_missing_values": false
+  "learning_period": 108000
 }
 ```
 
@@ -505,8 +504,7 @@ And its associated configuration would be:
   },
   "output": ["lightbulbState"],
   "time_quantum": 100,
-  "learning_period": 108000,
-  "deactivate_missing_values": false
+  "learning_period": 108000
 }
 ```
 
