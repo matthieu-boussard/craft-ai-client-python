@@ -11,7 +11,6 @@ class Interpreter(VanillaInterpreter):
     interpreter = VanillaInterpreter._get_interpreter(tree_version)
 
     df = contexts_df.copy(deep=True)
-
     tz_col = [key for key, value in configuration["context"].items()
               if value["type"] == "timezone"]
     # If a timezone is needed create a timezone dataframe which will
@@ -22,27 +21,50 @@ class Interpreter(VanillaInterpreter):
       df[tz_col] = create_timezone_df(contexts_df, tz_col).iloc[:, 0]
 
     predictions_iter = (
-      Interpreter.decide_from_row(bare_tree, row, tz_col, configuration, interpreter)
-      for row in df.itertuples()
+      Interpreter.decide_from_row({
+        "bare_tree": bare_tree,
+        "context_ops": row,
+        "tz_col": tz_col,
+        "configuration": configuration,
+        "feature_names": df.columns.values,
+        "interpreter": interpreter
+      })
+      for row in df.itertuples(name=None)
     )
     return pd.DataFrame(predictions_iter, index=df.index)
 
   @staticmethod
-  def decide_from_row(bare_tree, row, tz_col, configuration, interpreter):
+  def decide_from_row(params):
+    """
+    Compute a decision from a valid context operation
+
+    params : dict {
+      "bare_tree": a valid craft ai tree,
+      "context_row": a valid tuple representing a context operation,
+      "tz_col": the time zone column,
+      "configuration": a valid craft-ai configuration,
+      "feature_names": the feature names,
+      "interpreter": craft_ai interpreter
+    }
+    """
+
     context = {
-      index: format_input(value) for index, value in row._asdict().items()
-      if is_valid_property_value(index, value)
+      feature_name: format_input(value) for feature_name, value in zip(
+        params["feature_names"],
+        params["context_ops"][1:]
+      )
+      if is_valid_property_value(feature_name, value)
     }
     time = Time(
-      t=row[0].value // 1000000000, # Timestamp.value returns nanoseconds
-      timezone=context[tz_col] if tz_col else row[0].tz
+      t=params["context_ops"][0].value // 1000000000, # Timestamp.value returns nanoseconds
+      timezone=context[params["tz_col"]] if params["tz_col"] else params["context_ops"][0].tz
     )
     try:
       decision = VanillaInterpreter._decide(
-        configuration,
-        bare_tree,
+        params["configuration"],
+        params["bare_tree"],
         (context, time),
-        interpreter
+        params["interpreter"]
       )
 
       return {
