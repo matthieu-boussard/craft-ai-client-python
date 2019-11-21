@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [1.15.8](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.7...v1.15.8) - 2019-11-19 ##
 
+### Fixed
+
+- Rollback `craftai.client` to raise errors for responses with `202` status code.
+
 ## [1.15.7](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.6...v1.15.7) - 2019-10-29 ##
 
 ### Fixed
