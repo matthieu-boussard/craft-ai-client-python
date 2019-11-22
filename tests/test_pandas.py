@@ -21,6 +21,9 @@ DATETIME_AGENT_DATA = pandas_valid_data.DATETIME_AGENT_DATA
 MISSING_AGENT_CONFIGURATION = pandas_valid_data.MISSING_AGENT_CONFIGURATION
 MISSING_AGENT_DATA = pandas_valid_data.MISSING_AGENT_DATA
 MISSING_AGENT_DATA_DECISION = pandas_valid_data.MISSING_AGENT_DATA_DECISION
+INVALID_PYTHON_IDENTIFIER_CONFIGURATION = pandas_valid_data.INVALID_PYTHON_IDENTIFIER_CONFIGURATION
+INVALID_PYTHON_IDENTIFIER_DATA = pandas_valid_data.INVALID_PYTHON_IDENTIFIER_DATA
+INVALID_PYTHON_IDENTIFIER_DECISION = pandas_valid_data.INVALID_PYTHON_IDENTIFIER_DECISION
 
 CLIENT = craftai.pandas.Client(settings.CRAFT_CFG)
 
@@ -43,6 +46,10 @@ def setup_datetime_agent():
 def setup_missing_agent():
   CLIENT.delete_agent(AGENT_ID)
   CLIENT.create_agent(MISSING_AGENT_CONFIGURATION, AGENT_ID)
+
+def setup_invalid_python_identifier():
+  CLIENT.delete_agent(AGENT_ID)
+  CLIENT.create_agent(INVALID_PYTHON_IDENTIFIER_CONFIGURATION, AGENT_ID)
 
 def teardown():
   CLIENT.delete_agent(AGENT_ID)
@@ -295,3 +302,21 @@ def test_tree_visualization():
   tree1 = CLIENT.get_decision_tree(AGENT_ID,
                                    DATETIME_AGENT_DATA.last_valid_index().value // 10 ** 9)
   craftai.pandas.utils.create_tree_html(tree1, "", "constant", None, 500)
+
+def setup_agent_with_data_invalid_identifier():
+  setup_invalid_python_identifier()
+  CLIENT.add_operations(AGENT_ID, INVALID_PYTHON_IDENTIFIER_DATA)
+
+@with_setup(setup_agent_with_data_invalid_identifier, teardown)
+
+def test_decide_from_python_invalid_identifier():
+  tree = CLIENT.get_decision_tree(
+    AGENT_ID,
+    INVALID_PYTHON_IDENTIFIER_DATA.last_valid_index().value // 10 ** 9,
+    "2"
+  )
+
+  test_df = INVALID_PYTHON_IDENTIFIER_DECISION.copy(deep=True)
+  df = CLIENT.decide_from_contexts_df(tree, test_df)
+  assert_equal(len(df), 3)
+  assert_equal(len(df.dtypes), 8)

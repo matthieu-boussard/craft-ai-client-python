@@ -247,3 +247,53 @@ MISSING_AGENT_DATA_DECISION = pd.DataFrame(
   columns=["a", "b", "tz"],
   index=pd.date_range("20130101", periods=2, freq="D").tz_localize("Europe/Paris")
 )
+
+INVALID_PYTHON_IDENTIFIER_CONFIGURATION = {
+  "context": {
+    "a": {
+      "type": "continuous"
+    },
+    "1_b": {
+      "type": "enum"
+    },
+    "None": {
+      "type": "enum"
+    },
+    "_c": {
+      "type": "enum"
+    },
+    "tz": {
+      "type": "timezone"
+    }
+  },
+  "output": ["a"],
+  "time_quantum": 100,
+  "min_samples_per_leaf": 1,
+}
+
+INVALID_PYTHON_IDENTIFIER_DATA = pd.DataFrame(
+  [
+    [1, "Pierre", "Mignon", "Toto", "+02:00"],
+    [2, "Paul"],
+    [3],
+    [4, "Tata", "Tutu"],
+    [5, "Jacques"],
+    [6],
+    [7],
+    [8, np.nan, np.nan, np.nan, "+01:00"],
+    [9],
+    [10]
+  ],
+  columns=["a", "1_b", "None", "_c", "tz"],
+  index=pd.date_range("20130101", periods=10, freq="D").tz_localize("Europe/Paris")
+)
+
+INVALID_PYTHON_IDENTIFIER_DECISION = pd.DataFrame(
+  [
+    [1, "Pierre", "Mignon", "Toto", "+02:00"],
+    [2, "Paul", "Mignon", "Toto", "+02:00"],
+    [3, "Tata", "Tutu", "Toto", "+02:00"]
+  ],
+  columns=["a", "1_b", "None", "_c", "tz"],
+  index=pd.date_range("20130101", periods=3, freq="D").tz_localize("Europe/Paris")
+)
