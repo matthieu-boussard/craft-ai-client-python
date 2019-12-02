@@ -344,7 +344,7 @@ class CraftAIClient(object):
 
     generators = self._decode_response(resp)
 
-    return generators
+    return generators["generatorsList"]
 
   # def get_generator(self):
 
