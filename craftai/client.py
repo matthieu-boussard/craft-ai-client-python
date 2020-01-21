@@ -284,7 +284,7 @@ class CraftAIClient(object):
   # Generator method #
   ####################
 
-  def create_generator(self, configuration, filter, generator_id=""):
+  def create_generator(self, configuration, generator_filter, generator_id=""):
     """ Create a generator.
 
     :param dict configuration: Form given by the craftai documentation.
@@ -304,7 +304,7 @@ class CraftAIClient(object):
     # serialization
     payload = {
       "configuration": configuration,
-      "filter": filter
+      "filter": generator_filter
     }
 
     if generator_id != "":
@@ -367,7 +367,11 @@ class CraftAIClient(object):
 
     return decoded_resp
 
-  def _get_generator_decision_tree(self, generator_id, timestamp, version=DEFAULT_DECISION_TREE_VERSION):
+  def _get_generator_decision_tree(
+      self,
+      generator_id,
+      timestamp,
+      version=DEFAULT_DECISION_TREE_VERSION):
     """Tool for the function get_decision_tree.
 
     :param str generator_id: the id of the agent to get the tree. It
@@ -398,7 +402,11 @@ class CraftAIClient(object):
 
     return decision_tree
 
-  def get_generator_decision_tree(self, generator_id, timestamp=None, version=DEFAULT_DECISION_TREE_VERSION):
+  def get_generator_decision_tree(
+      self,
+      generator_id,
+      timestamp=None,
+      version=DEFAULT_DECISION_TREE_VERSION):
     """Get generator decision tree.
 
     :param str generator_id: the id of the agent to get the tree. It
