@@ -22,7 +22,6 @@ class TestListGenerators(unittest.TestCase):
       self.client.delete_generator(generators_id)
       self.client.create_generator(
         valid_data.VALID_GENERATOR_CONFIGURATION,
-        valid_data.VALID_GENERATOR_FILTER,
         generators_id)
 
   def tearDown(self):

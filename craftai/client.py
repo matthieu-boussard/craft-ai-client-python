@@ -284,7 +284,7 @@ class CraftAIClient(object):
   # Generator method #
   ####################
 
-  def create_generator(self, configuration, generator_filter, generator_id=""):
+  def create_generator(self, configuration, generator_id="", generator_filter=[]):
     """ Create a generator.
 
     :param dict configuration: Form given by the craftai documentation.
@@ -299,12 +299,20 @@ class CraftAIClient(object):
     """
     # Extra header in addition to the main session's
     ct_header = {"Content-Type": "application/json; charset=utf-8"}
+    # Check that filter is passed as parameters, if it is the case put it in the configuration
+    if (generator_filter != []):
+      configuration["filter"] = generator_filter
 
     # Building payload and checking that it is valid for a JSON
     # serialization
+    try:
+      effective_filter = configuration["filter"]
+    except TypeError as err:
+      raise CraftAiBadRequestError("Invalid generator configuration, no valid filter provided")
+
     payload = {
-      "configuration": configuration,
-      "filter": generator_filter
+        "configuration": configuration,
+        "filter": configuration["filter"]
     }
 
     if generator_id != "":

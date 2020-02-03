@@ -23,9 +23,10 @@ def setup_generator_with_agent_with_operations():
   CLIENT.create_agent(valid_data.VALID_CONFIGURATION, AGENT_ID_2)
   CLIENT.add_operations(AGENT_ID_1, valid_data.VALID_OPERATIONS_SET)
   CLIENT.add_operations(AGENT_ID_2, valid_data.VALID_OPERATIONS_SET)
+  GENERATOR_CONFIGURATION = valid_data.VALID_GENERATOR_CONFIGURATION
+  GENERATOR_CONFIGURATION["filter"] = [AGENT_ID_1, AGENT_ID_2]
   CLIENT.create_generator(
     valid_data.VALID_GENERATOR_CONFIGURATION,
-    FILTER,
     GENERATOR_ID
   )
 

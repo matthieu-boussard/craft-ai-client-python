@@ -41,13 +41,13 @@ class TestCreateGeneratorSuccess(unittest.TestCase):
     `configuration` fields being strings and `id` being the same as the one
     given as a parameter.
     """
-
+    GENERATOR_CONFIGURATION = valid_data.VALID_GENERATOR_CONFIGURATION.copy()
+    GENERATOR_CONFIGURATION["filter"] = self.filter
     resp = self.client.create_generator(
-      valid_data.VALID_GENERATOR_CONFIGURATION,
-      self.filter,
+      GENERATOR_CONFIGURATION,
       self.generator_id
     )
-    self.assertEqual(resp.get("generatorId"), self.generator_id)
+    self.assertEqual(resp.get("id"), self.generator_id)
     self.addCleanup(self.clean_up_generator, self.generator_id)
 
 
@@ -82,17 +82,17 @@ class TestCreateGeneratorFailure(unittest.TestCase):
     should always be unique.
     """
     # Calling create_generator a first time
+    GENERATOR_CONFIGURATION = valid_data.VALID_GENERATOR_CONFIGURATION.copy()
+    GENERATOR_CONFIGURATION["filter"] = self.filter
     self.client.create_generator(
-      valid_data.VALID_GENERATOR_CONFIGURATION,
-      self.filter,
+      GENERATOR_CONFIGURATION,
       self.generator_id
     )
     # Asserting that an error is risen the second time
     self.assertRaises(
       craft_err.CraftAiBadRequestError,
       self.client.create_generator,
-      valid_data.VALID_GENERATOR_CONFIGURATION,
-      self.filter,
+      GENERATOR_CONFIGURATION,
       self.generator_id)
     self.addCleanup(
       self.clean_up_generator,
@@ -105,11 +105,12 @@ class TestCreateGeneratorFailure(unittest.TestCase):
     an generator with an invalid id.
     """
     # Asserting that an error is risen the second time
+    GENERATOR_CONFIGURATION = valid_data.VALID_GENERATOR_CONFIGURATION.copy()
+    GENERATOR_CONFIGURATION["filter"] = self.filter
     self.assertRaises(
       craft_err.CraftAiBadRequestError,
       self.client.create_generator,
-      valid_data.VALID_CONFIGURATION,
-      self.filter,
+      GENERATOR_CONFIGURATION,
       "toto/tutu")
 
   def test_create_generator_with_invalid_context(self):
@@ -122,13 +123,13 @@ class TestCreateGeneratorFailure(unittest.TestCase):
       configuration = {
         "context": invalid_data.INVALID_CONTEXTS[inv_context],
         "output": ["lightbulbColor"],
-        "time_quantum": 100
+        "time_quantum": 100,
+        "filter": self.filter
       }
       self.assertRaises(
         craft_err.CraftAiBadRequestError,
         self.client.create_generator,
         configuration,
-        self.filter,
         self.generator_id)
       self.addCleanup(
         self.clean_up_generator,
@@ -147,7 +148,6 @@ class TestCreateGeneratorFailure(unittest.TestCase):
         craft_err.CraftAiBadRequestError,
         self.client.create_generator,
         invalid_data.UNDEFINED_KEY[empty_configuration],
-        self.filter,
         self.generator_id,
         )
       self.addCleanup(
@@ -165,13 +165,13 @@ class TestCreateGeneratorFailure(unittest.TestCase):
       configuration = {
         "context": valid_data.VALID_CONTEXT,
         "output": valid_data.VALID_OUTPUT,
-        "time_quantum": invalid_data.INVALID_TIME_QUANTA[inv_tq]
+        "time_quantum": invalid_data.INVALID_TIME_QUANTA[inv_tq],
+        "filter": self.filter
       }
       self.assertRaises(
         craft_err.CraftAiBadRequestError,
         self.client.create_generator,
         configuration,
-        self.filter,
         self.generator_id
       )
       self.addCleanup(
@@ -185,12 +185,12 @@ class TestCreateGeneratorFailure(unittest.TestCase):
     incorrect filter, since it is essential to
     the creation of generator.
     """
+    CONFIGURATION_INVALID_FILTER = valid_data.VALID_GENERATOR_CONFIGURATION
     for inv_filter in invalid_data.INVALID_FILTER:
       self.assertRaises(
         craft_err.CraftAiBadRequestError,
         self.client.create_generator,
         valid_data.VALID_GENERATOR_CONFIGURATION,
-        invalid_data.INVALID_FILTER[inv_filter],
         self.generator_id
       )
       self.addCleanup(

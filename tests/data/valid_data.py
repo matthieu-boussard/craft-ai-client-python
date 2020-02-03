@@ -35,7 +35,8 @@ VALID_GENERATOR_CONFIGURATION = {
   "time_quantum": VALID_TQ,
   "operations_as_events": True,
   "learning_period": VALID_LEARNING_PERIOD,
-  "tree_max_operations": VALID_TREE_MAX_OPERATIONS
+  "tree_max_operations": VALID_TREE_MAX_OPERATIONS,
+  "filter": VALID_GENERATOR_FILTER
 }
 
 VALID_LARGE_CONFIGURATION = {
