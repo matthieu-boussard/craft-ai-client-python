@@ -284,13 +284,10 @@ class CraftAIClient(object):
   # Generator method #
   ####################
 
-  def create_generator(self, configuration, generator_id="", generator_filter=[]):
+  def create_generator(self, configuration, generator_id=""):
     """ Create a generator.
 
     :param dict configuration: Form given by the craftai documentation.
-    :param list filter: A list of valid agent id. It must be a list of
-    containing only characters in "a-zA-Z0-9_-" and must be between
-    1 and 36 characters.
     :param str generator_id: The id of the generator to delete. It must be
     an str containing only characters in "a-zA-Z0-9_-" and must be
     between 1 and 36 characters. It must referenced an existing generator.
@@ -299,20 +296,12 @@ class CraftAIClient(object):
     """
     # Extra header in addition to the main session's
     ct_header = {"Content-Type": "application/json; charset=utf-8"}
-    # Check that filter is passed as parameters, if it is the case put it in the configuration
-    if (generator_filter != []):
-      configuration["filter"] = generator_filter
 
     # Building payload and checking that it is valid for a JSON
     # serialization
-    try:
-      effective_filter = configuration["filter"]
-    except TypeError as err:
-      raise CraftAiBadRequestError("Invalid generator configuration, no valid filter provided")
 
     payload = {
-        "configuration": configuration,
-        "filter": configuration["filter"]
+        "configuration": configuration
     }
 
     if generator_id != "":
