@@ -301,7 +301,7 @@ class CraftAIClient(object):
     # serialization
 
     payload = {
-        "configuration": configuration
+      "configuration": configuration
     }
 
     if generator_id != "":

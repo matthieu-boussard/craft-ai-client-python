@@ -1,3 +1,4 @@
+import copy
 import unittest
 
 from craftai import Client, errors as craft_err
@@ -17,11 +18,6 @@ class TestCreateGeneratorSuccess(unittest.TestCase):
     cls.filter = valid_data.VALID_GENERATOR_FILTER
 
   def setUp(self):
-    # Makes sure that no agent with the same ID already exists
-    # resp = self.client.create_agent(
-    #   valid_data.VALID_CONFIGURATION,
-    #   self.agent_id
-    # )
     self.client.delete_agent(self.agent_id)
     self.client.delete_generator(self.generator_id)
     self.client.create_agent(
@@ -29,6 +25,9 @@ class TestCreateGeneratorSuccess(unittest.TestCase):
       self.agent_id
     )
 
+  def tearDown(self):
+    self.client.delete_generator(self.generator_id)
+    self.client.delete_agent(self.agent_id)
 
   def clean_up_generator(self, generator_id):
     # Makes sure that no agent with the standard ID remains
@@ -41,10 +40,10 @@ class TestCreateGeneratorSuccess(unittest.TestCase):
     `configuration` fields being strings and `id` being the same as the one
     given as a parameter.
     """
-    GENERATOR_CONFIGURATION = valid_data.VALID_GENERATOR_CONFIGURATION.copy()
-    GENERATOR_CONFIGURATION["filter"] = self.filter
+    generator_configuration = valid_data.VALID_GENERATOR_CONFIGURATION.copy()
+    generator_configuration["filter"] = self.filter
     resp = self.client.create_generator(
-      GENERATOR_CONFIGURATION,
+      generator_configuration,
       self.generator_id
     )
     self.assertEqual(resp.get("id"), self.generator_id)
@@ -65,6 +64,7 @@ class TestCreateGeneratorFailure(unittest.TestCase):
   def setUp(self):
     # Makes sure that no agent with the same ID already exists
     self.client.delete_agent(self.agent_id)
+    self.client.delete_generator(self.generator_id)
     self.client.create_agent(
       valid_data.VALID_CONFIGURATION,
       self.agent_id
@@ -82,17 +82,17 @@ class TestCreateGeneratorFailure(unittest.TestCase):
     should always be unique.
     """
     # Calling create_generator a first time
-    GENERATOR_CONFIGURATION = valid_data.VALID_GENERATOR_CONFIGURATION.copy()
-    GENERATOR_CONFIGURATION["filter"] = self.filter
+    generator_configuration = valid_data.VALID_GENERATOR_CONFIGURATION.copy()
+    generator_configuration["filter"] = self.filter
     self.client.create_generator(
-      GENERATOR_CONFIGURATION,
+      generator_configuration,
       self.generator_id
     )
     # Asserting that an error is risen the second time
     self.assertRaises(
       craft_err.CraftAiBadRequestError,
       self.client.create_generator,
-      GENERATOR_CONFIGURATION,
+      generator_configuration,
       self.generator_id)
     self.addCleanup(
       self.clean_up_generator,
@@ -105,12 +105,12 @@ class TestCreateGeneratorFailure(unittest.TestCase):
     an generator with an invalid id.
     """
     # Asserting that an error is risen the second time
-    GENERATOR_CONFIGURATION = valid_data.VALID_GENERATOR_CONFIGURATION.copy()
-    GENERATOR_CONFIGURATION["filter"] = self.filter
+    generator_configuration = valid_data.VALID_GENERATOR_CONFIGURATION.copy()
+    generator_configuration["filter"] = self.filter
     self.assertRaises(
       craft_err.CraftAiBadRequestError,
       self.client.create_generator,
-      GENERATOR_CONFIGURATION,
+      generator_configuration,
       "toto/tutu")
 
   def test_create_generator_with_invalid_context(self):
@@ -185,12 +185,13 @@ class TestCreateGeneratorFailure(unittest.TestCase):
     incorrect filter, since it is essential to
     the creation of generator.
     """
-    CONFIGURATION_INVALID_FILTER = valid_data.VALID_GENERATOR_CONFIGURATION
     for inv_filter in invalid_data.INVALID_FILTER:
+      configuration_invalid_filter = copy.deepcopy(valid_data.VALID_GENERATOR_CONFIGURATION)
+      configuration_invalid_filter["filter"] = invalid_data.INVALID_FILTER[inv_filter]
       self.assertRaises(
         craft_err.CraftAiBadRequestError,
         self.client.create_generator,
-        valid_data.VALID_GENERATOR_CONFIGURATION,
+        configuration_invalid_filter,
         self.generator_id
       )
       self.addCleanup(
