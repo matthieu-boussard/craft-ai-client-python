@@ -14,6 +14,9 @@ class CraftEstimator(BaseEstimator):
     # The JSON configuration necessary to create a craft ai agent
     # See the doc for more details (https://beta.craft.ai/doc/http).
     self.configuration = configuration
+    self.output_name = None
+    if configuration is not None:
+      self.output_name = configuration["output"][0]
 
     # The agent name used for this craft ai agent.
     self.agent_name = agent_name
@@ -31,8 +34,6 @@ class CraftEstimator(BaseEstimator):
     # If the dataset is static - it does not contain any timestamp and
     # this flag must be set at true.
     self.add_timestamps_for_static = add_timestamps_for_static
-
-    self.output_name = None
 
     super(BaseEstimator, self).__init__()
 

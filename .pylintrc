@@ -1,6 +1,6 @@
 [MASTER]
 
-disable=missing-docstring,locally-enabled,locally-disabled,duplicate-code,unnecessary-lambda
+disable=missing-docstring,locally-enabled,locally-disabled,duplicate-code,unnecessary-lambda,chained-comparison,arguments-out-of-order,no-else-return,no-else-raise,unbalanced-tuple-unpacking,consider-using-in,useless-object-inheritance,consider-using-get,cyclic-import,too-many-statements
 
 [BASIC]
 
