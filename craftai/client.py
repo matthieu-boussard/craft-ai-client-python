@@ -450,6 +450,33 @@ class CraftAIClient(object):
         # Do nothing and continue.
         continue
 
+  def _get_generator_operations_list_pages(self, url, ops_list):
+    if url is None:
+      return ops_list
+
+    resp = self._requests_session.get(url)
+
+    new_ops_list = self._decode_response(resp)
+    next_page_url = resp.headers.get("x-craft-ai-next-page-url")
+
+    return self._get_generator_operations_list_pages(next_page_url, ops_list + new_ops_list)
+
+  def get_generator_operations_list(self, generator_id, start=None, end=None):
+    # Raises an error when generator_id is invalid
+    self._check_entity_id(generator_id)
+
+    req_url = "{}/generators/{}/context".format(self._base_url, generator_id)
+    req_params = {
+      "start": start,
+      "end": end
+    }
+    resp = self._requests_session.get(req_url, params=req_params)
+
+    initial_ops_list = self._decode_response(resp)
+    next_page_url = resp.headers.get("x-craft-ai-next-page-url")
+
+    return self._get_generator_operations_list_pages(next_page_url, initial_ops_list)
+
   ###################
   # Context methods #
   ###################
