@@ -288,11 +288,11 @@ class CraftAIClient(object):
     """ Create a generator.
 
     :param dict configuration: Form given by the craftai documentation.
-    :param str generator_id: The id of the generator to delete. It must be
+    :param str generator_id: The id of the generator to create. It must be
     an str containing only characters in "a-zA-Z0-9_-" and must be
-    between 1 and 36 characters. It must referenced an existing generator.
+    between 1 and 36 characters.
     :param default generator_id : "" In this case the generator_id is
-    generated
+    generated.
     """
     # Extra header in addition to the main session's
     ct_header = {"Content-Type": "application/json; charset=utf-8"}
@@ -343,18 +343,15 @@ class CraftAIClient(object):
 
     return generators["generatorsList"]
 
-  # def get_generator(self):
-
-
   def delete_generator(self, generator_id):
     """ Delete a generator
 
     :param str generator_id: The id of the generator to delete. It must be
     an str containing only characters in "a-zA-Z0-9_-" and must be
-    between 1 and 36 characters. It must referenced an existing generator.
+    between 1 and 36 characters. It must reference an existing generator.
     """
 
-    # Raises an error when agent_id is invalid
+    # Raises an error when generator_id is invalid
     self._check_entity_id(generator_id)
 
     req_url = "{}/generators/{}".format(self._base_url, generator_id)
@@ -369,9 +366,9 @@ class CraftAIClient(object):
       generator_id,
       timestamp,
       version=DEFAULT_DECISION_TREE_VERSION):
-    """Tool for the function get_decision_tree.
+    """Tool for the function get_generator_decision_tree.
 
-    :param str generator_id: the id of the agent to get the tree. It
+    :param str generator_id: the id of the generator whose tree to get. It
     must be an str containing only characters in "a-zA-Z0-9_-" and
     must be between 1 and 36 characters.
     :param int timestamp: Optional. The decision tree is comptuted
@@ -406,7 +403,7 @@ class CraftAIClient(object):
       version=DEFAULT_DECISION_TREE_VERSION):
     """Get generator decision tree.
 
-    :param str generator_id: the id of the agent to get the tree. It
+    :param str generator_id: the id of the generator whose tree to get. It
     must be an str containing only characters in "a-zA-Z0-9_-" and
     must be between 1 and 36 characters.
     :param int timestamp: Optional. The decision tree is comptuted
@@ -486,7 +483,7 @@ class CraftAIClient(object):
 
     :param str agent_id: The id of the agent to delete. It must be
     an str containing only characters in "a-zA-Z0-9_-" and must be
-    between 1 and 36 characters. It must referenced an existing agent.
+    between 1 and 36 characters. It must reference an existing agent.
     :param list operations: Contains dictionnaries that has the
     form given in the craftai documentation and the configuration
     of the agent.
@@ -572,7 +569,7 @@ class CraftAIClient(object):
     :param list payload: contains the informations necessary for the action.
     It's in the form [{"id": agent_id, "operations": operations}]
     With id that is an str containing only characters in "a-zA-Z0-9_-"
-    and must be between 1 and 36 characters. It must referenced an
+    and must be between 1 and 36 characters. It must reference an
     existing agent.
     With operations a list containing dictionnaries that has the form given
     in the craftai documentation and the configuration of the agent.
@@ -684,7 +681,7 @@ class CraftAIClient(object):
   def _get_decision_tree(self, agent_id, timestamp, version=DEFAULT_DECISION_TREE_VERSION):
     """Tool for the function get_decision_tree.
 
-    :param str agent_id: the id of the agent to get the tree. It
+    :param str agent_id: the id of the agent whose tree to get. It
     must be an str containing only characters in "a-zA-Z0-9_-" and
     must be between 1 and 36 characters.
     :param int timestamp: Optional. The decision tree is comptuted
@@ -715,7 +712,7 @@ class CraftAIClient(object):
   def get_decision_tree(self, agent_id, timestamp=None, version=DEFAULT_DECISION_TREE_VERSION):
     """Get decision tree.
 
-    :param str agent_id: the id of the agent to get the tree. It
+    :param str agent_id: the id of the agent whose tree to get. It
     must be an str containing only characters in "a-zA-Z0-9_-" and
     must be between 1 and 36 characters.
     :param int timestamp: Optional. The decision tree is comptuted
@@ -788,7 +785,7 @@ class CraftAIClient(object):
     :param list payload: contains the informations necessary for getting
     the trees. It's in the form [{"id": agent_id, "timestamp": timestamp}]
     With id a str containing only characters in "a-zA-Z0-9_-" and must be
-    between 1 and 36 characters. It must referenced an existing agent.
+    between 1 and 36 characters. It must reference an existing agent.
     With timestamp an positive and not null integer.
     :param version: version of the tree to get.
     :type version: str or int.
