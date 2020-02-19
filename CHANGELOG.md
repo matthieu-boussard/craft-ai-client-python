@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - `craftai.pandas.client.decide_from_contexts_df` can use every possible feature name.
 
+### Removed
+
+- Remove support for python v2.
+
 ## [1.15.8](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.7...v1.15.8) - 2019-11-19 ##
 
 ### Fixed
