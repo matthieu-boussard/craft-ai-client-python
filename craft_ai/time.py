@@ -27,14 +27,17 @@ class Time(object):
             # datetime(2012, 9, 12, 6, 0, 0, tzinfo=pytz.utc)
             result = timestamp
             if (result.tzinfo is None) and (not timezone):
-                # Handle this format : Time(datetime(2011, 1, 1, 0, 0), timezone=None)
+                # Handle this format :
+                # Time(datetime(2011, 1, 1, 0, 0), timezone=None)
                 raise CraftAiTimeError("You must provide at least one timezone")
             elif (result.tzinfo is None) and timezone:
-                # Handle this format : Time(datetime(2011, 1, 1, 0, 0), timezone="+02:00")
+                # Handle this format :
+                # Time(datetime(2011, 1, 1, 0, 0), timezone="+02:00")
                 result = pyutc.localize(result)
                 result = set_timezone(result, timezone)
             elif (result.tzinfo is not None) and (timezone):
-                # Handle format like : Time(datetime(2002, 10, 27, 6, 0, 0, tzinfo=utc),timezone="+02:00" )
+                # Handle format like :
+                # Time(datetime(2002, 10, 27, 6, 0, 0, tzinfo=utc),timezone="+02:00" )
                 raise CraftAiTimeError(
                     "You must provide one timezone, but two were provided:"
                     " in the datetime and in the timezone parameter."

@@ -164,10 +164,10 @@ def test_get_decision_tree_with_datetimedatetime():
 def test_get_decision_tree_with_invalid_id():
     """get_decision_tree should fail when given a non-string/empty string ID
 
-  It should raise an error upon request for retrieval of an agent's
-  decision tree with an ID that is not of type string, since agent IDs
-  should always be strings.
-  """
+    It should raise an error upon request for retrieval of an agent's
+    decision tree with an ID that is not of type string, since agent IDs
+    should always be strings.
+    """
     for empty_id in invalid_data.UNDEFINED_KEY:
         assert_raises(
             craft_ai.errors.CraftAiBadRequestError,
@@ -181,9 +181,9 @@ def test_get_decision_tree_with_invalid_id():
 def test_get_decision_tree_with_unknown_id():
     """get_decision_tree should fail when given an unknown agent ID
 
-  It should raise an error upon request for the retrieval of an agent
-  that doesn't exist.
-  """
+    It should raise an error upon request for the retrieval of an agent
+    that doesn't exist.
+    """
     assert_raises(
         craft_ai.errors.CraftAiNotFoundError,
         CLIENT.get_decision_tree,
@@ -212,9 +212,7 @@ def test_get_decision_tree_with_float_timestamp():
     )
 
 
-###
-### The following tests are quite long, they are disabled atm.
-###
+# The following tests are quite long, they are disabled atm.
 
 # @with_setup(setup_agent_w_operations_l, teardown)
 # def test_get_decision_tree_from_operations():

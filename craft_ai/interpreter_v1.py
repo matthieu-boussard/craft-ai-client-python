@@ -29,9 +29,9 @@ _VALUE_VALIDATORS = {
     ),
 }
 
-##############################
-## Interpreter for V1 Trees ##
-##############################
+############################
+# Interpreter for V1 Trees #
+############################
 
 
 class InterpreterV1(object):
@@ -138,13 +138,14 @@ class InterpreterV1(object):
             # If there is no context value:
             if context_value is None:
                 raise CraftAiDecisionError(
-                    """Unable to take decision, property '{}' is missing from the given context.""".format(
+                    """Unable to take decision, """
+                    """property '{}' is missing from the given context.""".format(
                         property_name
                     )
                 )
             if (
                 not isinstance(operator, six.string_types)
-                or not operator in OPERATORS.values()
+                or operator not in OPERATORS.values()
             ):
                 raise CraftAiDecisionError(
                     """Invalid decision tree format, {} is not a valid"""
@@ -164,12 +165,12 @@ class InterpreterV1(object):
     def _check_context(configuration, context):
         # Extract the required properties (i.e. those that are not the output)
         expected_properties = [
-            p for p in configuration["context"] if not p in configuration["output"]
+            p for p in configuration["context"] if p not in configuration["output"]
         ]
 
         # Retrieve the missing properties
         missing_properties = [
-            p for p in expected_properties if not p in context or context[p] is None
+            p for p in expected_properties if p not in context or context[p] is None
         ]
 
         # Validate the values
@@ -204,6 +205,7 @@ class InterpreterV1(object):
 
                 for error in errors:
                     message = "".join((message, ", ", error))
+
                 message = message + "."
 
                 metadata = {}

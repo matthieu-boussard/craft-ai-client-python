@@ -18,11 +18,6 @@ class TestGetContextStateSuccess(unittest.TestCase):
         cls.client = CraftAIClient(settings.CRAFT_CFG)
         cls.agent_id = valid_data.VALID_ID + "_" + settings.RUN_ID[-4:]
 
-    @classmethod
-    def setUpClass(cls):
-        cls.client = CraftAIClient(settings.CRAFT_CFG)
-        cls.agent_id = valid_data.VALID_ID + "_" + settings.RUN_ID
-
     def setUp(self):
         self.client.delete_agent(self.agent_id)
         self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id)
@@ -56,11 +51,6 @@ class TestGetContextStateFailure(unittest.TestCase):
     def setUpClass(cls):
         cls.client = CraftAIClient(settings.CRAFT_CFG)
         cls.agent_id = valid_data.VALID_ID + "_" + settings.RUN_ID[-4:]
-
-    @classmethod
-    def setUpClass(cls):
-        cls.client = CraftAIClient(settings.CRAFT_CFG)
-        cls.agent_id = valid_data.VALID_ID + "_" + settings.RUN_ID
 
     def setUp(self):
         self.client.delete_agent(self.agent_id)
@@ -100,7 +90,7 @@ class TestGetContextStateFailure(unittest.TestCase):
 
     def test_get_context_state_with_invalid_timestamp(self):
         for inv_ts in invalid_data.INVALID_TIMESTAMPS:
-            if not inv_ts is None:
+            if inv_ts is not None:
                 self.assertRaises(
                     craft_err.CraftAiBadRequestError,
                     self.client.get_context_state,

@@ -9,8 +9,14 @@ OPERATORS_V1 = {
     "LT": "<",
 }
 
-LT = lambda a, b: a < b
-GTE = lambda a, b: a >= b
+
+def LT(a, b):
+    return a < b
+
+
+def GTE(a, b):
+    return a >= b
+
 
 OPERATORS_FUNCTION_V1 = {
     OPERATORS_V1["IS"]: lambda context, value: context == value,

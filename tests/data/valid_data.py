@@ -64,9 +64,9 @@ VALID_OPERATIONS_SET = [
     },
     {
         "timestamp": 1458741331,
-        "context": {"presence": "player", "lightIntensity": 0.5,},
+        "context": {"presence": "player", "lightIntensity": 0.5},
     },
-    {"timestamp": 1458741432, "context": {"presence": "none", "lightIntensity": 0,}},
+    {"timestamp": 1458741432, "context": {"presence": "none", "lightIntensity": 0}},
     {"timestamp": 1458741533, "context": {"presence": "occupant+player"}},
     {
         "timestamp": 1458741634,

@@ -67,9 +67,8 @@ def format_decision_rule_tests_generator():
                     ),
                 )
 
-                # pylint: disable=W0108
-                test_fn = lambda r, e: check_expectation(r, e)
-                # pylint: enable=W0108
+                def test_fn(r, e):
+                    return check_expectation(r, e)
 
                 test_fn.description = expectation["title"]
                 format_decision_rule_tests_generator.compat_func_name = (

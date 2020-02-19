@@ -6,6 +6,7 @@ from six import text_type, binary_type
 
 from craft_ai.errors import CraftAiTokenError
 
+
 # Initial code retrieved from PyJWT
 # cf. https://github.com/jpadilla/pyjwt/blob/ceff941/jwt/utils.py#L33-L42
 def base64url_decode(base64_input):
@@ -54,7 +55,7 @@ def jwt_decode(jwt):
 
     try:
         payload = json.loads(payload_data.decode("utf-8"))
-    except ValueError as e:
+    except ValueError:
         # Unable to load the payload as a json
         payload = payload_data
 

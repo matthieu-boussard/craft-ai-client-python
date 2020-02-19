@@ -28,9 +28,9 @@ _VALUE_VALIDATORS = {
     ),
 }
 
-##############################
-## Interpreter for V2 Trees ##
-##############################
+############################
+# Interpreter for V2 Trees #
+############################
 
 
 class InterpreterV2(object):
@@ -193,6 +193,7 @@ class InterpreterV2(object):
                     """Unable to take decision: the decision tree has no valid"""
                     """ predicted value for the given context."""
                 )
+
         # If it is not a leaf, we recurse into the children and store
         # the distributions/means and sizes of each child branch.
         def recurse(_child):
@@ -264,7 +265,7 @@ class InterpreterV2(object):
 
             if (
                 not isinstance(operator, six.string_types)
-                or not operator in OPERATORS.values()
+                or operator not in OPERATORS.values()
             ):
                 raise CraftAiDecisionError(
                     """Invalid decision tree format, {} is not a valid"""
@@ -279,11 +280,11 @@ class InterpreterV2(object):
     def _check_context(configuration, context):
         # Extract the required properties (i.e. those that are not the output)
         expected_properties = [
-            p for p in configuration["context"] if not p in configuration["output"]
+            p for p in configuration["context"] if p not in configuration["output"]
         ]
 
         # Retrieve the missing properties
-        missing_properties = [p for p in expected_properties if not p in context]
+        missing_properties = [p for p in expected_properties if p not in context]
 
         # Validate the values
         bad_properties = [

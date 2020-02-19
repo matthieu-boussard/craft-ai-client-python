@@ -409,7 +409,8 @@ class CraftAIClient(object):
         """
         self._requests_session.headers["x-craft-ai-tree-version"] = version
 
-        # If we give no timestamp the default behaviour is to give the tree from the latest timestamp
+        # If we give no timestamp the default behaviour is to give the tree
+        # from the latest timestamp
         if timestamp is None:
             req_url = "{}/generators/{}/tree?".format(self._base_url, generator_id)
         else:
@@ -716,7 +717,11 @@ class CraftAIClient(object):
     ):
         """Tool for the function get_decision_tree.
 
+<<<<<<< HEAD
         :param str agent_id: the id of the agent whose tree to get. It
+=======
+        :param str agent_id: the id of the agent to get the tree. It
+>>>>>>> Using flake8 for style check
         must be an str containing only characters in "a-zA-Z0-9_-" and
         must be between 1 and 36 characters.
         :param int timestamp: Optional. The decision tree is comptuted
@@ -732,7 +737,8 @@ class CraftAIClient(object):
         """
         self._requests_session.headers["x-craft-ai-tree-version"] = version
 
-        # If we give no timestamp the default behaviour is to give the tree from the latest timestamp
+        # If we give no timestamp the default behaviour is to give
+        # the tree from the latest timestamp
         if timestamp is None:
             req_url = "{}/agents/{}/decision/tree?".format(self._base_url, agent_id)
         else:
@@ -880,7 +886,7 @@ class CraftAIClient(object):
     def _parse_body(response):
         try:
             return response.json()
-        except:
+        except Exception:
             raise CraftAiInternalError(
                 "Internal Error, the craft ai server responded in an invalid format."
             )

@@ -32,9 +32,8 @@ def reduce_decision_rules_tests_generator():
                     ),
                 )
 
-                # pylint: disable=W0108
-                test_fn = lambda r, e: check_expectation(r, e)
-                # pylint: enable=W0108
+                def test_fn(r, e):
+                    return check_expectation(r, e)
 
                 test_fn.description = expectation["title"]
                 reduce_decision_rules_tests_generator.compat_func_name = (
