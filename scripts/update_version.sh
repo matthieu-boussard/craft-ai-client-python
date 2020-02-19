@@ -1,7 +1,7 @@
 #!/bin/bash
 
 AVAILABLE_INCREMENTS=(major minor patch)
-INIT_PY_FILE="craftai/__init__.py"
+INIT_PY_FILE="craft_ai/__init__.py"
 CHANGELOG_MD_FILE="./CHANGELOG.md"
 GH_ORG="craft-ai"
 GH_REPO="craft-ai-client-python"

@@ -12,8 +12,8 @@ from pytz import utc as pyutc
 from tzlocal import get_localzone
 from dateutil.parser import isoparse
 
-from craftai.errors import CraftAiTimeError
-from craftai.timezones import is_timezone, timezone_offset_in_sec
+from craft_ai.errors import CraftAiTimeError
+from craft_ai.timezones import is_timezone, timezone_offset_in_sec
 
 _EPOCH = datetime(1970, 1, 1, tzinfo=pyutc)
 
@@ -136,7 +136,7 @@ class Time(object):
     self.timestamp = Time.timestamp_from_datetime(_time)
 
   def to_dict(self):
-    """Returns the Time instance as a usable dictionary for craftai"""
+    """Returns the Time instance as a usable dictionary for craft_ai"""
     return {
       "timestamp": int(self.timestamp),
       "timezone": self.timezone,

@@ -42,7 +42,7 @@ class CraftAiNullDecisionError(CraftAiDecisionError):
 
 
 class CraftAiTimeError(CraftAiError):
-  """An error occured during the creation of a craftai.Time instance."""
+  """An error occured during the creation of a craft_ai.Time instance."""
 
 
 class CraftAiTokenError(CraftAiError):

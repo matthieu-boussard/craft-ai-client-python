@@ -4,14 +4,14 @@ import semver
 
 from nose.tools import assert_equal, assert_is_instance, assert_not_equal, assert_raises, with_setup
 import pandas as pd
-import craftai
-from craftai.constants import DEFAULT_DECISION_TREE_VERSION
+import craft_ai
+from craft_ai.constants import DEFAULT_DECISION_TREE_VERSION
 
 from . import settings
 from .data import valid_data
 from .data import invalid_data
 
-CLIENT = craftai.Client(settings.CRAFT_CFG)
+CLIENT = craft_ai.Client(settings.CRAFT_CFG)
 AGENT_ID_1 = "test_get_decision_tree_" + settings.RUN_ID[-4:] + "_1"
 AGENT_ID_2 = "test_get_decision_tree_" + settings.RUN_ID[-4:] + "_2"
 GENERATOR_ID = "test_generator_decision_tree_" + settings.RUN_ID[-4:]
@@ -137,7 +137,7 @@ def test_get_generator_decision_tree_with_invalid_id():
   """
   for empty_id in invalid_data.UNDEFINED_KEY:
     assert_raises(
-      craftai.errors.CraftAiBadRequestError,
+      craft_ai.errors.CraftAiBadRequestError,
       CLIENT.get_generator_decision_tree,
       invalid_data.UNDEFINED_KEY[empty_id],
       valid_data.VALID_TIMESTAMP)
@@ -150,7 +150,7 @@ def test_get_generator_decision_tree_with_unknown_id():
   that doesn't exist.
   """
   assert_raises(
-    craftai.errors.CraftAiNotFoundError,
+    craft_ai.errors.CraftAiNotFoundError,
     CLIENT.get_generator_decision_tree,
     invalid_data.UNKNOWN_ID,
     valid_data.VALID_TIMESTAMP)
@@ -158,7 +158,7 @@ def test_get_generator_decision_tree_with_unknown_id():
 @with_setup(setup_generator_with_agent_with_operations, teardown)
 def test_get_generator_decision_tree_with_negative_timestamp():
   assert_raises(
-    craftai.errors.CraftAiBadRequestError,
+    craft_ai.errors.CraftAiBadRequestError,
     CLIENT.get_generator_decision_tree,
     GENERATOR_ID,
     invalid_data.INVALID_TIMESTAMPS["negative_ts"])
@@ -166,7 +166,7 @@ def test_get_generator_decision_tree_with_negative_timestamp():
 @with_setup(setup_generator_with_agent_with_operations, teardown)
 def test_get_generator_decision_tree_with_float_timestamp():
   assert_raises(
-    craftai.errors.CraftAiBadRequestError,
+    craft_ai.errors.CraftAiBadRequestError,
     CLIENT.get_generator_decision_tree,
     GENERATOR_ID,
     invalid_data.INVALID_TIMESTAMPS["float_ts"])

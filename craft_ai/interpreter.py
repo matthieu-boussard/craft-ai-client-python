@@ -1,11 +1,11 @@
 import re
 import semver
 
-from craftai.errors import CraftAiDecisionError
-from craftai.time import Time
-from craftai.timezones import get_timezone_key, timezone_offset_in_standard_format
-from craftai.interpreter_v1 import InterpreterV1
-from craftai.interpreter_v2 import InterpreterV2
+from craft_ai.errors import CraftAiDecisionError
+from craft_ai.time import Time
+from craft_ai.timezones import get_timezone_key, timezone_offset_in_standard_format
+from craft_ai.interpreter_v1 import InterpreterV1
+from craft_ai.interpreter_v2 import InterpreterV2
 
 class Interpreter(object):
 

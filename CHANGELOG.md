@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add support for generators with the new `client` methods `create_generator`, `get_generator`, `list_generators`, `delete_generator`, `get_generator_decision_tree` and `get_generator_operations_list`.
 - Support for Python version 3.7
 
+### Changed
+
+- Root package renamed `craft_ai` (previously `craftai`) to follow python naming conventions.
+
 ### Fixed
 
 - `craftai.pandas.client.decide_from_contexts_df` can use every possible feature name.

@@ -2,7 +2,7 @@ import unittest
 import json
 import os
 
-import craftai
+import craft_ai
 
 from . import settings
 from .data import valid_data, invalid_data
@@ -46,7 +46,7 @@ def merge_sorted_operation_arrays_by_timestamp(operations_a, operations_b):
 class TestGetGeneratorOperationsListSuccess(unittest.TestCase):
   @classmethod
   def setUpClass(cls):
-    cls.client = craftai.Client(settings.CRAFT_CFG)
+    cls.client = craft_ai.Client(settings.CRAFT_CFG)
     cls.generator_id = valid_data.VALID_GENERATOR_ID  + "_" + settings.RUN_ID[-4:]
     cls.agent_id_1 = valid_data.VALID_ID  + "_" + settings.RUN_ID[-4:]
     cls.agent_id_2 = valid_data.VALID_ID_TWO  + "_" + settings.RUN_ID[-4:]
@@ -125,7 +125,7 @@ class TestGetGeneratorOperationsListSuccess(unittest.TestCase):
 class TestGetOperationsListFailure(unittest.TestCase):
   @classmethod
   def setUpClass(cls):
-    cls.client = craftai.Client(settings.CRAFT_CFG)
+    cls.client = craft_ai.Client(settings.CRAFT_CFG)
     cls.agent_id = valid_data.VALID_ID  + "_" + settings.RUN_ID[-4:]
     cls.generator_id = valid_data.VALID_GENERATOR_ID  + "_" + settings.RUN_ID[-4:]
 
@@ -147,6 +147,6 @@ class TestGetOperationsListFailure(unittest.TestCase):
   def test_get_generator_operations_list_with_invalid_id(self):
     for empty_id in invalid_data.UNDEFINED_KEY:
       self.assertRaises(
-        craftai.errors.CraftAiBadRequestError,
+        craft_ai.errors.CraftAiBadRequestError,
         self.client.get_generator_operations_list,
         invalid_data.UNDEFINED_KEY[empty_id])

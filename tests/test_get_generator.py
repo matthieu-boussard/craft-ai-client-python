@@ -1,6 +1,6 @@
 import unittest
 
-import craftai
+import craft_ai
 
 from . import settings
 from .data import valid_data
@@ -10,7 +10,7 @@ class TestGetGeneratorSuccess(unittest.TestCase):
   """Checks that the client succeeds when getting a generator with OK input"""
   @classmethod
   def setUpClass(cls):
-    cls.client = craftai.Client(settings.CRAFT_CFG)
+    cls.client = craft_ai.Client(settings.CRAFT_CFG)
     cls.generator_id = valid_data.VALID_GENERATOR_ID  + "_" + settings.RUN_ID[-4:]
 
   def setUp(self):
@@ -38,7 +38,7 @@ class TestGetGeneratorFailure(unittest.TestCase):
   """Checks that the client fails properly when getting a generator with bad input"""
   @classmethod
   def setUpClass(cls):
-    cls.client = craftai.Client(settings.CRAFT_CFG)
+    cls.client = craft_ai.Client(settings.CRAFT_CFG)
     cls.generator_id = valid_data.VALID_GENERATOR_ID  + "_" + settings.RUN_ID[-4:]
 
   def setUp(self):
@@ -59,7 +59,7 @@ class TestGetGeneratorFailure(unittest.TestCase):
     """
     for empty_id in invalid_data.UNDEFINED_KEY:
       self.assertRaises(
-        craftai.errors.CraftAiBadRequestError,
+        craft_ai.errors.CraftAiBadRequestError,
         self.client.get_generator,
         invalid_data.UNDEFINED_KEY[empty_id])
 
@@ -70,6 +70,6 @@ class TestGetGeneratorFailure(unittest.TestCase):
     that doesn't exist.
     """
     self.assertRaises(
-      craftai.errors.CraftAiNotFoundError,
+      craft_ai.errors.CraftAiNotFoundError,
       self.client.get_generator,
       invalid_data.UNKNOWN_ID)

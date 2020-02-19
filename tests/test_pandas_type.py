@@ -3,12 +3,12 @@ import pandas as pd
 
 from nose.tools import with_setup
 
-import craftai.pandas
+import craft_ai.pandas
 
 
 from . import settings
 
-CLIENT = craftai.pandas.Client(settings.CRAFT_CFG)
+CLIENT = craft_ai.pandas.Client(settings.CRAFT_CFG)
 
 def setup_nothing():
   pass

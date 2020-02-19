@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from numpy.random import randn
-from craftai.pandas import MISSING_VALUE, OPTIONAL_VALUE
+from craft_ai.pandas import MISSING_VALUE, OPTIONAL_VALUE
 
 NB_OPERATIONS = 300
 NB_MANY_OPERATIONS = 1000

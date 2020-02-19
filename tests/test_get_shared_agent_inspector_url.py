@@ -1,6 +1,6 @@
 import unittest
 
-from craftai import Client as CraftAIClient
+from craft_ai import Client as CraftAIClient
 
 from . import settings
 from .data import valid_data

@@ -2,8 +2,8 @@ import unittest
 from datetime import datetime
 import pytz
 
-from craftai import Time
-from craftai.errors import CraftAiTimeError
+from craft_ai import Time
+from craft_ai.errors import CraftAiTimeError
 
 
 class TestTime(unittest.TestCase):

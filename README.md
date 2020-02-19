@@ -32,14 +32,14 @@ _Depending on your setup you may need to use `pip3` or `pipenv` instead of `pip`
 Then import it in your code
 
 ```python
-import craftai
+import craft_ai
 ```
 > This client also provides helpers to use it in conjuction with [pandas](#pandas-support)
 
 #### Initialize ####
 
 ```python
-client = craftai.Client({
+client = craft_ai.Client({
   "token": "{token}"
 })
 ```
@@ -601,13 +601,13 @@ provided continuously.
 
 **craft ai** API heavily relies on `timestamps`. A `timestamp` is an instant represented as a [Unix time](https://en.wikipedia.org/wiki/Unix_time), that is to say the amount of seconds elapsed since Thursday, 1 January 1970 at midnight UTC. In most programming languages this representation is easy to retrieve, you can refer to [**this page**](https://github.com/techgaun/unix-time/blob/master/README.md) to find out how.
 
-#### `craftai.Time` #####
+#### `craft_ai.Time` #####
 
-The `craftai.Time` class facilitates the handling of time types in **craft ai**. It is able to extract the different **craft ai** formats from various _datetime_ representations, thanks to [datetime](https://docs.python.org/3.5/library/datetime.html).
+The `craft_ai.Time` class facilitates the handling of time types in **craft ai**. It is able to extract the different **craft ai** formats from various _datetime_ representations, thanks to [datetime](https://docs.python.org/3.5/library/datetime.html).
 
 ```python
 # From a unix timestamp and an explicit UTC offset
-t1 = craftai.Time(1465496929, "+10:00")
+t1 = craft_ai.Time(1465496929, "+10:00")
 
 # t1 == {
 #   utc: "2016-06-09T18:28:49.000Z",
@@ -618,7 +618,7 @@ t1 = craftai.Time(1465496929, "+10:00")
 # }
 
 # From a unix timestamp and using the local UTC offset.
-t2 = craftai.Time(1465496929)
+t2 = craft_ai.Time(1465496929)
 
 # Value are valid if in Paris !
 # t2 == {
@@ -630,7 +630,7 @@ t2 = craftai.Time(1465496929)
 # }
 
 # From a ISO 8601 string. Note that here it should not have any ":" in the timezone part
-t3 = craftai.Time("1977-04-22T01:00:00-0500")
+t3 = craft_ai.Time("1977-04-22T01:00:00-0500")
 
 # t3 == {
 #   utc: "1977-04-22T06:00:00.000Z",
@@ -641,10 +641,10 @@ t3 = craftai.Time("1977-04-22T01:00:00-0500")
 # }
 
 # Retrieve the current time with the local UTC offset
-now = craftai.Time()
+now = craft_ai.Time()
 
 # Retrieve the current time with the given UTC offset
-nowP5 = craftai.Time(timezone="+05:00")
+nowP5 = craft_ai.Time(timezone="+05:00")
 ```
 
 ### Advanced configuration
@@ -1483,7 +1483,7 @@ The simple configuration to create the `client` is just the token. For special n
 `client.add_operations` splits the provided operations into chunks in order to limit the size of the http requests to the craft ai API. In the client configuration, `operationsChunksSize` can be increased in order to limit the number of request, or decreased when large http requests cause errors.
 
 ```python
-client = craftai.Client({
+client = craft_ai.Client({
     # Mandatory, the token
     "token": "{token}",
     # Optional, default value is 200
@@ -1496,7 +1496,7 @@ client = craftai.Client({
 It is possible to increase or decrease the timeout duration of `client.get_decision_tree`, for exemple to account for especially long computations.
 
 ```python
-client = craftai.Client({
+client = craft_ai.Client({
     # Mandatory, the token
     "token": "{token}",
     # Optional, default value is 600000 (10 minutes)
@@ -1509,7 +1509,7 @@ client = craftai.Client({
 It is possible to provide proxy configuration in the `proxy` property of the client configuration. It will be used to call the craft ai API (through HTTPS). The expected format is a host name or IP and port, optionally preceded by credentials such as `http://user:pass@10.10.1.10:1080`.
 
 ```python
-client = craftai.Client({
+client = craft_ai.Client({
     # Mandatory, the token
     "token": "{token}",
     # Optional, no default value
@@ -1537,7 +1537,7 @@ Note that the python interpreter takes an array of contexts.
 tree = { ... } # Decision tree as retrieved through the craft ai REST API
 
 # Compute the decision on a fully described context
-decision = craftai.Interpreter.decide(
+decision = craft_ai.Interpreter.decide(
   tree,
   [{ # The context on which the decision is taken
     "timezone": "+02:00",
@@ -1549,13 +1549,13 @@ decision = craftai.Interpreter.decide(
 # Or Compute the decision on a context created from the given one and filling the
 # `day_of_week`, `time_of_day` and `timezone` properties from the given `Time`
 
-decision = craftai.Interpreter.decide(
+decision = craft_ai.Interpreter.decide(
   tree,
   [{
     "timezone": "+02:00",
     "peopleCount": 3
   },
-  craftai.Time("2010-01-01T07:30:30+0200")
+  craft_ai.Time("2010-01-01T07:30:30+0200")
   ]
 )
 ```
@@ -1644,10 +1644,10 @@ A `decision` in a case where the tree cannot make a prediction:
 From a list of decision rules, as retrieved when taking a decision, when taking a decision compute an equivalent & minimal list of rules.
 
 ```python
-from craftai import reduce_decision_rules
+from craft_ai import reduce_decision_rules
 
 # `decision` is the decision tree as retrieved from taking a decision
-decision = craftai.Interpreter.decide( ... )
+decision = craft_ai.Interpreter.decide( ... )
 
 # `decision_rules` is the decision rules that led to decision for the `lightBulbState` value
 decision_rules = decision["output"]["lightBulbState"]["decision_rules"]
@@ -1661,10 +1661,10 @@ minimal_decision_rules = reduce_decision_rules(decisionRules)
 From a list of decision rules, compute a _human readable_ version of these rules, in english.
 
 ```python
-from craftai import format_decision_rules
+from craft_ai import format_decision_rules
 
 # `decision` is the decision tree as retrieved from taking a decision
-decision = craftai.Interpreter.decide( ... )
+decision = craft_ai.Interpreter.decide( ... )
 
 # `decision_rules` is the decision rules that led to decision for the `lightBulbState` value
 decision_rules = decision["output"]["lightbulbState"]["decision_rules"]
@@ -1690,21 +1690,21 @@ The craft ai python client optionally supports [pandas](http://pandas.pydata.org
 Basically instead of importing the default module, you can do the following
 
 ```python
-import craftai.pandas
+import craft_ai.pandas
 
 # Most of the time you'll need the following
 import numpy as np
 import pandas as pd
 
-# Client must then be defined using craftai.pandas module
-client = craftai.pandas.Client({
+# Client must then be defined using craft_ai.pandas module
+client = craft_ai.pandas.Client({
   "token": "{token}"
 })
 ```
 
 The craft ai pandas module is derived for the _vanilla_ one, with the following methods are overriden to support pandas' [`DataFrame`](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html).
 
-#### `craftai.pandas.Client.get_operations_list` #####
+#### `craft_ai.pandas.Client.get_operations_list` #####
 
 Retrieves the desired operations as a `DataFrame` where:
 
@@ -1726,7 +1726,7 @@ df = client.get_operations_list("my_new_agent")
 # 2013-01-05 00:00:00+00:00   0            NaN              NaN
 ```
 
-#### `craftai.pandas.Client.add_operations` #####
+#### `craft_ai.pandas.Client.add_operations` #####
 
 Add a `DataFrame` of operations to the desired agent. The format is the same as above.
 
@@ -1745,13 +1745,13 @@ df = pd.DataFrame(
 client.add_operations("my_new_agent", df)
 ```
 
-Given an object that is not a `DataFrame` this method behave like the _vanilla_ `craftai.Client.add_operations`.
+Given an object that is not a `DataFrame` this method behave like the _vanilla_ `craft_ai.Client.add_operations`.
 
-Furthermore, missing values and optional values can be handled by the craft ai pandas client. To do so, we introduce two new types that are `craftai.pandas.MISSING_VALUE` for [missing values](#missing-values) and `craftai.pandas.OPTIONAL_VALUE` for [optional values](#optional-values).
+Furthermore, missing values and optional values can be handled by the craft ai pandas client. To do so, we introduce two new types that are `craft_ai.pandas.MISSING_VALUE` for [missing values](#missing-values) and `craft_ai.pandas.OPTIONAL_VALUE` for [optional values](#optional-values).
 To send your `DataFrame` with actual missing values or optional values, you must use one of these types:
 
 ```python
-from craftai.pandas import MISSING_VALUE, OPTIONAL_VALUE
+from craft_ai.pandas import MISSING_VALUE, OPTIONAL_VALUE
 
 df = pd.DataFrame(
   [
@@ -1773,7 +1773,7 @@ To ensure that all the missing values contained in your `DataFrame` are to the r
 contexts_df.fillna(MISSING_VALUE) # Or OPTIONAL_VALUE
 ```
 
-#### `craftai.pandas.Client.get_state_history` #####
+#### `craft_ai.pandas.Client.get_state_history` #####
 
 Retrieves the desired state history as a `DataFrame` where:
 
@@ -1794,7 +1794,7 @@ df = client.get_state_history("my_new_agent")
 # 2013-01-05 00:00:00+00:00   0            OFF              +02:00
 ```
 
-#### `craftai.pandas.Client.decide_from_contexts_df` #####
+#### `craft_ai.pandas.Client.decide_from_contexts_df` #####
 
 Take multiple decisions on a given `DataFrame` following the same format as above.
 
@@ -1820,10 +1820,10 @@ decisions_df = client.decide_from_contexts_df(tree, pd.DataFrame(
 # 2013-01-05 00:00:00+00:00   OFF                              0.999449                  ...
 ```
 
-This function also accepts craft ai missing values and optional values types, `craftai.pandas.MISSING_VALUE` and `craftai.pandas.OPTIONAL_VALUE`.
+This function also accepts craft ai missing values and optional values types, `craft_ai.pandas.MISSING_VALUE` and `craft_ai.pandas.OPTIONAL_VALUE`.
 
 ```python
-from craftai.pandas import MISSING_VALUE, OPTIONAL_VALUE
+from craft_ai.pandas import MISSING_VALUE, OPTIONAL_VALUE
 
 decisions_df = client.decide_from_contexts_df(tree, pd.DataFrame(
   [
@@ -1840,14 +1840,14 @@ decisions_df = client.decide_from_contexts_df(tree, pd.DataFrame(
 
 This function never raises `CraftAiNullDecisionError`, instead it inserts these errors in the result `Dataframe` in a specific `error` column.
 
-#### `craftai.pandas.utils.create_tree_html` #####
+#### `craft_ai.pandas.utils.create_tree_html` #####
 
 Returns a HTML version of the given decision tree. If this latter is saved in a `.html` file, it can be opened in
 a browser to be visualized.
 
 ```python
 
-from  craftai.pandas.utils import create_tree_html
+from  craft_ai.pandas.utils import create_tree_html
 
 tree = client.get_decision_tree(
   "my_agent", # The agent id
@@ -1867,14 +1867,14 @@ html = create_tree_html(
 # ...
 ```
 
-#### `craftai.pandas.utils.display_tree` #####
+#### `craft_ai.pandas.utils.display_tree` #####
 
 Display a decision tree in a Jupyter Notebook.
 This function can be useful for analyzing the induced decision trees.
 
 ```python
 
-from  craftai.pandas.utils import display_tree
+from  craft_ai.pandas.utils import display_tree
 
 tree = client.get_decision_tree(
   "my_agent", # The agent id
@@ -1890,7 +1890,7 @@ display_tree(
 )
 ```
 
-#### `craftai.pandas.client.add_operations_bulk` #####
+#### `craft_ai.pandas.client.add_operations_bulk` #####
 
 Add operations to several agents at once.
 ```python
@@ -1917,4 +1917,8 @@ addition_operations_bulk_payload = [
 
 client.add_operations_bulk(addition_operations_bulk_payload)
 ```
+<<<<<<< HEAD
 Given an object that is not a `DataFrame` this method behave like the _vanilla_ `craftai.Client.add_operations_bulk`.
+=======
+Given an object that is not a `DataFrame` this method behave like the _vanilla_ `craft_ai.Client.add_operations_bulk`.
+>>>>>>> Migrating to poetry + Renaming package craftai to craft_ai

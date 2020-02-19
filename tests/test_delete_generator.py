@@ -1,6 +1,6 @@
 import unittest
 
-import craftai
+import craft_ai
 
 from . import settings
 from .data import valid_data, invalid_data
@@ -10,7 +10,7 @@ class TestDeleteGeneratorWithValidID(unittest.TestCase):
   """Checks that the client succeeds when deleting a generator with OK input"""
   @classmethod
   def setUpClass(cls):
-    cls.client = craftai.Client(settings.CRAFT_CFG)
+    cls.client = craft_ai.Client(settings.CRAFT_CFG)
     cls.generator_id = valid_data.VALID_GENERATOR_ID  + "_" + settings.RUN_ID[-4:]
 
   def setUp(self):
@@ -19,7 +19,7 @@ class TestDeleteGeneratorWithValidID(unittest.TestCase):
     # it is necessary to catch this kind of errors.
     try:
       self.client.create_generator(valid_data.VALID_GENERATOR_CONFIGURATION, self.generator_id)
-    except craftai.errors.CraftAiBadRequestError as e:
+    except craft_ai.errors.CraftAiBadRequestError as e:
       if "one already exists" not in e.message:
         raise e
 
@@ -34,7 +34,7 @@ class TestDeleteGeneratorWithUnknownID(unittest.TestCase):
 
   @classmethod
   def setUpClass(cls):
-    cls.client = craftai.Client(settings.CRAFT_CFG)
+    cls.client = craft_ai.Client(settings.CRAFT_CFG)
     cls.generator_id = valid_data.VALID_GENERATOR_ID  + "_" + settings.RUN_ID[-4:]
 
   def test_delete_generator_with_unknown_id(self):
@@ -58,10 +58,10 @@ class TestDeleteGeneratorWithInvalidID(unittest.TestCase):
   """Checks that the client fails when trying to delete an invalid generator"""
   @classmethod
   def setUpClass(cls):
-    cls.client = craftai.Client(settings.CRAFT_CFG)
+    cls.client = craft_ai.Client(settings.CRAFT_CFG)
 
   def setUp(self):
-    self.client = craftai.Client(settings.CRAFT_CFG)
+    self.client = craft_ai.Client(settings.CRAFT_CFG)
 
   def test_delete_generator_with_invalid_id(self):
     """delete_generator should fail when given a non-string/empty string ID
@@ -73,6 +73,6 @@ class TestDeleteGeneratorWithInvalidID(unittest.TestCase):
 
     for empty_id in invalid_data.UNDEFINED_KEY:
       self.assertRaises(
-        craftai.errors.CraftAiBadRequestError,
+        craft_ai.errors.CraftAiBadRequestError,
         self.client.delete_generator,
         invalid_data.UNDEFINED_KEY[empty_id])

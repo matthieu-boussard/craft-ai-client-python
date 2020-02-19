@@ -2,7 +2,7 @@ import json
 import os
 
 from nose.tools import assert_raises, assert_equal
-from craftai import Client, Interpreter, Time, errors as craft_err
+from craft_ai import Client, Interpreter, Time, errors as craft_err
 
 from . import settings
 

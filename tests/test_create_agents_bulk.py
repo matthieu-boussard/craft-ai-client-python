@@ -1,7 +1,7 @@
 import unittest
 import six
 
-from craftai import Client, errors as craft_err
+from craft_ai import Client, errors as craft_err
 
 from . import settings
 from .data import valid_data

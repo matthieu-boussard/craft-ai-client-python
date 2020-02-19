@@ -4,7 +4,7 @@ import json
 
 from six import text_type, binary_type
 
-from craftai.errors import CraftAiTokenError
+from craft_ai.errors import CraftAiTokenError
 
 # Initial code retrieved from PyJWT
 # cf. https://github.com/jpadilla/pyjwt/blob/ceff941/jwt/utils.py#L33-L42

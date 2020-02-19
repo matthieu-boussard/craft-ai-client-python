@@ -1,4 +1,0 @@
-include LICENSE
-include README.rst
-include CHANGELOG.md
-recursive-include craftai/pandas *.py

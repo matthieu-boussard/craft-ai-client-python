@@ -2,10 +2,10 @@ import math
 import numbers
 import six
 
-from craftai.errors import CraftAiDecisionError, CraftAiNullDecisionError
-from craftai.operators import OPERATORS, OPERATORS_FUNCTION
-from craftai.types import TYPES
-from craftai.timezones import is_timezone
+from craft_ai.errors import CraftAiDecisionError, CraftAiNullDecisionError
+from craft_ai.operators import OPERATORS, OPERATORS_FUNCTION
+from craft_ai.types import TYPES
+from craft_ai.timezones import is_timezone
 
 _DECISION_VERSION = "2.0.0"
 

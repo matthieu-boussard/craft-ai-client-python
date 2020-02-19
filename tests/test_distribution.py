@@ -1,6 +1,6 @@
 from math import sqrt
 from nose.tools import assert_equal, assert_true
-from craftai.interpreter_v2 import InterpreterV2
+from craft_ai.interpreter_v2 import InterpreterV2
 
 def test_regression_mean():
   means = [10, 20, 30]

@@ -4,14 +4,14 @@ import semver
 
 from nose.tools import assert_equal, assert_is_instance, assert_not_equal, assert_raises, with_setup
 import pandas as pd
-import craftai
-from craftai.constants import DEFAULT_DECISION_TREE_VERSION
+import craft_ai
+from craft_ai.constants import DEFAULT_DECISION_TREE_VERSION
 
 from . import settings
 from .data import valid_data
 from .data import invalid_data
 
-CLIENT = craftai.Client(settings.CRAFT_CFG)
+CLIENT = craft_ai.Client(settings.CRAFT_CFG)
 AGENT_ID = "test_get_decision_tree_" + settings.RUN_ID[-4:]
 
 VALID_L_CFG = valid_data.VALID_LARGE_CONFIGURATION
@@ -157,7 +157,7 @@ def test_get_decision_tree_with_invalid_id():
   """
   for empty_id in invalid_data.UNDEFINED_KEY:
     assert_raises(
-      craftai.errors.CraftAiBadRequestError,
+      craft_ai.errors.CraftAiBadRequestError,
       CLIENT.get_decision_tree,
       invalid_data.UNDEFINED_KEY[empty_id],
       valid_data.VALID_TIMESTAMP)
@@ -170,7 +170,7 @@ def test_get_decision_tree_with_unknown_id():
   that doesn't exist.
   """
   assert_raises(
-    craftai.errors.CraftAiNotFoundError,
+    craft_ai.errors.CraftAiNotFoundError,
     CLIENT.get_decision_tree,
     invalid_data.UNKNOWN_ID,
     valid_data.VALID_TIMESTAMP)
@@ -178,7 +178,7 @@ def test_get_decision_tree_with_unknown_id():
 @with_setup(setup_agent_w_operations, teardown)
 def test_get_decision_tree_with_negative_timestamp():
   assert_raises(
-    craftai.errors.CraftAiBadRequestError,
+    craft_ai.errors.CraftAiBadRequestError,
     CLIENT.get_decision_tree,
     AGENT_ID,
     invalid_data.INVALID_TIMESTAMPS["negative_ts"])
@@ -186,7 +186,7 @@ def test_get_decision_tree_with_negative_timestamp():
 @with_setup(setup_agent_w_operations, teardown)
 def test_get_decision_tree_with_float_timestamp():
   assert_raises(
-    craftai.errors.CraftAiBadRequestError,
+    craft_ai.errors.CraftAiBadRequestError,
     CLIENT.get_decision_tree,
     AGENT_ID,
     invalid_data.INVALID_TIMESTAMPS["float_ts"])
@@ -209,10 +209,10 @@ def test_get_decision_tree_with_float_timestamp():
 # def test_get_decision_tree_w_serverside_timeout():
 #   other_client_cfg = settings.CRAFT_CFG.copy()
 #   other_client_cfg["decisionTreeRetrievalTimeout"] = False
-#   other_client = craftai.Client(other_client_cfg)
+#   other_client = craft_ai.Client(other_client_cfg)
 #   last_operation = VALID_L_OPERATIONS[-1][-1]
 #   assert_raises(
-#     craftai.errors.CraftAiLongRequestTimeOutError,
+#     craft_ai.errors.CraftAiLongRequestTimeOutError,
 #     other_client.get_decision_tree,
 #     AGENT_ID,
 #     last_operation["timestamp"])
@@ -221,10 +221,10 @@ def test_get_decision_tree_with_float_timestamp():
 # def test_get_decision_tree_w_smallish_timeout():
 #   other_client_cfg = settings.CRAFT_CFG.copy()
 #   other_client_cfg["decisionTreeRetrievalTimeout"] = 500
-#   other_client = craftai.Client(other_client_cfg)
+#   other_client = craft_ai.Client(other_client_cfg)
 #   last_operation = VALID_L_OPERATIONS[-1][-1]
 #   assert_raises(
-#     craftai.errors.CraftAiLongRequestTimeOutError,
+#     craft_ai.errors.CraftAiLongRequestTimeOutError,
 #     other_client.get_decision_tree,
 #     AGENT_ID,
 #     last_operation["timestamp"])
