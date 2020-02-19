@@ -9,9 +9,4 @@ from .reducer import reduce_decision_rules
 
 # Defining what will be imported when doing `from craft_ai import *`
 
-__all__ = [
-  "Client",
-  "errors",
-  "Interpreter",
-  "Time"
-]
+__all__ = ["Client", "errors", "Interpreter", "Time"]
