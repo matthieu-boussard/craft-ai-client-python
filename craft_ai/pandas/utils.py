@@ -8,7 +8,10 @@ from IPython.core.display import display, HTML
 import pandas as pd
 import six
 import semver
-from .constants import MISSING_VALUE, OPTIONAL_VALUE
+from .constants import (
+    MISSING_VALUE,
+    OPTIONAL_VALUE,
+)
 from ..constants import REACT_CRAFT_AI_DECISION_TREE_VERSION
 from ..errors import CraftAiError
 
@@ -57,36 +60,36 @@ def random_string(length=20):
 # Return a html version of the given tree
 def create_tree_html(tree_object, selected_node, edge_type, folded_nodes, height=500):
     html_template = """ <html>
-  <head>
-    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin defer>
-    </script>
-    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin defer>
-    </script>
-    <script src="https://unpkg.com/react-craft-ai-decision-tree@0.0.26" crossorigin defer>
-    </script>
-    <style>
-      .jp-RenderedHTMLCommon table {{ table-layout: inherit; }}
-      .jp-RenderedHTMLCommon ul {{ padding-left: none; }}
-    </style>
-  </head>
-  <body>
-    <div id="{idDiv}">
-    </div>
-    <script async=false>
-  ReactDOM.render(
-    React.createElement(DecisionTree,
-      {{
-        style: {{ height: {height} }},
-        data: {tree},
-        selectedNode: "{selectedNode}",
-        foldedNodes: {foldedNodes},
-        edgeType: "{edgeType}"
-      }}
-    ),document.getElementById("{idDiv}")
-  );
-    </script>
-  </body>
-  </html>"""
+    <head>
+        <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin defer>
+        </script>
+        <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin defer>
+        </script>
+        <script src="https://unpkg.com/react-craft-ai-decision-tree@0.0.26" crossorigin defer>
+        </script>
+        <style>
+        .jp-RenderedHTMLCommon table {{ table-layout: inherit; }}
+        .jp-RenderedHTMLCommon ul {{ padding-left: none; }}
+        </style>
+    </head>
+    <body>
+        <div id="{idDiv}">
+        </div>
+        <script async=false>
+    ReactDOM.render(
+        React.createElement(DecisionTree,
+        {{
+            style: {{ height: {height} }},
+            data: {tree},
+            selectedNode: "{selectedNode}",
+            foldedNodes: {foldedNodes},
+            edgeType: "{edgeType}"
+        }}
+        ),document.getElementById("{idDiv}")
+    );
+        </script>
+    </body>
+    </html>"""
 
     if height <= 0:
         raise CraftAiError("A strictly positive height value must be given.")
@@ -145,7 +148,7 @@ def create_tree_html(tree_object, selected_node, edge_type, folded_nodes, height
                     )
                 )
 
-    if not edge_type in ["constant", "absolute", "relative"]:
+    if edge_type not in ["constant", "absolute", "relative"]:
         raise CraftAiError(
             """Invalid edge type given, its value should be a "constant", """
             """"absolute" or "relative", found: {}""".format(edge_type)
@@ -208,17 +211,17 @@ def _get_paths(tree):
 
 def _is_neighbour(path0, path1):
     """
-  Boolean function. A neighbour has exactly the same path excepted for the last node
-  """
+        Boolean function. A neighbour has exactly the same path excepted for the last node
+    """
     return path0[:-1] == path1[:-1] and path0 != path1
 
 
 def _get_neighbours(paths, decision_path):
     """
-  Collect all neighbours paths of the given decision path
-  param: paths: paths aggregator
-  param: decision_path: decision path to get neighbours from
-  """
+    Collect all neighbours paths of the given decision path
+    param: paths: paths aggregator
+    param: decision_path: decision path to get neighbours from
+    """
     split = decision_path.split("-")
     neighbours = []
     for step in range(1, len(split) + 1):
@@ -247,12 +250,12 @@ def get_paths(tree):
 
 def get_neighbours(tree, decision_path, max_depth=None, include_self=False):
     """
-  collect all neighbours decision paths of the given decision path
-  param: tree: craft_ai tree or simple tree
-  param: decision_path: string tree path eg. "0-2-1"
-  param: max_depth: positive int filter neighbours on their depth
-  param: include_self: boolean. include the given decision_path to the neighbours.
-  """
+    collect all neighbours decision paths of the given decision path
+    param: tree: craft_ai tree or simple tree
+    param: decision_path: string tree path eg. "0-2-1"
+    param: max_depth: positive int filter neighbours on their depth
+    param: include_self: boolean. include the given decision_path to the neighbours.
+    """
     paths = _get_paths(_extract_tree(tree))
     if decision_path not in paths:
         raise CraftAiError(

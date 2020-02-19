@@ -135,18 +135,18 @@ class CraftAIClient(object):
     def create_agent(self, configuration, agent_id=""):
         """Create an agent.
 
-    :param dict configuration: Form given by the craft_ai documentation.
-    :param str agent_id: Optional. The id of the agent to create. It
-    must be an str containing only characters in "a-zA-Z0-9_-" and
-    must be between 1 and 36 characters.
-    :default agent_id: "", the agent_id is generated.
+        :param dict configuration: Form given by the craft_ai documentation.
+        :param str agent_id: Optional. The id of the agent to create. It
+        must be an str containing only characters in "a-zA-Z0-9_-" and
+        must be between 1 and 36 characters.
+        :default agent_id: "", the agent_id is generated.
 
-    :return: agent created.
-    :rtype: dict.
+        :return: agent created.
+        :rtype: dict.
 
-    :raise CraftAiBadRequestError: if the input is not of
-    the right form.
-    """
+        :raise CraftAiBadRequestError: if the input is not of
+        the right form.
+        """
         # Extra header in addition to the main session's
         ct_header = {"Content-Type": "application/json; charset=utf-8"}
 
@@ -177,18 +177,18 @@ class CraftAIClient(object):
     def create_agents_bulk(self, payload):
         """Create a group of agents.
 
-    :param list payload: Contains the informations to create the agents.
-    It's in the form [{"id": agent_id, "configuration": configuration}]
-    With an optional id key that is an str containing only characters
-    in "a-zA-Z0-9_-" and must be between 1 and 36 characters.
-    With configuration having the form given in the craft_ai documentation.
+        :param list payload: Contains the informations to create the agents.
+        It's in the form [{"id": agent_id, "configuration": configuration}]
+        With an optional id key that is an str containing only characters
+        in "a-zA-Z0-9_-" and must be between 1 and 36 characters.
+        With configuration having the form given in the craft_ai documentation.
 
-    :return: agents created which are represented with dictionnaries.
-    :rtype: List of dict.
+        :return: agents created which are represented with dictionnaries.
+        :rtype: List of dict.
 
-    :raises CraftAiBadRequestError: If all of the ids or all of the
-    configurations are invalid.
-    """
+        :raises CraftAiBadRequestError: If all of the ids or all of the
+        configurations are invalid.
+        """
         # Check all ids, raise an error if all ids are invalid
         valid_indices, invalid_indices, invalid_agents = self._check_agent_id_bulk(
             payload
@@ -232,13 +232,13 @@ class CraftAIClient(object):
     def delete_agent(self, agent_id):
         """Delete an agent.
 
-    :param str agent_id: The id of the agent to delete. It must
-    be an str containing only characters in "a-zA-Z0-9_-" and
-    must be between 1 and 36 characters.
+        :param str agent_id: The id of the agent to delete. It must
+        be an str containing only characters in "a-zA-Z0-9_-" and
+        must be between 1 and 36 characters.
 
-    :return: agent deleted.
-    :rtype: dict.
-    """
+        :return: agent deleted.
+        :rtype: dict.
+        """
         # Raises an error when agent_id is invalid
         self._check_agent_id(agent_id)
 
@@ -252,17 +252,17 @@ class CraftAIClient(object):
     def delete_agents_bulk(self, payload):
         """Delete a group of agents
 
-    :param list payload: Contains the informations to delete the agents.
-    It's in the form [{"id": agent_id}].
-    With id an str containing only characters in "a-zA-Z0-9_-" and must
-    be between 1 and 36 characters.
+        :param list payload: Contains the informations to delete the agents.
+        It's in the form [{"id": agent_id}].
+        With id an str containing only characters in "a-zA-Z0-9_-" and must
+        be between 1 and 36 characters.
 
-    :return: the list of agents deleted which are represented with
-    dictionnaries.
-    :rtype: list of dict.
+        :return: the list of agents deleted which are represented with
+        dictionnaries.
+        :rtype: list of dict.
 
-    :raises CraftAiBadRequestError: If all of the ids are invalid.
-    """
+        :raises CraftAiBadRequestError: If all of the ids are invalid.
+        """
         # Check all ids, raise an error if all ids are invalid
         valid_indices, invalid_indices, invalid_agents = self._check_agent_id_bulk(
             payload
@@ -315,19 +315,19 @@ class CraftAIClient(object):
     def add_operations(self, agent_id, operations):
         """Add operations to an agent.
 
-    :param str agent_id: The id of the agent to delete. It must be
-    an str containing only characters in "a-zA-Z0-9_-" and must be
-    between 1 and 36 characters. It must referenced an existing agent.
-    :param list operations: Contains dictionnaries that has the
-    form given in the craft_ai documentation and the configuration
-    of the agent.
+        :param str agent_id: The id of the agent to delete. It must be
+        an str containing only characters in "a-zA-Z0-9_-" and must be
+        between 1 and 36 characters. It must referenced an existing agent.
+        :param list operations: Contains dictionnaries that has the
+        form given in the craft_ai documentation and the configuration
+        of the agent.
 
-    :return: message about the added operations.
-    :rtype: str
+        :return: message about the added operations.
+        :rtype: str
 
-    :raise CraftAiBadRequestError: if the input is not of
-    the right form.
-    """
+        :raise CraftAiBadRequestError: if the input is not of
+        the right form.
+        """
         # Raises an error when agent_id is invalid
         self._check_agent_id(agent_id)
 
@@ -363,17 +363,17 @@ class CraftAIClient(object):
 
     def _add_operations_bulk(self, chunked_data):
         """Tool for the function add_operations_bulk. It send the requests to
-    add the operations to the agents.
+        add the operations to the agents.
 
-    :param list chunked_data: list of list of the agents and their operations
-    to add. Each chunk can be requested at the same time.
+        :param list chunked_data: list of list of the agents and their operations
+        to add. Each chunk can be requested at the same time.
 
-    :return: list of agents containing a message about the added
-    operations.
-    :rtype: list of dict.
+        :return: list of agents containing a message about the added
+        operations.
+        :rtype: list of dict.
 
-    :raises CraftAiBadRequestError: if the input is not of the right form.
-    """
+        :raises CraftAiBadRequestError: if the input is not of the right form.
+        """
         url = "{}/bulk/context".format(self._base_url)
         ct_header = {"Content-Type": "application/json; charset=utf-8"}
 
@@ -406,21 +406,21 @@ class CraftAIClient(object):
     def add_operations_bulk(self, payload):
         """Add operations to a group of agents.
 
-    :param list payload: contains the informations necessary for the action.
-    It's in the form [{"id": agent_id, "operations": operations}]
-    With id that is an str containing only characters in "a-zA-Z0-9_-"
-    and must be between 1 and 36 characters. It must referenced an
-    existing agent.
-    With operations a list containing dictionnaries that has the form given
-    in the craft_ai documentation and the configuration of the agent.
+        :param list payload: contains the informations necessary for the action.
+        It's in the form [{"id": agent_id, "operations": operations}]
+        With id that is an str containing only characters in "a-zA-Z0-9_-"
+        and must be between 1 and 36 characters. It must referenced an
+        existing agent.
+        With operations a list containing dictionnaries that has the form given
+        in the craft_ai documentation and the configuration of the agent.
 
-    :return: list of agents containing a message about the added
-    operations.
-    :rtype: list of dict.
+        :return: list of agents containing a message about the added
+        operations.
+        :rtype: list of dict.
 
-    :raises CraftAiBadRequestError: if all of the ids are invalid or
-    referenced non existing agents or one of the operations is invalid.
-    """
+        :raises CraftAiBadRequestError: if all of the ids are invalid or
+        referenced non existing agents or one of the operations is invalid.
+        """
         # Check all ids, raise an error if all ids are invalid
         valid_indices, _, _ = self._check_agent_id_bulk(payload)
         valid_payload = [payload[i] for i in valid_indices]
@@ -522,23 +522,24 @@ class CraftAIClient(object):
     ):
         """Tool for the function get_decision_tree.
 
-    :param str agent_id: the id of the agent to get the tree. It
-    must be an str containing only characters in "a-zA-Z0-9_-" and
-    must be between 1 and 36 characters.
-    :param int timestamp: Optional. The decision tree is comptuted
-    at this timestamp.
-    :default timestamp: None, means that we get the tree computed
-    with all its context history.
-    :param version: version of the tree to get.
-    :type version: str or int.
-    :default version: default version of the tree.
+        :param str agent_id: the id of the agent to get the tree. It
+        must be an str containing only characters in "a-zA-Z0-9_-" and
+        must be between 1 and 36 characters.
+        :param int timestamp: Optional. The decision tree is comptuted
+        at this timestamp.
+        :default timestamp: None, means that we get the tree computed
+        with all its context history.
+        :param version: version of the tree to get.
+        :type version: str or int.
+        :default version: default version of the tree.
 
-    :return: decision tree.
-    :rtype: dict.
-    """
+        :return: decision tree.
+        :rtype: dict.
+        """
         self._requests_session.headers["x-craft-ai-tree-version"] = version
 
-        # If we give no timestamp the default behaviour is to give the tree from the latest timestamp
+        # If we give no timestamp the default behaviour is to give
+        # the tree from the latest timestamp
         if timestamp is None:
             req_url = "{}/agents/{}/decision/tree?".format(self._base_url, agent_id)
         else:
@@ -557,23 +558,23 @@ class CraftAIClient(object):
     ):
         """Get decision tree.
 
-    :param str agent_id: the id of the agent to get the tree. It
-    must be an str containing only characters in "a-zA-Z0-9_-" and
-    must be between 1 and 36 characters.
-    :param int timestamp: Optional. The decision tree is comptuted
-    at this timestamp.
-    :default timestamp: None, means that we get the tree computed
-    with all its context history.
-    :param version: version of the tree to get.
-    :type version: str or int.
-    :default version: default version of the tree.
+        :param str agent_id: the id of the agent to get the tree. It
+        must be an str containing only characters in "a-zA-Z0-9_-" and
+        must be between 1 and 36 characters.
+        :param int timestamp: Optional. The decision tree is comptuted
+        at this timestamp.
+        :default timestamp: None, means that we get the tree computed
+        with all its context history.
+        :param version: version of the tree to get.
+        :type version: str or int.
+        :default version: default version of the tree.
 
-    :return: decision tree.
-    :rtype: dict.
+        :return: decision tree.
+        :rtype: dict.
 
-    :raises CraftAiLongRequestTimeOutError: if the API doesn't get
-    the tree in the time given by the configuration.
-    """
+        :raises CraftAiLongRequestTimeOutError: if the API doesn't get
+        the tree in the time given by the configuration.
+        """
         if isinstance(version, int):
             version = str(version)
 
@@ -606,16 +607,16 @@ class CraftAIClient(object):
     ):
         """Tool for the function get_decision_trees_bulk.
 
-    :param list payload: contains the informations necessary for getting
-    the trees. Its form is the same than for the function.
-    get_decision_trees_bulk.
-    :param list valid_indices: list of the indices of the valid agent id.
-    :param list invalid_indices: list of the indices of the valid agent id.
-    :param list invalid_dts: list of the invalid agent id.
+        :param list payload: contains the informations necessary for getting
+        the trees. Its form is the same than for the function.
+        get_decision_trees_bulk.
+        :param list valid_indices: list of the indices of the valid agent id.
+        :param list invalid_indices: list of the indices of the valid agent id.
+        :param list invalid_dts: list of the invalid agent id.
 
-    :return: decision trees.
-    :rtype: list of dict.
-    """
+        :return: decision trees.
+        :rtype: list of dict.
+        """
         valid_dts = self._create_and_send_json_bulk(
             [payload[i] for i in valid_indices],
             "{}/bulk/decision_tree".format(self._base_url),
@@ -633,23 +634,23 @@ class CraftAIClient(object):
     def get_decision_trees_bulk(self, payload, version=DEFAULT_DECISION_TREE_VERSION):
         """Get a group of decision trees.
 
-    :param list payload: contains the informations necessary for getting
-    the trees. It's in the form [{"id": agent_id, "timestamp": timestamp}]
-    With id a str containing only characters in "a-zA-Z0-9_-" and must be
-    between 1 and 36 characters. It must referenced an existing agent.
-    With timestamp an positive and not null integer.
-    :param version: version of the tree to get.
-    :type version: str or int.
-    :default version: default version of the tree.
+        :param list payload: contains the informations necessary for getting
+        the trees. It's in the form [{"id": agent_id, "timestamp": timestamp}]
+        With id a str containing only characters in "a-zA-Z0-9_-" and must be
+        between 1 and 36 characters. It must referenced an existing agent.
+        With timestamp an positive and not null integer.
+        :param version: version of the tree to get.
+        :type version: str or int.
+        :default version: default version of the tree.
 
-    :return: Decision trees.
-    :rtype: list of dict.
+        :return: Decision trees.
+        :rtype: list of dict.
 
-    :raises CraftAiBadRequestError: if all of the ids are invalid or
-    referenced non existing agents or all of the timestamp are invalid.
-    :raises CraftAiLongRequestTimeOutError: if the API doesn't get
-    the tree in the time given by the configuration.
-    """
+        :raises CraftAiBadRequestError: if all of the ids are invalid or
+        referenced non existing agents or all of the timestamp are invalid.
+        :raises CraftAiLongRequestTimeOutError: if the API doesn't get
+        the tree in the time given by the configuration.
+        """
         if isinstance(version, int):
             version = str(version)
         self._requests_session.headers["x-craft-ai-tree-version"] = version
@@ -684,7 +685,7 @@ class CraftAIClient(object):
     def _parse_body(response):
         try:
             return response.json()
-        except:
+        except Exception:
             raise CraftAiInternalError(
                 "Internal Error, the craft ai server responded in an invalid format."
             )
@@ -693,12 +694,12 @@ class CraftAIClient(object):
     def _decode_response(response):
         """Decode the response of a request.
 
-    :param response: response of a request.
+        :param response: response of a request.
 
-    :return: decoded response.
+        :return: decoded response.
 
-    :raise Error: Raise the error given by the request.
-    """
+        :raise Error: Raise the error given by the request.
+        """
         status_code = response.status_code
 
         message = "Status code " + str(status_code)
@@ -717,12 +718,12 @@ class CraftAIClient(object):
     def _decode_response_bulk(response_bulk):
         """Decode the response of each agent given by a bulk function.
 
-    :param list response_bulk: list of dictionnary which represents
-    the response for an agent.
+        :param list response_bulk: list of dictionnary which represents
+        the response for an agent.
 
-    :return: decoded response.
-    :rtype: list of dict.
-    """
+        :return: decoded response.
+        :rtype: list of dict.
+        """
         resp = []
         for response in response_bulk:
             if ("status" in response) and (response.get("status") == 201):
@@ -749,13 +750,13 @@ class CraftAIClient(object):
     def _get_error_from_status(status_code, message):
         """Give the error corresponding to the status code.
 
-    :param int status_code: status code of the response to
-    a request.
-    :param str message: error message given by the response.
+        :param int status_code: status code of the response to
+        a request.
+        :param str message: error message given by the response.
 
-    :return: error corresponding to the status code.
-    :rtype: Error.
-    """
+        :return: error corresponding to the status code.
+        :rtype: Error.
+        """
         if status_code == 202:
             err = CraftAiLongRequestTimeOutError(message)
         elif status_code == 401 or status_code == 403:
@@ -785,11 +786,11 @@ class CraftAIClient(object):
     def _check_agent_id(agent_id):
         """Checks that the given agent_id is a valid non-empty string.
 
-    :param str agent_id: agent id to check.
+        :param str agent_id: agent id to check.
 
-    :raise CraftAiBadRequestError: If the given agent_id is not of
-    type string or if it is an empty string.
-    """
+        :raise CraftAiBadRequestError: If the given agent_id is not of
+        type string or if it is an empty string.
+        """
         if (
             not isinstance(agent_id, six.string_types)
             or AGENT_ID_PATTERN.match(agent_id) is None
@@ -798,16 +799,16 @@ class CraftAIClient(object):
 
     def _check_agent_id_bulk(self, payload, check_serializable=True):
         """Checks that all the given agent ids are valid non-empty strings
-    and if the agents are serializable.
+        and if the agents are serializable.
 
-    :param list payload: list of dictionnary which represents an agent.
+        :param list payload: list of dictionnary which represents an agent.
 
-    :return: list of the agents with valid ids, list of the agents with
-    invalid ids, list of the dictionnaries with valid ids.
-    :rtype: list, list, list of dict.
+        :return: list of the agents with valid ids, list of the agents with
+        invalid ids, list of the dictionnaries with valid ids.
+        :rtype: list, list, list of dict.
 
-    :raise CraftAiBadRequestError: If all the agents are invalid.
-    """
+        :raise CraftAiBadRequestError: If all the agents are invalid.
+        """
         invalid_agent_indices = []
         valid_agent_indices = []
         invalid_payload = []
@@ -846,16 +847,16 @@ class CraftAIClient(object):
     def _recreate_list_with_indices(indices1, values1, indices2, values2):
         """Create a list in the right order.
 
-    :param list indices1: contains the list of indices corresponding to
-    the values in values1.
-    :param list values1: contains the first list of values.
-    :param list indices2: contains the list of indices corresponding to
-    the values in values2.
-    :param list values2: contains the second list of values.
+        :param list indices1: contains the list of indices corresponding to
+        the values in values1.
+        :param list values1: contains the first list of values.
+        :param list indices2: contains the list of indices corresponding to
+        the values in values2.
+        :param list values2: contains the second list of values.
 
-    :return: list of the values in the correct order.
-    :rtype: list.
-    """
+        :return: list of the values in the correct order.
+        :rtype: list.
+        """
         # Test if indices are continuous
         list_indices = sorted(indices1 + indices2)
         for i, index in enumerate(list_indices):
@@ -872,19 +873,19 @@ class CraftAIClient(object):
     def _create_and_send_json_bulk(self, payload, req_url, request_type="POST"):
         """Create a json, do a request to the URL and process the response.
 
-    :param list payload: contains the informations necessary for the action.
-    It's a list of dictionnary.
-    :param str req_url: URL to request with the payload.
-    :param str request_type: type of request, either "POST" or "DELETE".
-    :default request_type: "POST".
+        :param list payload: contains the informations necessary for the action.
+        It's a list of dictionnary.
+        :param str req_url: URL to request with the payload.
+        :param str request_type: type of request, either "POST" or "DELETE".
+        :default request_type: "POST".
 
-    :return: response of the request.
-    :rtype: list of dict.
+        :return: response of the request.
+        :rtype: list of dict.
 
-    :raises CraftAiBadRequestError: if the payload doesn't have the
-    correct form to be transformed into a json or request_type is
-    neither "POST" or "DELETE".
-    """
+        :raises CraftAiBadRequestError: if the payload doesn't have the
+        correct form to be transformed into a json or request_type is
+        neither "POST" or "DELETE".
+        """
         # Extra header in addition to the main session's
         ct_header = {"Content-Type": "application/json; charset=utf-8"}
 

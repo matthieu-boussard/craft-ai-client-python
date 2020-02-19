@@ -38,13 +38,13 @@ SIMPLE_AGENT_MANY_DATA = pd.DataFrame(
 SIMPLE_AGENT_DATA_DICT = [
     {
         "timestamp": 1458741230,
-        "context": {"a": 10, "b": 10, "c": 10, "d": 10, "e": 10,},
+        "context": {"a": 10, "b": 10, "c": 10, "d": 10, "e": 10},
     },
-    {"timestamp": 1458741331, "context": {"a": 10, "b": 11, "c": 12, "e": 13,}},
-    {"timestamp": 1458741432, "context": {"a": 13, "b": 44, "c": 33, "d": 22,}},
-    {"timestamp": 1458741533, "context": {"a": 11, "d": 55, "e": 55,}},
-    {"timestamp": 1458741634, "context": {"a": 33, "c": 66, "d": 22, "e": 44,}},
-    {"timestamp": 1458741735, "context": {"a": 1, "b": 33, "c": 33, "d": 44,}},
+    {"timestamp": 1458741331, "context": {"a": 10, "b": 11, "c": 12, "e": 13}},
+    {"timestamp": 1458741432, "context": {"a": 13, "b": 44, "c": 33, "d": 22}},
+    {"timestamp": 1458741533, "context": {"a": 11, "d": 55, "e": 55}},
+    {"timestamp": 1458741634, "context": {"a": 33, "c": 66, "d": 22, "e": 44}},
+    {"timestamp": 1458741735, "context": {"a": 1, "b": 33, "c": 33, "d": 44}},
 ]
 
 COMPLEX_AGENT_CONFIGURATION = {
@@ -161,7 +161,7 @@ MISSING_AGENT_DATA = pd.DataFrame(
 )
 
 MISSING_AGENT_DATA_DECISION = pd.DataFrame(
-    [[1, MISSING_VALUE, "+02:00"], [3, OPTIONAL_VALUE],],
+    [[1, MISSING_VALUE, "+02:00"], [3, OPTIONAL_VALUE]],
     columns=["a", "b", "tz"],
     index=pd.date_range("20130101", periods=2, freq="D").tz_localize("Europe/Paris"),
 )

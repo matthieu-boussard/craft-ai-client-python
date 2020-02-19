@@ -57,14 +57,14 @@ def _in_in_reducer(rule_1, rule_2):
 
     if op_2_from_in_op_1 and op_2_to_in_op_1:
         # op_2 belongs to op_1
-        #    |    op_1    |
+        #   |    op_1    |
         #      |  op_2  |
         return rule_2
 
     if op_2_from_in_op_1 and op_1_to_in_op_2:
         # overlap 1
-        #    |    op_1    |
-        #             |   op_2   |
+        #       |    op_1    |
+        #           |   op_2   |
         return {
             "property": rule_1["property"],
             "operator": OPERATORS["IN_INTERVAL"],

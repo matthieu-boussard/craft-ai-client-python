@@ -31,7 +31,7 @@ INVALID_OPS_SET = {
     "incomplete_first_op": [
         {
             "timestamp": 1458741231,
-            "context": {"presence": "player", "lightIntensity": 0.5,},
+            "context": {"presence": "player", "lightIntensity": 0.5},
         }
     ],
     "invalid_operation": [

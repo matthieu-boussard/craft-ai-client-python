@@ -34,9 +34,9 @@ def interpreter_tests_generator():
                     expectations = json.load(f)
 
                 for expectation in expectations:
-                    # pylint: disable=W0108
-                    test_fn = lambda t, e: check_expectation(t, e)
-                    # pylint: enable=W0108
+
+                    def test_fn(t, e):
+                        return check_expectation(t, e)
 
                     test_fn.description = tree_file + " - " + expectation["title"]
                     interpreter_tests_generator.compat_func_name = test_fn.description

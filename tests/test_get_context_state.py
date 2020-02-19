@@ -78,9 +78,9 @@ class TestGetContextStateFailure(unittest.TestCase):
     def test_get_context_state_with_unknown_id(self):
         """get_context_state should fail when given an unknown agent ID
 
-    It should raise an error upon request for the retrieval of an agent
-    that doesn't exist.
-    """
+        It should raise an error upon request for the retrieval of an agent
+        that doesn't exist.
+        """
         self.assertRaises(
             craft_err.CraftAiNotFoundError,
             self.client.get_context_state,
@@ -90,7 +90,7 @@ class TestGetContextStateFailure(unittest.TestCase):
 
     def test_get_context_state_with_invalid_timestamp(self):
         for inv_ts in invalid_data.INVALID_TIMESTAMPS:
-            if not inv_ts is None:
+            if inv_ts is not None:
                 self.assertRaises(
                     craft_err.CraftAiBadRequestError,
                     self.client.get_context_state,
