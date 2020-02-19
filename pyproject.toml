@@ -16,7 +16,7 @@ classifiers = [
 include = ["LICENSE", "CHANGELOG.md"]
 
 [tool.poetry.dependencies]
-python = "^3.5"
+python = "^3.6"
 requests = "^2.20.1"
 six = "^1.10"
 datetime = "^4.1.1"
@@ -30,10 +30,9 @@ IPython = "^5.8.0"
 pandas = ["pandas"]
 
 [tool.poetry.dev-dependencies]
-pylint = "1.8.1"
-pylint_quotes = "0.1.6"
 nose = "^1.3.7"
 python-dotenv = "^0.5.1"
+black = "^19.10b0"
 
 [build-system]
 requires = ["poetry>=0.12"]

@@ -10,15 +10,18 @@ from . import settings
 
 CLIENT = craft_ai.pandas.Client(settings.CRAFT_CFG)
 
+
 def setup_nothing():
-  pass
+    pass
+
 
 def teardown_nothing():
-  pass
+    pass
+
 
 @with_setup(setup_nothing, teardown_nothing)
 def test_predict_month():
-  tree_json = """{
+    tree_json = """{
         \"_version\": \"1.1.0\",
         \"trees\": {
             \"scream\": {
@@ -69,8 +72,8 @@ def test_predict_month():
             ]
         }
   }"""
-  tree = json.loads(tree_json)
+    tree = json.loads(tree_json)
 
-  state_history = pd.read_csv("tests/data/state_only_month.csv", index_col=0)
-  state_history.index = pd.to_datetime(state_history.index)
-  CLIENT.decide_from_contexts_df(tree, state_history)
+    state_history = pd.read_csv("tests/data/state_only_month.csv", index_col=0)
+    state_history.index = pd.to_datetime(state_history.index)
+    CLIENT.decide_from_contexts_df(tree, state_history)
