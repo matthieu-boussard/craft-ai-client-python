@@ -62,7 +62,6 @@ setup(
     "python-dateutil~=2.7.2",
     "IPython~=5.8.0",
     "pandas~=0.24.2",
-    "scikit-learn~=0.20.3"
   ],
   include_package_data=True
 )
