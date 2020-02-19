@@ -3,8 +3,8 @@ import os
 
 from nose.tools import assert_equal
 from nose.tools import assert_true
-from craftai.pandas.utils import get_paths
-from craftai.pandas.utils import get_neighbours
+from craft_ai.pandas.utils import get_paths
+from craft_ai.pandas.utils import get_neighbours
 
 
 HERE = os.path.abspath(os.path.dirname(__file__))

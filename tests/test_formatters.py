@@ -4,7 +4,7 @@ import os
 from dateutil.parser import isoparse
 from nose.tools import assert_equal, assert_true, assert_raises
 
-from craftai import format_property, format_decision_rules, errors
+from craft_ai import format_property, format_decision_rules, errors
 
 def test_format_property_time_of_day():
   formatter = format_property("time_of_day")

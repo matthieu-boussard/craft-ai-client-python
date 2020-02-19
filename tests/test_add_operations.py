@@ -1,7 +1,7 @@
 import unittest
 
 import copy
-import craftai
+import craft_ai
 
 from . import settings
 from .data import valid_data
@@ -14,7 +14,7 @@ class TestAddOperationsSuccess(unittest.TestCase):
 
   @classmethod
   def setUpClass(cls):
-    cls.client = craftai.Client(settings.CRAFT_CFG)
+    cls.client = craft_ai.Client(settings.CRAFT_CFG)
     cls.agent_id = valid_data.VALID_ID  + "_" + settings.RUN_ID
 
   def setUp(self):
@@ -67,7 +67,7 @@ class TestAddOperationsFailure(unittest.TestCase):
 
   @classmethod
   def setUpClass(cls):
-    cls.client = craftai.Client(settings.CRAFT_CFG)
+    cls.client = craft_ai.Client(settings.CRAFT_CFG)
     cls.agent_id = valid_data.VALID_ID  + "_" + settings.RUN_ID
 
   def setUp(self):
@@ -86,7 +86,7 @@ class TestAddOperationsFailure(unittest.TestCase):
     """
     for empty_id in invalid_data.UNDEFINED_KEY:
       self.assertRaises(
-        craftai.errors.CraftAiBadRequestError,
+        craft_ai.errors.CraftAiBadRequestError,
         self.client.add_operations,
         invalid_data.UNDEFINED_KEY[empty_id],
         valid_data.VALID_OPERATIONS_SET)
@@ -99,7 +99,7 @@ class TestAddOperationsFailure(unittest.TestCase):
     """
     for ops_set in invalid_data.UNDEFINED_KEY:
       self.assertRaises(
-        craftai.errors.CraftAiBadRequestError,
+        craft_ai.errors.CraftAiBadRequestError,
         self.client.add_operations,
         self.agent_id,
         invalid_data.UNDEFINED_KEY[ops_set])
@@ -112,7 +112,7 @@ class TestAddOperationsFailure(unittest.TestCase):
     """
     for ops_set in invalid_data.INVALID_OPS_SET:
       self.assertRaises(
-        craftai.errors.CraftAiBadRequestError,
+        craft_ai.errors.CraftAiBadRequestError,
         self.client.add_operations,
         self.agent_id,
         invalid_data.INVALID_OPS_SET[ops_set])

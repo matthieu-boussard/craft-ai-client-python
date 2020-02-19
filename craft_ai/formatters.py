@@ -1,9 +1,9 @@
 import datetime
 import math
 
-from craftai.errors import CraftAiError
-from craftai.operators import OPERATORS
-from craftai.types import TYPES, TYPE_ANY
+from craft_ai.errors import CraftAiError
+from craft_ai.operators import OPERATORS
+from craft_ai.types import TYPES, TYPE_ANY
 
 DAYS = [
   "Mon",

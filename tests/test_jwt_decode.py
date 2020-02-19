@@ -1,7 +1,7 @@
 import unittest
 
-from craftai.jwt_decode import jwt_decode
-from craftai.errors import CraftAiTokenError
+from craft_ai.jwt_decode import jwt_decode
+from craft_ai.errors import CraftAiTokenError
 
 #pylint: disable=C0301
 JWT_IO_EXAMPLE = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ"

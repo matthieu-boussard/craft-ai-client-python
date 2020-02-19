@@ -3,7 +3,7 @@ import pandas as pd
 from numpy.random import randn
 from nose.tools import assert_equal, assert_raises, with_setup, assert_true
 
-import craftai.pandas
+import craft_ai.pandas
 from .data import pandas_valid_data
 
 from . import settings
@@ -25,7 +25,7 @@ INVALID_PYTHON_IDENTIFIER_CONFIGURATION = pandas_valid_data.INVALID_PYTHON_IDENT
 INVALID_PYTHON_IDENTIFIER_DATA = pandas_valid_data.INVALID_PYTHON_IDENTIFIER_DATA
 INVALID_PYTHON_IDENTIFIER_DECISION = pandas_valid_data.INVALID_PYTHON_IDENTIFIER_DECISION
 
-CLIENT = craftai.pandas.Client(settings.CRAFT_CFG)
+CLIENT = craft_ai.pandas.Client(settings.CRAFT_CFG)
 
 def setup_simple_agent():
   CLIENT.delete_agent(AGENT_ID)
@@ -60,7 +60,7 @@ def test_add_operations_df_bad_index():
                     columns=["a", "b", "c", "d", "e"])
 
   assert_raises(
-    craftai.pandas.errors.CraftAiBadRequestError,
+    craft_ai.pandas.errors.CraftAiBadRequestError,
     CLIENT.add_operations,
     AGENT_ID,
     df
@@ -96,7 +96,7 @@ def test_add_operations_df_unexpected_property():
                                         freq="T").tz_localize("Europe/Paris"))
 
   assert_raises(
-    craftai.pandas.errors.CraftAiBadRequestError,
+    craft_ai.pandas.errors.CraftAiBadRequestError,
     CLIENT.add_operations,
     AGENT_ID,
     df
@@ -301,7 +301,7 @@ def test_datetime_state_history_df():
 def test_tree_visualization():
   tree1 = CLIENT.get_decision_tree(AGENT_ID,
                                    DATETIME_AGENT_DATA.last_valid_index().value // 10 ** 9)
-  craftai.pandas.utils.create_tree_html(tree1, "", "constant", None, 500)
+  craft_ai.pandas.utils.create_tree_html(tree1, "", "constant", None, 500)
 
 def setup_agent_with_data_invalid_identifier():
   setup_invalid_python_identifier()

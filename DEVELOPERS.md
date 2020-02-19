@@ -55,7 +55,7 @@
   > This will create a git commit.
 
 
-4. Increment the version in `craftai/__init__.py` and move _Unreleased_ section
+4. Increment the version in `craft_ai/__init__.py` and move _Unreleased_ section
    of `CHANGELOG.md` to a newly created section for this version.
 
   ```console

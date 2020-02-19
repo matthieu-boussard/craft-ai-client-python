@@ -219,13 +219,13 @@ def _extract_tree(tree):
   return tree
 
 def get_paths(tree):
-  """ return a set of all decision paths in a craftai tree """
+  """ return a set of all decision paths in a craft_ai tree """
   return _get_paths(_extract_tree(tree))
 
 def get_neighbours(tree, decision_path, max_depth=None, include_self=False):
   """
   collect all neighbours decision paths of the given decision path
-  param: tree: craftai tree or simple tree
+  param: tree: craft_ai tree or simple tree
   param: decision_path: string tree path eg. "0-2-1"
   param: max_depth: positive int filter neighbours on their depth
   param: include_self: boolean. include the given decision_path to the neighbours.

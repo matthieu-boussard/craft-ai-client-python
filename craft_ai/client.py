@@ -12,13 +12,17 @@ import requests
 import six
 import pandas as pd
 
-from craftai import __version__ as pkg_version
-from craftai.constants import AGENT_ID_PATTERN, DEFAULT_DECISION_TREE_VERSION
-from craftai.errors import CraftAiCredentialsError, CraftAiBadRequestError, CraftAiNotFoundError
-from craftai.errors import CraftAiUnknownError, CraftAiInternalError, CraftAiLongRequestTimeOutError
-from craftai.errors import CraftAiNetworkError
-from craftai.interpreter import Interpreter
-from craftai.jwt_decode import jwt_decode
+from craft_ai import __version__ as pkg_version
+from craft_ai.constants import AGENT_ID_PATTERN, DEFAULT_DECISION_TREE_VERSION
+from craft_ai.errors import CraftAiCredentialsError, CraftAiBadRequestError, CraftAiNotFoundError
+from craft_ai.errors import (
+  CraftAiUnknownError,
+  CraftAiInternalError,
+  CraftAiLongRequestTimeOutError
+)
+from craft_ai.errors import CraftAiNetworkError
+from craft_ai.interpreter import Interpreter
+from craft_ai.jwt_decode import jwt_decode
 
 USER_AGENT = "craft-ai-client-python/{} [{} {}]".format(pkg_version,
                                                         python_implementation(),
@@ -114,7 +118,7 @@ class CraftAIClient(object):
   def create_agent(self, configuration, agent_id=""):
     """Create an agent.
 
-    :param dict configuration: Form given by the craftai documentation.
+    :param dict configuration: Form given by the craft_ai documentation.
     :param str agent_id: Optional. The id of the agent to create. It
     must be an str containing only characters in "a-zA-Z0-9_-" and
     must be between 1 and 36 characters.
@@ -159,7 +163,7 @@ class CraftAIClient(object):
     It's in the form [{"id": agent_id, "configuration": configuration}]
     With an optional id key that is an str containing only characters
     in "a-zA-Z0-9_-" and must be between 1 and 36 characters.
-    With configuration having the form given in the craftai documentation.
+    With configuration having the form given in the craft_ai documentation.
 
     :return: agents created which are represented with dictionnaries.
     :rtype: List of dict.
@@ -291,7 +295,7 @@ class CraftAIClient(object):
     an str containing only characters in "a-zA-Z0-9_-" and must be
     between 1 and 36 characters. It must referenced an existing agent.
     :param list operations: Contains dictionnaries that has the
-    form given in the craftai documentation and the configuration
+    form given in the craft_ai documentation and the configuration
     of the agent.
 
     :return: message about the added operations.
@@ -378,7 +382,7 @@ class CraftAIClient(object):
     and must be between 1 and 36 characters. It must referenced an
     existing agent.
     With operations a list containing dictionnaries that has the form given
-    in the craftai documentation and the configuration of the agent.
+    in the craft_ai documentation and the configuration of the agent.
 
     :return: list of agents containing a message about the added
     operations.

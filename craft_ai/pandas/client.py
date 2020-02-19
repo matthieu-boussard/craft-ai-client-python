@@ -59,7 +59,7 @@ class Client(VanillaClient):
     and must be between 1 and 36 characters. It must referenced an
     existing agent.
     With operations either a list of dict or a DataFrame that has
-    the form given in the craftai documentation and the configuration of
+    the form given in the craft_ai documentation and the configuration of
     the agent.
 
     :return: list of agents containing a message about the added

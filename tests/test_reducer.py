@@ -2,7 +2,7 @@ import json
 import os
 
 from nose.tools import assert_raises, assert_equal, assert_true
-from craftai import reduce_decision_rules, errors
+from craft_ai import reduce_decision_rules, errors
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 

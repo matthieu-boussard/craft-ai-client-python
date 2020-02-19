@@ -1,8 +1,8 @@
 import unittest
 import semver
 
-from craftai import Client, errors as craft_err
-from craftai.constants import DEFAULT_DECISION_TREE_VERSION
+from craft_ai import Client, errors as craft_err
+from craft_ai.constants import DEFAULT_DECISION_TREE_VERSION
 
 from . import settings
 from .data import valid_data

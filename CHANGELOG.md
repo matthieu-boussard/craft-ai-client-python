@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.8...HEAD) ##
 
+### Changed
+
+- Root package renamed `craft_ai` (previously `craftai`) to follow python naming conventions.
+
 ### Fixed
 
 - `craftai.pandas.client.decide_from_contexts_df` can use every possible feature name.

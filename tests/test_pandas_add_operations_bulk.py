@@ -2,8 +2,8 @@ import unittest
 import pandas as pd
 from numpy.random import randn
 
-import craftai.pandas
-from craftai import errors as craft_err
+import craft_ai.pandas
+from craft_ai import errors as craft_err
 
 from . import settings
 from .data import valid_data, invalid_data
@@ -25,7 +25,7 @@ class TestAddOperationsBulkSuccess(unittest.TestCase):
 
   @classmethod
   def setUpClass(cls):
-    cls.client = craftai.pandas.Client(settings.CRAFT_CFG)
+    cls.client = craft_ai.pandas.Client(settings.CRAFT_CFG)
     cls.agent_id1 = valid_data.VALID_ID  + "_" + settings.RUN_ID
     cls.agent_id2 = valid_data.VALID_ID_TWO  + "_" + settings.RUN_ID
 
@@ -169,7 +169,7 @@ class TestAddOperationsGroupAgentBulkSuccess(unittest.TestCase):
 
   @classmethod
   def setUpClass(cls):
-    cls.client = craftai.pandas.Client(settings.CRAFT_CFG)
+    cls.client = craft_ai.pandas.Client(settings.CRAFT_CFG)
     agent = valid_data.VALID_ID_TEMPLATE + "{}_" + settings.RUN_ID
     cls.agents = [agent.format(i) for i in range(NB_AGENTS_TO_ADD_OPERATIONS)]
 
@@ -216,7 +216,7 @@ class TestAddOperationsBulkFailure(unittest.TestCase):
 
   @classmethod
   def setUpClass(cls):
-    cls.client = craftai.pandas.Client(settings.CRAFT_CFG)
+    cls.client = craft_ai.pandas.Client(settings.CRAFT_CFG)
     cls.agent_name = valid_data.VALID_ID_TEMPLATE + "{}_" + settings.RUN_ID
 
   def clean_up_agent(self, aid):
@@ -384,7 +384,7 @@ class TestAddOperationsBulkSomeFailure(unittest.TestCase):
 
   @classmethod
   def setUpClass(cls):
-    cls.client = craftai.pandas.Client(settings.CRAFT_CFG)
+    cls.client = craft_ai.pandas.Client(settings.CRAFT_CFG)
     cls.agent_id = valid_data.VALID_ID  + "_" + settings.RUN_ID
 
   def setUp(self):
