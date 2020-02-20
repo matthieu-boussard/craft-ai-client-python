@@ -28,10 +28,12 @@ class TestListGenerators(unittest.TestCase):
     # Makes sure that no generator with the standard ID remains
     for generator_id in self.generators_id:
       self.client.delete_generator(generator_id)
+    self.client.delete_agent(self.agent_id)
 
   def test_list_generators(self):
     """list_generators should returns the list of generators in the current project."""
     generators_list = self.client.list_generators()
     self.assertIsInstance(generators_list, list)
+    self.assertTrue(len(generators_list) == len(self.generators_id))
     for generator_id in self.generators_id:
       self.assertTrue(generator_id in generators_list)

@@ -8,7 +8,7 @@ from .data import valid_data
 from .data import invalid_data
 
 class TestCreateGeneratorSuccess(unittest.TestCase):
-  """Checks that the client succeeds when creating an agent with OK input"""
+  """Checks that the client succeeds when creating a generator with OK input"""
 
   @classmethod
   def setUpClass(cls):
@@ -30,7 +30,7 @@ class TestCreateGeneratorSuccess(unittest.TestCase):
     self.client.delete_agent(self.agent_id)
 
   def clean_up_generator(self, generator_id):
-    # Makes sure that no agent with the standard ID remains
+    # Makes sure that no generator with the standard ID remains
     self.client.delete_generator(generator_id)
 
   def test_create_generator_given_generator_id(self):
@@ -71,8 +71,8 @@ class TestCreateGeneratorFailure(unittest.TestCase):
     )
 
   def clean_up_generator(self, generator_id):
-    # Makes sure that no agent with the standard ID remains
-    self.client.delete_agent(generator_id)
+    # Makes sure that no generator with the standard ID remains
+    self.client.delete_generator(generator_id)
 
   def test_create_generator_with_existing_generator_id(self):
     """create_generator should fail when given an ID that already exists
