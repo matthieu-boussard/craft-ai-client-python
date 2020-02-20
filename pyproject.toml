@@ -34,6 +34,13 @@ nose = "^1.3.7"
 python-dotenv = "^0.5.1"
 black = "^19.10b0"
 flake8 = "^3.7.9"
+taskipy = "^1.1.3"
+
+[tool.taskipy.tasks]
+test = "nosetests"
+lint = "task lint_black && task lint_flake8"
+lint_black = "black . --check"
+lint_flake8 = "flake8 ."
 
 [build-system]
 requires = ["poetry>=0.12"]
