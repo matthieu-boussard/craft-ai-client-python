@@ -1,5 +1,4 @@
 import unittest
-import six
 
 from craft_ai import Client, errors as craft_err
 
@@ -47,7 +46,7 @@ class TestCreateAgentsBulkSuccess(unittest.TestCase):
         payload = [{"configuration": valid_data.VALID_CONFIGURATION}]
         resp = self.client.create_agents_bulk(payload)
 
-        self.assertIsInstance(resp[0].get("id"), six.string_types)
+        self.assertIsInstance(resp[0].get("id"), str)
 
         self.addCleanup(self.clean_up_agent, resp[0].get("id"))
 
@@ -63,8 +62,8 @@ class TestCreateAgentsBulkSuccess(unittest.TestCase):
         ]
         resp = self.client.create_agents_bulk(payload)
 
-        self.assertIsInstance(resp[0].get("id"), six.string_types)
-        self.assertIsInstance(resp[1].get("id"), six.string_types)
+        self.assertIsInstance(resp[0].get("id"), str)
+        self.assertIsInstance(resp[1].get("id"), str)
         self.addCleanup(self.clean_up_agents, [resp[0].get("id"), resp[1].get("id")])
 
     def test_create_one_agent_given_agent_id(self):
@@ -114,7 +113,7 @@ class TestCreateAgentsBulkSuccess(unittest.TestCase):
         resp = self.client.create_agents_bulk(payload)
 
         self.assertEqual(resp[0].get("id"), self.agent_id1)
-        self.assertIsInstance(resp[1].get("id"), six.string_types)
+        self.assertIsInstance(resp[1].get("id"), str)
         self.addCleanup(self.clean_up_agents, [resp[0].get("id"), resp[1].get("id")])
 
     def test_create_lot_of_agents_bulk(self):
@@ -340,9 +339,9 @@ class TestCreateAgentsBulkSomeFailure(unittest.TestCase):
         self.assertEqual(resp2[0].get("id"), self.agent_id)
         self.assertIsInstance(resp2[0].get("error"), craft_err.CraftAiBadRequestError)
         self.assertFalse("configuration" in resp2[0])
-        self.assertIsInstance(resp1[1].get("id"), six.string_types)
+        self.assertIsInstance(resp1[1].get("id"), str)
         self.assertTrue("configuration" in resp1[1])
-        self.assertIsInstance(resp2[1].get("id"), six.string_types)
+        self.assertIsInstance(resp2[1].get("id"), str)
         self.assertTrue("configuration" in resp2[1])
 
         self.addCleanup(

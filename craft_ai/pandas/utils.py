@@ -6,7 +6,6 @@ import string
 from IPython.core.display import display, HTML
 
 import pandas as pd
-import six
 import semver
 from .constants import (
     MISSING_VALUE,
@@ -30,11 +29,10 @@ def format_input(val):
 
 def is_valid_property_value(key, value):
     # From https://stackoverflow.com/a/19773559
-    # https://pythonhosted.org/six/#six.text_type for unicode in Python 2
     return key != DUMMY_COLUMN_NAME and (
         (
             not hasattr(value, "__len__")
-            or isinstance(value, (str, six.text_type))
+            or isinstance(value, str)
             or value == MISSING_VALUE
             or value == OPTIONAL_VALUE
             or value is None

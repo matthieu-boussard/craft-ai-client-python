@@ -1,5 +1,4 @@
 import numbers
-import six
 
 from craft_ai.errors import CraftAiDecisionError, CraftAiNullDecisionError
 from craft_ai.operators import (
@@ -13,19 +12,19 @@ _DECISION_VERSION = "1.1.0"
 
 _VALUE_VALIDATORS = {
     TYPES["continuous"]: lambda value: isinstance(value, numbers.Real),
-    TYPES["enum"]: lambda value: isinstance(value, six.string_types),
+    TYPES["enum"]: lambda value: isinstance(value, str),
     TYPES["timezone"]: lambda value: is_timezone(value),
     TYPES["time_of_day"]: lambda value: (
         isinstance(value, numbers.Real) and value >= 0 and value < 24
     ),
     TYPES["day_of_week"]: lambda value: (
-        isinstance(value, six.integer_types) and value >= 0 and value <= 6
+        isinstance(value, int) and value >= 0 and value <= 6
     ),
     TYPES["day_of_month"]: lambda value: (
-        isinstance(value, six.integer_types) and value >= 1 and value <= 31
+        isinstance(value, int) and value >= 1 and value <= 31
     ),
     TYPES["month_of_year"]: lambda value: (
-        isinstance(value, six.integer_types) and value >= 1 and value <= 12
+        isinstance(value, int) and value >= 1 and value <= 12
     ),
 }
 
@@ -143,10 +142,7 @@ class InterpreterV1(object):
                         property_name
                     )
                 )
-            if (
-                not isinstance(operator, six.string_types)
-                or operator not in OPERATORS.values()
-            ):
+            if not isinstance(operator, str) or operator not in OPERATORS.values():
                 raise CraftAiDecisionError(
                     """Invalid decision tree format, {} is not a valid"""
                     """ decision operator.""".format(operator)
