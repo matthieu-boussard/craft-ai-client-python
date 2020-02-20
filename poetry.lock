@@ -372,6 +372,17 @@ version = "1.14.0"
 
 [[package]]
 category = "dev"
+description = "tasks runner for python projects"
+name = "taskipy"
+optional = false
+python-versions = ">=3.6,<4.0"
+version = "1.1.3"
+
+[package.dependencies]
+toml = ">=0.10.0,<0.11.0"
+
+[[package]]
+category = "dev"
 description = "Python Library for Tom's Obvious, Minimal Language"
 name = "toml"
 optional = false
@@ -454,7 +465,7 @@ testing = ["coverage", "nose", "zope.event"]
 pandas = ["pandas"]
 
 [metadata]
-content-hash = "33b24ac758324aa70c38162a8fc638767b1d89cd01195ab5663ae73ffe58218d"
+content-hash = "d17279e1bd794b90e31f9075c4d104f2b58944aa1d176a3f35bca1406a11efce"
 python-versions = "^3.6"
 
 [metadata.files]
@@ -658,6 +669,10 @@ simplegeneric = [
 six = [
     {file = "six-1.14.0-py2.py3-none-any.whl", hash = "sha256:8f3cd2e254d8f793e7f3d6d9df77b92252b52637291d0f0da013c76ea2724b6c"},
     {file = "six-1.14.0.tar.gz", hash = "sha256:236bdbdce46e6e6a3d61a337c0f8b763ca1e8717c03b369e87a7ec7ce1319c0a"},
+]
+taskipy = [
+    {file = "taskipy-1.1.3-py3-none-any.whl", hash = "sha256:b5c94e1d06d5f5d10b916c29e12615c34ab701e2132fcdb5024572c728c83595"},
+    {file = "taskipy-1.1.3.tar.gz", hash = "sha256:2ca48f072549ed44091a8b29a14c37d22d8b6dad8c6a065469f6b944951c7f07"},
 ]
 toml = [
     {file = "toml-0.10.0-py2.7.egg", hash = "sha256:f1db651f9657708513243e61e6cc67d101a39bad662eaa9b5546f789338e07a3"},
