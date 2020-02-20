@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 
 - Root package renamed `craft_ai` (previously `craftai`) to follow python naming conventions.
+- `craft_ai.pandas` now requires `pandas` v1.0.1 or compatible versions.
 
 ### Fixed
 
@@ -17,7 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Removed
 
-- Remove support for python v2.
+- Remove support for python v2, now supporting v3.6.1 and later.
 
 ## [1.15.8](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.7...v1.15.8) - 2019-11-19 ##
 
