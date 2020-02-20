@@ -1,4 +1,4 @@
-__version__ = "2.0.0rc0"
+__version__ = "2.0.0rc1"
 
 from . import errors
 from .client import CraftAIClient as Client
