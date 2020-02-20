@@ -1,9 +1,9 @@
-class MissingValue(object):  # pylint: disable=too-few-public-methods
+class MissingValue(object):
     def __str__(self):
         return "MISSING"
 
 
-class OptionalValue(object):  # pylint: disable=too-few-public-methods
+class OptionalValue(object):
     def __str__(self):
         return "OPTIONAL"
 

@@ -9,7 +9,6 @@ from nose.tools import (
     assert_raises,
     with_setup,
 )
-import pandas as pd
 import craft_ai
 from craft_ai.constants import DEFAULT_DECISION_TREE_VERSION
 
@@ -92,22 +91,6 @@ def test_get_generator_decision_tree_without_timestamp():
     decision_tree = CLIENT.get_generator_decision_tree(GENERATOR_ID)
     ground_truth_decision_tree = decision_tree = CLIENT.get_generator_decision_tree(
         GENERATOR_ID, 1458741230 + 505
-    )
-    assert_is_instance(decision_tree, dict)
-    assert_not_equal(decision_tree.get("_version"), None)
-    assert_not_equal(decision_tree.get("configuration"), None)
-    assert_not_equal(decision_tree.get("trees"), None)
-    assert_equal(decision_tree, ground_truth_decision_tree)
-
-
-@with_setup(setup_generator_with_agent_with_operations, teardown)
-def test_get_generator_decision_tree_with_pdtimestamp():
-    # test if we get the same decision tree
-    decision_tree = CLIENT.get_generator_decision_tree(
-        GENERATOR_ID, pd.Timestamp(valid_data.VALID_TIMESTAMP, unit="s", tz="UTC")
-    )
-    ground_truth_decision_tree = CLIENT.get_generator_decision_tree(
-        GENERATOR_ID, valid_data.VALID_TIMESTAMP
     )
     assert_is_instance(decision_tree, dict)
     assert_not_equal(decision_tree.get("_version"), None)

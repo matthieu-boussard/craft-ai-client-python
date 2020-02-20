@@ -2,6 +2,7 @@ import json
 import pandas as pd
 
 from .. import Client as VanillaClient
+from ..constants import DEFAULT_DECISION_TREE_VERSION
 from ..errors import CraftAiBadRequestError
 from .interpreter import Interpreter
 from .utils import format_input, is_valid_property_value, create_timezone_df
@@ -167,3 +168,23 @@ class Client(VanillaClient):
         else:
             raise CraftAiBadRequestError("Invalid data given, it is not a DataFrame.")
         return Interpreter.decide_from_contexts_df(tree, contexts_df)
+
+    def get_decision_tree(
+        self, agent_id, timestamp=None, version=DEFAULT_DECISION_TREE_VERSION
+    ):
+        # Convert pandas timestamp to a numerical timestamp in seconds
+        if isinstance(timestamp, pd.Timestamp):
+            timestamp = timestamp.value // 10 ** 9
+
+        return super(Client, self).get_decision_tree(agent_id, timestamp, version)
+
+    def get_generator_decision_tree(
+        self, generator_id, timestamp=None, version=DEFAULT_DECISION_TREE_VERSION
+    ):
+        # Convert pandas timestamp to a numerical timestamp in seconds
+        if isinstance(timestamp, pd.Timestamp):
+            timestamp = timestamp.value // 10 ** 9
+
+        return super(Client, self).get_generator_decision_tree(
+            generator_id, timestamp, version
+        )

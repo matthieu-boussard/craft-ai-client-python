@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Root package renamed `craft_ai` (previously `craftai`) to follow python naming conventions.
 - `craft_ai.pandas` now requires `pandas` v1.0.1 or compatible versions.
+- Moving tree traversal utils from `craft_ai.pandas.get_paths` and `craft_ai.pandas.get_neighbours` to `craft_ai.collect_paths_from_tree` and `craft_ai.compute_tree_decision_paths_neighbors`.
 
 ### Fixed
 
@@ -48,7 +49,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
-- `craftai.pandas.utils.get_paths` to list all paths of a craftai tree.
+- `craftai.pandas.utils.collect_paths_from_tree` to list all paths of a craftai tree.
 - `craftai.pandas.utils.get_neighbours` to list all neighbours paths of a given decision path.
 
 ## [1.15.5](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.4...v1.15.5) - 2019-09-05 ##
