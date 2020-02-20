@@ -1,5 +1,4 @@
 import unittest
-import six
 
 from craft_ai import Client, errors as craft_err
 
@@ -34,7 +33,7 @@ class TestCreateAgentSuccess(unittest.TestCase):
     `configuration` fields being strings.
     """
         resp = self.client.create_agent(valid_data.VALID_CONFIGURATION)
-        self.assertIsInstance(resp.get("id"), six.string_types)
+        self.assertIsInstance(resp.get("id"), str)
         self.addCleanup(self.clean_up_agent, resp.get("id"))
 
     def test_create_agent_given_agent_id(self):

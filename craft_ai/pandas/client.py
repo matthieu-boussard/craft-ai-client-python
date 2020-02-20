@@ -1,6 +1,5 @@
 import json
 import pandas as pd
-from six.moves import range
 
 from .. import Client as VanillaClient
 from ..errors import CraftAiBadRequestError

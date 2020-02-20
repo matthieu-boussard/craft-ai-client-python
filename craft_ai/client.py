@@ -7,9 +7,9 @@ import time
 import datetime
 
 from platform import python_implementation, python_version
+from urllib.parse import urlparse
 
 import requests
-import six
 import pandas as pd
 
 from craft_ai import __version__ as pkg_version
@@ -71,7 +71,7 @@ class CraftAIClient(object):
         cfg["project"] = cfg["project"] if "project" in cfg else payload.get("project")
         cfg["url"] = cfg["url"] if "url" in cfg else payload.get("platform")
 
-        if not isinstance(cfg.get("project"), six.string_types):
+        if not isinstance(cfg.get("project"), str):
             raise CraftAiCredentialsError(
                 """Unable to create client with no"""
                 """ or invalid project provided."""
@@ -85,17 +85,17 @@ class CraftAIClient(object):
                 raise CraftAiCredentialsError(
                     """Unable to create client with invalid""" """ project name."""
                 )
-        if not isinstance(cfg.get("owner"), six.string_types):
+        if not isinstance(cfg.get("owner"), str):
             raise CraftAiCredentialsError(
                 """Unable to create client with no""" """ or invalid owner provided."""
             )
-        if not isinstance(cfg.get("operationsChunksSize"), six.integer_types):
+        if not isinstance(cfg.get("operationsChunksSize"), int):
             cfg["operationsChunksSize"] = 200
         if cfg.get("decisionTreeRetrievalTimeout") is not False and not isinstance(
-            cfg.get("decisionTreeRetrievalTimeout"), six.integer_types
+            cfg.get("decisionTreeRetrievalTimeout"), int
         ):
             cfg["decisionTreeRetrievalTimeout"] = 1000 * 60 * 5  # 5 minutes
-        if not isinstance(cfg.get("url"), six.string_types):
+        if not isinstance(cfg.get("url"), str):
             cfg["url"] = "https://beta.craft.ai"
         if cfg.get("url").endswith("/"):
             raise CraftAiBadRequestError(
@@ -111,7 +111,7 @@ class CraftAIClient(object):
         )
 
         if cfg.get("proxy"):
-            scheme = six.moves.urllib.parse.urlparse(self.config["url"]).scheme
+            scheme = urlparse(self.config["url"]).scheme
             if not scheme:
                 raise CraftAiCredentialsError(
                     """Unable to create client with an URL"""
@@ -791,10 +791,7 @@ class CraftAIClient(object):
         :raise CraftAiBadRequestError: If the given agent_id is not of
         type string or if it is an empty string.
         """
-        if (
-            not isinstance(agent_id, six.string_types)
-            or AGENT_ID_PATTERN.match(agent_id) is None
-        ):
+        if not isinstance(agent_id, str) or AGENT_ID_PATTERN.match(agent_id) is None:
             raise CraftAiBadRequestError(ERROR_ID_MESSAGE)
 
     def _check_agent_id_bulk(self, payload, check_serializable=True):

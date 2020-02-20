@@ -1,5 +1,4 @@
 import re
-import six
 
 _TIMEZONE_REGEX = re.compile(r"^([+-](2[0-3]|[01][0-9])(:?[0-5][0-9])?|Z)$")
 
@@ -38,9 +37,9 @@ TIMEZONES = {
 
 
 def is_timezone(value):
-    if isinstance(value, six.integer_types) and value <= 840 and value >= -720:
+    if isinstance(value, int) and value <= 840 and value >= -720:
         return True
-    if not isinstance(value, six.string_types):
+    if not isinstance(value, str):
         return False
     if value in TIMEZONES:
         return True
@@ -56,7 +55,7 @@ def get_timezone_key(configuration):
 
 
 def timezone_offset_in_sec(timezone):
-    if isinstance(timezone, six.integer_types):
+    if isinstance(timezone, int):
         # If the offset belongs to [-15, 15] it is considered to represent hours.
         # This reproduces Moment's utcOffset behaviour.
         if timezone > -16 and timezone < 16:
@@ -77,7 +76,7 @@ def timezone_offset_in_sec(timezone):
 
 
 def timezone_offset_in_standard_format(timezone):
-    if isinstance(timezone, six.integer_types):
+    if isinstance(timezone, int):
         sign = "+" if timezone >= 0 else "-"
         absolute_offset = abs(timezone)
         if absolute_offset < 16:

@@ -6,8 +6,6 @@ import time
 
 from datetime import datetime, tzinfo, timedelta
 
-import six
-
 from pytz import utc as pyutc
 from tzlocal import get_localzone
 from dateutil.parser import isoparse
@@ -107,7 +105,7 @@ class Time(object):
             elif isinstance(timestamp, datetime):
                 _time = time_from_datetime_timestamp_and_timezone(timestamp, timezone)
 
-            elif isinstance(timestamp, six.string_types):
+            elif isinstance(timestamp, str):
                 _time = time_from_string_timestamp_and_timezone(timestamp, timezone)
 
             else:

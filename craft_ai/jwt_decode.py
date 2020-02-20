@@ -3,7 +3,6 @@ import binascii
 import json
 
 from collections import Mapping
-from six import text_type, binary_type
 
 from craft_ai.errors import CraftAiTokenError
 
@@ -11,7 +10,7 @@ from craft_ai.errors import CraftAiTokenError
 # Initial code retrieved from PyJWT
 # cf. https://github.com/jpadilla/pyjwt/blob/ceff941/jwt/utils.py#L33-L42
 def base64url_decode(base64_input):
-    if isinstance(base64_input, text_type):
+    if isinstance(base64_input, str):
         base64_input = base64_input.encode("ascii")
 
     rem = len(base64_input) % 4
@@ -25,12 +24,12 @@ def base64url_decode(base64_input):
 # Code inspired by PyJWT
 # cf. https://github.com/jpadilla/pyjwt/blob/ceff941/jwt/api_jws.py#L144-L181
 def jwt_decode(jwt):
-    if isinstance(jwt, text_type):
+    if isinstance(jwt, str):
         jwt = jwt.encode("utf-8")
 
-    if not issubclass(type(jwt), binary_type):
+    if not issubclass(type(jwt), bytes):
         raise CraftAiTokenError(
-            "Invalid token type, the token must be a {0}".format(binary_type)
+            "Invalid token type, the token must be a {0}".format(bytes)
         )
 
     try:
