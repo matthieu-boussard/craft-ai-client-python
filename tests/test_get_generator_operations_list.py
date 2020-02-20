@@ -62,14 +62,14 @@ class TestGetGeneratorOperationsListSuccess(unittest.TestCase):
     self.client.add_operations(self.agent_id_2, SMALL_VALID_OPERATIONS_SET)
     def add_agent_name_1_to_operation(operation):
       return {
-        "agentName": self.agent_id_1,
+        "agent_id": self.agent_id_1,
         "context": operation["context"],
         "timestamp": operation["timestamp"]
       }
     expected_operations_1 = list(map(add_agent_name_1_to_operation, LARGE_VALID_OPERATIONS_SET))
     def add_agent_name_2_to_operation(operation):
       return {
-        "agentName": self.agent_id_2,
+        "agent_id": self.agent_id_2,
         "context": operation["context"],
         "timestamp": operation["timestamp"]
       }

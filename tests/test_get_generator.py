@@ -31,7 +31,7 @@ class TestGetGeneratorSuccess(unittest.TestCase):
     self.assertIsInstance(generator, dict)
     generator_keys = generator.keys()
     self.assertTrue("configuration" in generator_keys)
-    self.assertTrue("agentsList" in generator_keys)
+    self.assertTrue("agents" in generator_keys)
 
 
 class TestGetGeneratorFailure(unittest.TestCase):
