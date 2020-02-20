@@ -10,23 +10,22 @@ from platform import python_implementation, python_version
 from urllib.parse import urlparse
 
 import requests
-import pandas as pd
 
-from craft_ai import __version__ as pkg_version
-from craft_ai.constants import AGENT_ID_PATTERN, DEFAULT_DECISION_TREE_VERSION
-from craft_ai.errors import (
+from . import __version__ as pkg_version
+from .constants import AGENT_ID_PATTERN, DEFAULT_DECISION_TREE_VERSION
+from .errors import (
     CraftAiCredentialsError,
     CraftAiBadRequestError,
     CraftAiNotFoundError,
 )
-from craft_ai.errors import (
+from .errors import (
     CraftAiUnknownError,
     CraftAiInternalError,
     CraftAiLongRequestTimeOutError,
 )
-from craft_ai.errors import CraftAiNetworkError
-from craft_ai.interpreter import Interpreter
-from craft_ai.jwt_decode import jwt_decode
+from .errors import CraftAiNetworkError
+from .interpreter import Interpreter
+from .jwt_decode import jwt_decode
 
 USER_AGENT = "craft-ai-client-python/{} [{} {}]".format(
     pkg_version, python_implementation(), python_version()
@@ -579,9 +578,7 @@ class CraftAIClient(object):
             version = str(version)
 
         # Convert datetime to timestamp
-        if isinstance(timestamp, pd.Timestamp):
-            timestamp = timestamp.value // 10 ** 9
-        elif isinstance(timestamp, datetime.datetime):
+        if isinstance(timestamp, datetime.datetime):
             timestamp = time.mktime(timestamp.timetuple())
 
         # Raises an error when agent_id is invalid

@@ -2,6 +2,7 @@ import json
 import pandas as pd
 
 from .. import Client as VanillaClient
+from ..constants import DEFAULT_DECISION_TREE_VERSION
 from ..errors import CraftAiBadRequestError
 from .interpreter import Interpreter
 from .utils import format_input, is_valid_property_value, create_timezone_df
@@ -71,22 +72,22 @@ class Client(VanillaClient):
     def add_operations_bulk(self, payload):
         """Add operations to a group of agents.
 
-    :param list payload: contains the informations necessary for the action.
-    It's in the form [{"id": agent_id, "operations": operations}]
-    With id that is an str containing only characters in "a-zA-Z0-9_-"
-    and must be between 1 and 36 characters. It must referenced an
-    existing agent.
-    With operations either a list of dict or a DataFrame that has
-    the form given in the craft_ai documentation and the configuration of
-    the agent.
+        :param list payload: contains the informations necessary for the action.
+        It's in the form [{"id": agent_id, "operations": operations}]
+        With id that is an str containing only characters in "a-zA-Z0-9_-"
+        and must be between 1 and 36 characters. It must referenced an
+        existing agent.
+        With operations either a list of dict or a DataFrame that has
+        the form given in the craft_ai documentation and the configuration of
+        the agent.
 
-    :return: list of agents containing a message about the added
-    operations.
-    :rtype: list of dict.
+        :return: list of agents containing a message about the added
+        operations.
+        :rtype: list of dict.
 
-    :raises CraftAiBadRequestError: if all of the ids are invalid or
-    referenced non existing agents or one of the operations is invalid.
-    """
+        :raises CraftAiBadRequestError: if all of the ids are invalid or
+        referenced non existing agents or one of the operations is invalid.
+        """
         # Check all ids, raise an error if all ids are invalid
         valid_indices, _, _ = self._check_agent_id_bulk(
             payload, check_serializable=False
@@ -167,3 +168,12 @@ class Client(VanillaClient):
         else:
             raise CraftAiBadRequestError("Invalid data given, it is not a DataFrame.")
         return Interpreter.decide_from_contexts_df(tree, contexts_df)
+
+    def get_decision_tree(
+        self, agent_id, timestamp=None, version=DEFAULT_DECISION_TREE_VERSION
+    ):
+        # Convert pandas timestamp to a numerical timestamp in seconds
+        if isinstance(timestamp, pd.Timestamp):
+            timestamp = timestamp.value // 10 ** 9
+
+        return super(Client, self).get_decision_tree(agent_id, timestamp, version)
