@@ -34,6 +34,5 @@ class TestListGenerators(unittest.TestCase):
     """list_generators should returns the list of generators in the current project."""
     generators_list = self.client.list_generators()
     self.assertIsInstance(generators_list, list)
-    self.assertTrue(len(generators_list) == len(self.generators_id))
     for generator_id in self.generators_id:
       self.assertTrue(generator_id in generators_list)
