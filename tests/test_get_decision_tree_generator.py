@@ -12,9 +12,9 @@ from .data import valid_data
 from .data import invalid_data
 
 CLIENT = craftai.Client(settings.CRAFT_CFG)
-AGENT_ID_1 = "test_get_decision_tree_" + settings.RUN_ID + "_1"
-AGENT_ID_2 = "test_get_decision_tree_" + settings.RUN_ID + "_2"
-GENERATOR_ID = "test_generator_decision_tree_" + settings.RUN_ID
+AGENT_ID_1 = "test_get_decision_tree_" + settings.RUN_ID[-4:] + "_1"
+AGENT_ID_2 = "test_get_decision_tree_" + settings.RUN_ID[-4:] + "_2"
+GENERATOR_ID = "test_generator_decision_tree_" + settings.RUN_ID[-4:]
 FILTER = [AGENT_ID_1, AGENT_ID_2]
 
 def setup_generator_with_agent_with_operations():

@@ -11,7 +11,7 @@ class TestGetGeneratorSuccess(unittest.TestCase):
   @classmethod
   def setUpClass(cls):
     cls.client = craftai.Client(settings.CRAFT_CFG)
-    cls.generator_id = valid_data.VALID_GENERATOR_ID  + "_" + settings.RUN_ID
+    cls.generator_id = valid_data.VALID_GENERATOR_ID  + "_" + settings.RUN_ID[-4:]
 
   def setUp(self):
     self.client.delete_generator(self.generator_id)
@@ -39,7 +39,7 @@ class TestGetGeneratorFailure(unittest.TestCase):
   @classmethod
   def setUpClass(cls):
     cls.client = craftai.Client(settings.CRAFT_CFG)
-    cls.generator_id = valid_data.VALID_GENERATOR_ID  + "_" + settings.RUN_ID
+    cls.generator_id = valid_data.VALID_GENERATOR_ID  + "_" + settings.RUN_ID[-4:]
 
   def setUp(self):
     # Makes sure that no generator exists with the test id

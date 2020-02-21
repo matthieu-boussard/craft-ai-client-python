@@ -26,8 +26,8 @@ class TestAddOperationsBulkSuccess(unittest.TestCase):
   @classmethod
   def setUpClass(cls):
     cls.client = craftai.pandas.Client(settings.CRAFT_CFG)
-    cls.agent_id1 = valid_data.VALID_ID  + "_" + settings.RUN_ID
-    cls.agent_id2 = valid_data.VALID_ID_TWO  + "_" + settings.RUN_ID
+    cls.agent_id1 = valid_data.VALID_ID  + "_" + settings.RUN_ID[-4:]
+    cls.agent_id2 = valid_data.VALID_ID_TWO  + "_" + settings.RUN_ID[-4:]
 
   def setUp(self):
     self.client.delete_agent(self.agent_id1)
@@ -170,7 +170,7 @@ class TestAddOperationsGroupAgentBulkSuccess(unittest.TestCase):
   @classmethod
   def setUpClass(cls):
     cls.client = craftai.pandas.Client(settings.CRAFT_CFG)
-    agent = valid_data.VALID_ID_TEMPLATE + "{}_" + settings.RUN_ID
+    agent = valid_data.VALID_ID_TEMPLATE + "{}_" + settings.RUN_ID[-4:]
     cls.agents = [agent.format(i) for i in range(NB_AGENTS_TO_ADD_OPERATIONS)]
 
   def setUp(self):
@@ -217,7 +217,7 @@ class TestAddOperationsBulkFailure(unittest.TestCase):
   @classmethod
   def setUpClass(cls):
     cls.client = craftai.pandas.Client(settings.CRAFT_CFG)
-    cls.agent_name = valid_data.VALID_ID_TEMPLATE + "{}_" + settings.RUN_ID
+    cls.agent_name = valid_data.VALID_ID_TEMPLATE + "{}_" + settings.RUN_ID[-4:]
 
   def clean_up_agent(self, aid):
     # Makes sure that no agent with the standard ID remains
@@ -385,7 +385,7 @@ class TestAddOperationsBulkSomeFailure(unittest.TestCase):
   @classmethod
   def setUpClass(cls):
     cls.client = craftai.pandas.Client(settings.CRAFT_CFG)
-    cls.agent_id = valid_data.VALID_ID  + "_" + settings.RUN_ID
+    cls.agent_id = valid_data.VALID_ID  + "_" + settings.RUN_ID[-4:]
 
   def setUp(self):
     self.client.delete_agent(self.agent_id)

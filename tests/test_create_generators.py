@@ -14,7 +14,7 @@ class TestCreateGeneratorSuccess(unittest.TestCase):
   def setUpClass(cls):
     cls.client = Client(settings.CRAFT_CFG)
     cls.agent_id = valid_data.VALID_ID
-    cls.generator_id = valid_data.VALID_GENERATOR_ID + "_" + settings.RUN_ID
+    cls.generator_id = valid_data.VALID_GENERATOR_ID + "_" + settings.RUN_ID[-4:]
     cls.filter = valid_data.VALID_GENERATOR_FILTER
 
   def setUp(self):
@@ -57,7 +57,7 @@ class TestCreateGeneratorFailure(unittest.TestCase):
   def setUpClass(cls):
     cls.client = Client(settings.CRAFT_CFG)
     cls.agent_id = valid_data.VALID_ID
-    cls.generator_id = valid_data.VALID_GENERATOR_ID + "_" + settings.RUN_ID
+    cls.generator_id = valid_data.VALID_GENERATOR_ID + "_" + settings.RUN_ID[-4:]
     cls.filter = valid_data.VALID_GENERATOR_FILTER
 
 

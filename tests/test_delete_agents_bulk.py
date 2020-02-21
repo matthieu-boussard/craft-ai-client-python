@@ -14,8 +14,8 @@ class TestDeleteAgentsBulkSuccess(unittest.TestCase):
   @classmethod
   def setUpClass(cls):
     cls.client = Client(settings.CRAFT_CFG)
-    cls.agent_id1 = valid_data.VALID_ID  + "_" + settings.RUN_ID
-    cls.agent_id2 = valid_data.VALID_ID_TWO  + "_" + settings.RUN_ID
+    cls.agent_id1 = valid_data.VALID_ID  + "_" + settings.RUN_ID[-4:]
+    cls.agent_id2 = valid_data.VALID_ID_TWO  + "_" + settings.RUN_ID[-4:]
 
   def setUp(self):
     try:
@@ -45,7 +45,7 @@ class TestDeleteGroupAgentsBulkSuccess(unittest.TestCase):
   @classmethod
   def setUpClass(cls):
     cls.client = Client(settings.CRAFT_CFG)
-    agent = valid_data.VALID_ID_TEMPLATE + "{}_" + settings.RUN_ID
+    agent = valid_data.VALID_ID_TEMPLATE + "{}_" + settings.RUN_ID[-4:]
     cls.agents = [agent.format(i) for i in range(NB_AGENTS_TO_DELETE)]
 
   def setUp(self):
@@ -104,7 +104,7 @@ class TestDeleteBulkAgentsBulkSomeFailure(unittest.TestCase):
   @classmethod
   def setUpClass(cls):
     cls.client = Client(settings.CRAFT_CFG)
-    cls.agent_id = valid_data.VALID_ID  + "_" + settings.RUN_ID
+    cls.agent_id = valid_data.VALID_ID  + "_" + settings.RUN_ID[-4:]
 
   def setUp(self):
     try:

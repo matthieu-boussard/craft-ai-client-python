@@ -8,7 +8,7 @@ from craftai.sklearn.model import CraftEstimatorRegressor
 from . import settings
 
 
-AGENT_ID = "test_sklearn_" + settings.RUN_ID
+AGENT_ID = "test_sklearn_" + settings.RUN_ID[-4:]
 def configuration_agent(max_depth=5):
   return {
     "agent_name": "{}_depth_{}".format(AGENT_ID, str(max_depth)),

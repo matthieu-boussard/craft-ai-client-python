@@ -11,7 +11,7 @@ class TestDeleteGeneratorWithValidID(unittest.TestCase):
   @classmethod
   def setUpClass(cls):
     cls.client = craftai.Client(settings.CRAFT_CFG)
-    cls.generator_id = valid_data.VALID_GENERATOR_ID  + "_" + settings.RUN_ID
+    cls.generator_id = valid_data.VALID_GENERATOR_ID  + "_" + settings.RUN_ID[-4:]
 
   def setUp(self):
     # Creating a generator may raise an error if one with the same ID
@@ -35,7 +35,7 @@ class TestDeleteGeneratorWithUnknownID(unittest.TestCase):
   @classmethod
   def setUpClass(cls):
     cls.client = craftai.Client(settings.CRAFT_CFG)
-    cls.generator_id = valid_data.VALID_GENERATOR_ID  + "_" + settings.RUN_ID
+    cls.generator_id = valid_data.VALID_GENERATOR_ID  + "_" + settings.RUN_ID[-4:]
 
   def test_delete_generator_with_unknown_id(self):
     """delete_generator should succeed when given a non-string/empty string ID

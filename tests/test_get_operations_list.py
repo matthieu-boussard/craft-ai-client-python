@@ -18,7 +18,7 @@ class TestGetOperationsListSuccess(unittest.TestCase):
   @classmethod
   def setUpClass(cls):
     cls.client = craftai.Client(settings.CRAFT_CFG)
-    cls.agent_id = valid_data.VALID_ID  + "_" + settings.RUN_ID
+    cls.agent_id = valid_data.VALID_ID  + "_" + settings.RUN_ID[-4:]
 
   def setUp(self):
     self.client.delete_agent(self.agent_id)
@@ -70,7 +70,7 @@ class TestGetOperationsListFailure(unittest.TestCase):
   @classmethod
   def setUpClass(cls):
     cls.client = craftai.Client(settings.CRAFT_CFG)
-    cls.agent_id = valid_data.VALID_ID  + "_" + settings.RUN_ID
+    cls.agent_id = valid_data.VALID_ID  + "_" + settings.RUN_ID[-4:]
 
   def setUp(self):
     self.client.delete_agent(self.agent_id)

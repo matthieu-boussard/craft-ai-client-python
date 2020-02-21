@@ -47,9 +47,9 @@ class TestGetGeneratorOperationsListSuccess(unittest.TestCase):
   @classmethod
   def setUpClass(cls):
     cls.client = craftai.Client(settings.CRAFT_CFG)
-    cls.generator_id = valid_data.VALID_GENERATOR_ID  + "_" + settings.RUN_ID
-    cls.agent_id_1 = valid_data.VALID_ID  + "_" + settings.RUN_ID
-    cls.agent_id_2 = valid_data.VALID_ID_TWO  + "_" + settings.RUN_ID
+    cls.generator_id = valid_data.VALID_GENERATOR_ID  + "_" + settings.RUN_ID[-4:]
+    cls.agent_id_1 = valid_data.VALID_ID  + "_" + settings.RUN_ID[-4:]
+    cls.agent_id_2 = valid_data.VALID_ID_TWO  + "_" + settings.RUN_ID[-4:]
     cls.filter = [cls.agent_id_1, cls.agent_id_2]
 
   def setUp(self):
@@ -126,8 +126,8 @@ class TestGetOperationsListFailure(unittest.TestCase):
   @classmethod
   def setUpClass(cls):
     cls.client = craftai.Client(settings.CRAFT_CFG)
-    cls.agent_id = valid_data.VALID_ID  + "_" + settings.RUN_ID
-    cls.generator_id = valid_data.VALID_GENERATOR_ID  + "_" + settings.RUN_ID
+    cls.agent_id = valid_data.VALID_ID  + "_" + settings.RUN_ID[-4:]
+    cls.generator_id = valid_data.VALID_GENERATOR_ID  + "_" + settings.RUN_ID[-4:]
 
   def setUp(self):
     self.client.delete_agent(self.agent_id)

@@ -13,7 +13,7 @@ class TestCreateAgentSuccess(unittest.TestCase):
   @classmethod
   def setUpClass(cls):
     cls.client = Client(settings.CRAFT_CFG)
-    cls.agent_id = valid_data.VALID_ID  + "_" + settings.RUN_ID
+    cls.agent_id = valid_data.VALID_ID  + "_" + settings.RUN_ID[-4:]
 
   def setUp(self):
     # Makes sure that no agent with the same ID already exists
@@ -57,7 +57,7 @@ class TestCreateAgentFailure(unittest.TestCase):
   @classmethod
   def setUpClass(cls):
     cls.client = Client(settings.CRAFT_CFG)
-    cls.agent_id = valid_data.VALID_ID  + "_" + settings.RUN_ID
+    cls.agent_id = valid_data.VALID_ID  + "_" + settings.RUN_ID[-4:]
 
   def setUp(self):
     # Makes sure that no agent with the same ID already exists
