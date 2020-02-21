@@ -18,7 +18,7 @@
   $ git submodule update
   ```
 
-5. Install the dependencies.
+5. Install the dependencies. For the following steps, you may want use in a Python virtual environment.
 
   ```console
   $ make init

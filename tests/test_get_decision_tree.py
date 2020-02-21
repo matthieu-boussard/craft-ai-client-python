@@ -12,7 +12,7 @@ from .data import valid_data
 from .data import invalid_data
 
 CLIENT = craftai.Client(settings.CRAFT_CFG)
-AGENT_ID = "test_get_decision_tree_" + settings.RUN_ID
+AGENT_ID = "test_get_decision_tree_" + settings.RUN_ID[-4:]
 
 VALID_L_CFG = valid_data.VALID_LARGE_CONFIGURATION
 VALID_L_BATCH_DURATION = VALID_L_CFG["learning_period"] * 4

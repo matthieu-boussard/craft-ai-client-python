@@ -70,7 +70,7 @@ class Client(VanillaClient):
     referenced non existing agents or one of the operations is invalid.
     """
     # Check all ids, raise an error if all ids are invalid
-    valid_indices, _, _ = self._check_agent_id_bulk(payload, check_serializable=False)
+    valid_indices, _, _ = self._check_entity_id_bulk(payload, check_serializable=False)
     valid_payload = [payload[i] for i in valid_indices]
 
     new_payload = []

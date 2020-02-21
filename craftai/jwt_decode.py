@@ -2,7 +2,6 @@ import base64
 import binascii
 import json
 
-from collections import Mapping
 from six import text_type, binary_type
 
 from craftai.errors import CraftAiTokenError
@@ -44,9 +43,6 @@ def jwt_decode(jwt):
     header = json.loads(header_data.decode("utf-8"))
   except ValueError as e:
     raise CraftAiTokenError("Invalid header string '%s'" % e)
-
-  if not isinstance(header, Mapping):
-    raise CraftAiTokenError("Invalid header string, it must be a json object")
 
   try:
     payload_data = base64url_decode(payload_segment)

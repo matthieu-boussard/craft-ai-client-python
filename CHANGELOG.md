@@ -7,15 +7,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.8...HEAD) ##
 
+### Added
+
+- Add support for generators with the new `client` methods `create_generator`, `get_generator`, `list_generators`, `delete_generator`, `get_generator_decision_tree` and `get_generator_operations_list`.
+- Support for Python version 3.7
+
 ### Fixed
 
 - `craftai.pandas.client.decide_from_contexts_df` can use every possible feature name.
+- Rollback `craftai.client` to raise errors for responses with `202` status code.
 
 ## [1.15.8](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.7...v1.15.8) - 2019-11-19 ##
 
-### Fixed
+### Changed
 
-- Rollback `craftai.client` to raise errors for responses with `202` status code.
+- Delete `deactivate_missing_values` flag in the configuration.
 
 ## [1.15.7](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.6...v1.15.7) - 2019-10-29 ##
 
@@ -25,7 +31,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
-- Delete `deactivate_missing_values` flag in the configuration.
 - `client.decide` now always computes the distributed decision when no matching nodes are found.
 
 ## [1.15.6](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.5...v1.15.6) - 2019-09-19 ##

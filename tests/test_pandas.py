@@ -8,7 +8,7 @@ from .data import pandas_valid_data
 
 from . import settings
 
-AGENT_ID = "test_pandas_" + settings.RUN_ID
+AGENT_ID = "test_pandas_" + settings.RUN_ID[-4:]
 
 SIMPLE_AGENT_CONFIGURATION = pandas_valid_data.SIMPLE_AGENT_CONFIGURATION
 SIMPLE_AGENT_DATA = pandas_valid_data.SIMPLE_AGENT_DATA

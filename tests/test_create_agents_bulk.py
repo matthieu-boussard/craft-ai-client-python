@@ -16,9 +16,9 @@ class TestCreateAgentsBulkSuccess(unittest.TestCase):
   @classmethod
   def setUpClass(cls):
     cls.client = Client(settings.CRAFT_CFG)
-    cls.agent_id1 = valid_data.VALID_ID  + "_" + settings.RUN_ID
-    cls.agent_id2 = valid_data.VALID_ID_TWO  + "_" + settings.RUN_ID
-    cls.agent_name = valid_data.VALID_ID_TEMPLATE + "{}_" + settings.RUN_ID
+    cls.agent_id1 = valid_data.VALID_ID  + "_" + settings.RUN_ID[-4:]
+    cls.agent_id2 = valid_data.VALID_ID_TWO  + "_" + settings.RUN_ID[-4:]
+    cls.agent_name = valid_data.VALID_ID_TEMPLATE + "{}_" + settings.RUN_ID[-4:]
 
   def setUp(self):
     # Makes sure that no agent with the same ID already exists
@@ -140,9 +140,9 @@ class TestCreateAgentsBulkFailure(unittest.TestCase):
   @classmethod
   def setUpClass(cls):
     cls.client = Client(settings.CRAFT_CFG)
-    cls.agent_id1 = valid_data.VALID_ID  + "_" + settings.RUN_ID
-    cls.agent_id2 = valid_data.VALID_ID_TWO  + "_" + settings.RUN_ID
-    cls.agent_name = valid_data.VALID_ID_TEMPLATE + "{}_" + settings.RUN_ID
+    cls.agent_id1 = valid_data.VALID_ID  + "_" + settings.RUN_ID[-4:]
+    cls.agent_id2 = valid_data.VALID_ID_TWO  + "_" + settings.RUN_ID[-4:]
+    cls.agent_name = valid_data.VALID_ID_TEMPLATE + "{}_" + settings.RUN_ID[-4:]
 
   def setUp(self):
     # Makes sure that no agent with the same ID already exists
@@ -303,8 +303,8 @@ class TestCreateAgentsBulkSomeFailure(unittest.TestCase):
   @classmethod
   def setUpClass(cls):
     cls.client = Client(settings.CRAFT_CFG)
-    cls.agent_id = valid_data.VALID_ID  + "_" + settings.RUN_ID
-    cls.agent_name = valid_data.VALID_ID_TEMPLATE + "{}_" + settings.RUN_ID
+    cls.agent_id = valid_data.VALID_ID  + "_" + settings.RUN_ID[-4:]
+    cls.agent_name = valid_data.VALID_ID_TEMPLATE + "{}_" + settings.RUN_ID[-4:]
 
   def setUp(self):
     # Makes sure that no agent with the same ID already exists

@@ -17,8 +17,8 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
   @classmethod
   def setUpClass(cls):
     cls.client = Client(settings.CRAFT_CFG)
-    cls.agent_id1 = valid_data.VALID_ID  + "_" + settings.RUN_ID
-    cls.agent_id2 = valid_data.VALID_ID_TWO  + "_" + settings.RUN_ID
+    cls.agent_id1 = valid_data.VALID_ID  + "_" + settings.RUN_ID[-4:]
+    cls.agent_id2 = valid_data.VALID_ID_TWO  + "_" + settings.RUN_ID[-4:]
 
   def setUp(self):
     # Makes sure that no agent with the same ID already exists
@@ -176,7 +176,7 @@ class TestGetGroupDecisionTreesBulkSuccess(unittest.TestCase):
     cls.client = Client(settings.CRAFT_CFG)
     cls.agents = []
     for i in range(NB_DECISION_TREES_TO_GET):
-      cls.agents.append(valid_data.VALID_ID_TEMPLATE + str(i)  + "_" + settings.RUN_ID)
+      cls.agents.append(valid_data.VALID_ID_TEMPLATE + str(i)  + "_" + settings.RUN_ID[-4:])
 
   def setUp(self):
     # Makes sure that no agent with the same ID already exists
@@ -223,7 +223,7 @@ class TestGetDecisionTreesBulkFailure(unittest.TestCase):
   @classmethod
   def setUpClass(cls):
     cls.client = Client(settings.CRAFT_CFG)
-    cls.agent_name = valid_data.VALID_ID_TEMPLATE + "{}_" + settings.RUN_ID
+    cls.agent_name = valid_data.VALID_ID_TEMPLATE + "{}_" + settings.RUN_ID[-4:]
 
   def clean_up_agent(self, aid):
     # Makes sure that no agent with the standard ID remains
@@ -292,8 +292,8 @@ class TestGetDecisionTreesBulkSomeFailure(unittest.TestCase):
   @classmethod
   def setUpClass(cls):
     cls.client = Client(settings.CRAFT_CFG)
-    cls.agent_id = valid_data.VALID_ID  + "_" + settings.RUN_ID
-    cls.agent_name = valid_data.VALID_ID_TEMPLATE + "{}_" + settings.RUN_ID
+    cls.agent_id = valid_data.VALID_ID  + "_" + settings.RUN_ID[-4:]
+    cls.agent_name = valid_data.VALID_ID_TEMPLATE + "{}_" + settings.RUN_ID[-4:]
 
   def setUp(self):
     # Makes sure that no agent with the same ID already exists
