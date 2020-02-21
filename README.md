@@ -432,62 +432,11 @@ Each agent has a configuration defining:
 
 > :warning: the absolute value of a `continuous` property must be less than 10<sup>20</sup>.
 
-#### Missing Values
+A base type property can be defined as *optional* if its value is likely to be unknown at some point in time and that it is to be considered as a normal behavior, and not as a missing property. You can achieve that by adding `is_optional: true` to the property definition in your configuration.
 
-If one of these properties value is **missing**, you can send a `null` value for a context attribute value to tell **craft ai** that the value is missing. **craft ai** will take into account as much as possible from this incomplete context.
+> :warning: An optional property cannot be set as being an output of the agent.
 
-A context with a missing value looks like:
-```json
-{
-  "timestamp": 1469415720,
-  "context": {
-    "timezone": "+02:00",
-    "temperature": null,
-    "lightbulbState": "OFF"
-  }
-}
-```
-
-And its associated configuration would be:
-```json
-{
-  "context": {
-    "timezone": {
-      "type": "enum"
-    },
-    "temperature": {
-      "type": "continuous"
-    },
-    "lightbulbState": {
-      "type": "enum"
-    }
-  },
-  "output": ["lightbulbState"],
-  "time_quantum": 100,
-  "learning_period": 108000
-}
-```
-
-#### Optional Values
-
-An `enum`, `continuous` or `boolean` property is defined as *optional* if this latter is explicitely known as being non applicable. For instance, a sensor measuring the ambient temperature can sometimes be *offline* on purpose, and this behavior must be considered as normal and not as a missing property. To tackle this kind of problem, we introduce *optional* values. A property is be defined as optional by adding `is_optional: true` to the types properties in your configuration. Then, in a context, an **optional** value is defined as `{}`, the empty JSON Object:
-
-A context with an optional value looks like:
-```json
-{
-  {
-      "timestamp": 1469415720,
-      "context": {
-        "timezone": "+02:00",
-        "temperature": {},
-        "lightbulbState": "OFF"
-      }
-  },
-  ...
-}
-```
-
-And its associated configuration would be:
+Here is a simple example of configuration :
 ```json
 {
   "context": {
@@ -712,7 +661,7 @@ These advanced configuration parameters are optional, and will appear in the age
 
 #### Create
 
-Create a new agent, and create its [configuration](#configuration).
+Create a new agent, and define its [configuration](#configuration).
 
 > The agent's identifier is a case sensitive string between 1 and 36 characters long. It only accepts letters, digits, hyphen-minuses and underscores (i.e. the regular expression `/[a-zA-Z0-9_-]{1,36}/`).
 
@@ -791,6 +740,373 @@ client.delete_shared_agent_inspector_url(
 
 
 
+### Generator
+
+The craft ai API lets you generate decision trees built on data from one or several agents by creating a generator. It is useful to:
+  - test several hyper-parameters and features sets without reloading all the data for each try
+  - gather data from different agents to make new models on top of them, enhancing the possible data combinations and allowing you to inspect the global behavior across your agents
+
+We define the data stream(s) used by a generator by specifying a list of agents as a filter in its configuration. Other than the filter, the configuration of a generator is similar to an agent's configuration. It has to verify some additional properties:
+
+- Every feature defined in the context configuration of the generator must be present in **all** the agent that match the filter, with the same context types.
+- The parameters `operations_as_events` must be set to true.
+- It follows that the parameters `tree_max_operations` and `learning_period` must be set with valid integers.
+- The agent names provided in the list must be valid agent identifiers.
+
+#### Create
+
+Create a new generator, and define its [configuration](#configuration).
+
+> The generator's identifier is a case sensitive string between 1 and 36 characters long. It only accepts letters, digits, hyphen-minuses and underscores (i.e. the regular expression `/[a-zA-Z0-9_-]{1,36}/`).
+
+```python
+
+GENERATOR_NAME = 'smarthome_gen'
+GENERATOR_FILTER = ['smarthome']
+GENERATOR_CONFIGURATION = {
+  "context": {
+      "light": {
+          "type": "enum"
+      },
+      "tz": {
+          "type": "timezone"
+      },
+      "movement": {
+          "type": "continuous"
+      },
+      "time": {
+          "type": "time_of_day",
+          "is_generated": True
+      }
+  },
+  "output": [
+      "light"
+  ],
+  "learning_period": 1500000,
+  "tree_max_operations": 15000,
+  "operations_as_events": True,
+  'filter': GENERATOR_FILTER
+}
+
+client.create_generator(
+  GENERATOR_CONFIGURATION, # A valid configuration.
+  GENERATOR_NAME # The generator id.
+)
+```
+
+#### Delete
+
+```python
+GENERATOR_NAME = 'smarthome_gen'
+client.delete_generator(
+  GENERATOR_NAME
+)
+```
+
+#### Retrieve
+
+```python
+GENERATOR_NAME = 'smarthome_gen'
+client.get_generator(
+  GENERATOR_NAME
+)
+
+### Ouputted info is the following
+"""{
+    "_version": "2.0.0"
+    "id": "smarthome_gen",
+    "configuration": {
+        "operations_as_events": True,
+        "learning_period": 1500000,
+        "tree_max_operations": 15000,
+        "context": {
+            "light": {
+                "type": "enum"
+            },
+            "tz": {
+                "type": "timezone"
+            },
+            "movement": {
+                "type": "continuous"
+            },
+            "time": {
+                "type": "time_of_day",
+                "is_generated": True
+            }
+        },
+        "output": [
+            "light"
+        ],
+        "filter": [
+            "smarthome"
+        ]
+    },
+    "firstTimestamp": 1254836352,
+    "lastTimestamp": 1272721522,
+    "agents": [
+        "smarthome"
+    ],
+  }"""
+###
+
+```
+
+#### Retrieve generators list
+
+```python
+client.list_generators() # Return the list of generators in the project.
+```
+
+#### List operations in the generator
+
+Retrieve the context operations of agents matching the generator's filter. Each operation also contains the identifier of the agent for which it was added, in the `agent_id` property.
+
+```python
+GENERATOR_NAME = 'smarthome_gen'
+START_TIMESTAMP = 1478894153
+END_TIMESTAMP = 1478895266
+
+client.get_operations_list(
+  GENERATOR_NAME, # The agent id
+  START_TIMESTAMP, # Optional, the **start** timestamp from which the
+              # operations are retrieved (inclusive bound)
+  END_TIMESTAMP # Optional, the **end** timestamp up to which the
+              # operations are retrieved (inclusive bound)
+)
+```
+
+> This call can generate multiple requests to the craft ai API as results are paginated.
+
+#### Get decision tree
+
+```python
+DECISION_TREE_TIMESTAMP = 1469473600
+GENERATOR_NAME = 'smarthome_gen'
+client.get_generator_decision_tree(
+  GENERATOR_NAME, # The agent id
+  DECISION_TREE_TIMESTAMP # The timestamp at which the decision tree is retrieved
+)
+
+""" Outputted tree is the following
+{
+  "_version": "2.0.0",
+  "trees": {
+    "light": {
+        "children": [
+            {
+                "predicted_value": "OFF",
+                "confidence": 0.9966583847999572,
+                "decision_rule": {
+                    "operand": [
+                        7.25,
+                        22.65
+                    ],
+                    "operator": "[in[",
+                    "property": "time"
+                }
+            },
+            {
+                "children": [
+                    {
+                        "predicted_value": "ON",
+                        "confidence": 0.9618390202522278,
+                        "decision_rule": {
+                            "operand": [
+                                22.65,
+                                0.06666667
+                            ],
+                            "operator": "[in[",
+                            "property": "time"
+                        }
+                    },
+                    {
+                        "children": [
+                            {
+                                "predicted_value": "OFF",
+                                "confidence": 0.9797198176383972,
+                                "decision_rule": {
+                                    "operand": [
+                                        0.06666667,
+                                        0.6
+                                    ],
+                                    "operator": "[in[",
+                                    "property": "time"
+                                }
+                            },
+                            {
+                                "children": [
+                                    {
+                                        "predicted_value": "ON",
+                                        "confidence": 0.9585137963294984,
+                                        "decision_rule": {
+                                            "operand": [
+                                                0.6,
+                                                2.25
+                                            ],
+                                            "operator": "[in[",
+                                            "property": "time"
+                                        }
+                                    },
+                                    {
+                                        "children": [
+                                            {
+                                                "predicted_value": "OFF",
+                                                "confidence": 0.8077218532562256,
+                                                "decision_rule": {
+                                                    "operand": [
+                                                        2.25,
+                                                        2.4666667
+                                                    ],
+                                                    "operator": "[in[",
+                                                    "property": "time"
+                                                }
+                                            },
+                                        ],
+                                        "decision_rule": {
+                                            "operand": [
+                                                2.25,
+                                                7.25
+                                            ],
+                                            "operator": "[in[",
+                                            "property": "time"
+                                        }
+                                    }
+                                ],
+                                "decision_rule": {
+                                    "operand": [
+                                        0.6,
+                                        7.25
+                                    ],
+                                    "operator": "[in[",
+                                    "property": "time"
+                                }
+                            }
+                        ],
+                        "decision_rule": {
+                            "operand": [
+                                0.06666667,
+                                7.25
+                            ],
+                            "operator": "[in[",
+                            "property": "time"
+                        }
+                    }
+                ],
+                "decision_rule": {
+                    "operand": [
+                        22.65,
+                        7.25
+                    ],
+                    "operator": "[in[",
+                    "property": "time"
+                }
+            }
+        ]
+    }
+},
+"configuration": {
+    "operations_as_events": True,
+    "learning_period": 1500000,
+    "tree_max_operations": 15000,
+    "context": {
+        "light": {
+            "type": "enum"
+        },
+        "tz": {
+            "type": "timezone"
+        },
+        "movement": {
+            "type": "continuous"
+        },
+        "time": {
+            "type": "time_of_day",
+            "is_generated": True
+        }
+    },
+    "output": [
+        "light"
+    ],
+    "filter": [
+        "smarthome"
+    ]
+  }
+}
+"""
+```
+
+#### Get decision
+
+```python
+const CONTEXT_OPS = {
+  "tz": "+02:00",
+  "movement": 2,
+  "time": 7.5
+};
+const DECISION_TREE_TIMESTAMP = 1469473600;
+const GENERATOR_NAME = 'smarthome_gen';
+
+client.computeGeneratorDecision(
+  GENERATOR_NAME, # The name of the generator
+  DECISION_TREE_TIMESTAMP, # The timestamp at which the decision tree is retrieved
+  CONTEXT_OPS # A valid context operation according to the generator configuration
+)
+"""
+{
+  "_version": "2.0.0",
+  "context": {
+      "tz": "+02:00",
+      "movement": 2,
+      "time": 7.5
+  },
+  "output": {
+    "light": {
+        "predicted_value": "OFF",
+        "confidence": 0.8386044502258301,
+        "decision_rules": [
+            {
+                "operand": [
+                    2.1166666,
+                    10.333333
+                ],
+                "operator": "[in[",
+                "property": "time"
+            },
+            {
+                "operand": [
+                    2.1166666,
+                    9.3
+                ],
+                "operator": "[in[",
+                "property": "time"
+            },
+            {
+                "operand": [
+                    2.1166666,
+                    8.883333
+                ],
+                "operator": "[in[",
+                "property": "time"
+            },
+            {
+                "operand": [
+                    3.5333333,
+                    8.883333
+                ],
+                "operator": "[in[",
+                "property": "time"
+            }
+        ],
+        "nb_samples": 442,
+        "decision_path": "0-0-0-0-1",
+        "distribution": [
+            0.85067874,
+            0.14932127
+        ]
+    }
+  }
+}"""
+```
+
 ### Context
 
 #### Add operations
@@ -853,6 +1169,43 @@ client.add_operations(
     }
   ]
 )
+```
+
+##### Missing Values
+
+If the value of a base type property is **missing**, you can send a `null` value. **craft ai** will take into account as much information as possible from this incomplete context.
+
+A context operation with a missing value looks like:
+```json
+[
+  {
+    "timestamp": 1469415720,
+    "context": {
+      "peopleCount": "OFF",
+      "lightbulbState": null
+    }
+  },
+  ...
+]
+```
+
+##### Optional Values
+
+If the value of an **optional** property is not filled at some point—as should be expected from an optional value—send the empty JSON Object `{}` to **craft ai**:
+
+A context with an optional value looks like:
+```json
+[
+  {
+    "timestamp": 1469415720,
+    "context": {
+      "timezone": "+02:00",
+      "temperature": {},
+      "lightbulbState": "OFF"
+    }
+  },
+  ...
+]
 ```
 
 #### List operations
@@ -930,190 +1283,194 @@ The craft ai API includes a bulk route which provides a programmatic option to p
 #### Bulk - Create
 
 To create several agents at once, use the method `create_agents_bulk` as the following:
-  ```python
-  agent_id_1 = 'my_first_agent'
-  agent_id_2 = 'my_second_agent'
+```python
+agent_id_1 = 'my_first_agent'
+agent_id_2 = 'my_second_agent'
 
-  configuration_1 = {
-    "context": {
-      "peopleCount": {
-        "type": "continuous"
-      },
-      "timeOfDay": {
-        "type": "time_of_day"
-      },
-      "timezone": {
-        "type": "timezone"
-      },
-      "lightbulbState": {
-        "type": "enum"
-      }
+configuration_1 = {
+  "context": {
+    "peopleCount": {
+      "type": "continuous"
     },
-    "output": ["lightbulbState"]
-  }
-  configuration_2 = { ... }
-
-  creation_bulk_payload = [
-    {'id': agent_id_1, 'configuration': configuration_1},
-    {'id': agent_id_2, 'configuration': configuration_2}
-  ]
-
-  created_agents = client.create_agents_bulk(creation_bulk_payload)
-  print(created_agents)
-  ```
-  The variable `created_agents` is an **array of responses**. If an agent has been successfully created, the corresponding response is an object similar to the classic `create_agent()` response. When there are **mixed results**, `created_agents` should looks like:
-  ```python
-  [
-    {'_version': '2.0.0',                                 # creation succeeded
-     'configuration': {
-        'context': {
-          ...
-        },
-        'output': ...,
-        'learning_period': 1500000,
-        'time_quantum': 100
-     },
-     'id': 'my_first_agent'},
-    {'error': CraftAiBadRequestError('error-message'),    # creation failed
-     'id': 'my_second_agent'
+    "timeOfDay": {
+      "type": "time_of_day"
+    },
+    "timezone": {
+      "type": "timezone"
+    },
+    "lightbulbState": {
+      "type": "enum"
     }
-  ]
-  ```
+  },
+  "output": ["lightbulbState"]
+}
+configuration_2 = { ... }
+
+creation_bulk_payload = [
+  {'id': agent_id_1, 'configuration': configuration_1},
+  {'id': agent_id_2, 'configuration': configuration_2}
+]
+
+created_agents = client.create_agents_bulk(creation_bulk_payload)
+print(created_agents)
+```
+The variable `created_agents` is an **array of responses**. If an agent has been successfully created, the corresponding response is an object similar to the classic `create_agent()` response. When there are **mixed results**, `created_agents` should looks like:
+```python
+[
+  {'_version': '2.0.0',                                 # creation succeeded
+   'configuration': {
+      'context': {
+        ...
+      },
+      'output': ...,
+      'learning_period': 1500000,
+      'time_quantum': 100
+   },
+   'id': 'my_first_agent'},
+  {'error': CraftAiBadRequestError('error-message'),    # creation failed
+   'id': 'my_second_agent'
+  }
+]
+```
 
 #### Bulk - Delete
 
 To delete several agents at once, use the method `delete_agents_bulk` as the following:
-  ```python
-  agent_id_1 = 'my_first_agent'
-  agent_id_2 = 'my_second_agent'
+```python
+agent_id_1 = 'my_first_agent'
+agent_id_2 = 'my_second_agent'
 
-  deletion_bulk_payload = [
-    {'id': agent_id_1},
-    {'id': agent_id_2}
-  ]
+deletion_bulk_payload = [
+  {'id': agent_id_1},
+  {'id': agent_id_2}
+]
 
-  deleted_agents = client.delete_agents_bulk(creation_bulk_payload)
-  print(agents_deleted)
-  ```
-  The variable `deleted_agents` is an **array of responses**. If an agent has been successfully deleted, the corresponding response is an object similar to the classic `delete_agent()` response. When there are **mixed results**, `deleted_agents` should looks like:
+deleted_agents = client.delete_agents_bulk(creation_bulk_payload)
+print(agents_deleted)
+```
+The variable `deleted_agents` is an **array of responses**. If an agent has been successfully deleted, the corresponding response is an object similar to the classic `delete_agent()` response. When there are **mixed results**, `deleted_agents` should looks like:
 
-  ```python
-  [
-    {'id': 'my_first_agent',                              # deletion succeeded
-     'creationDate': 1557492944277,
-     'lastContextUpdate': 1557492944277,
-     'lastTreeUpdate': 1557492944277,
-     'configuration': {
-        'context': {
-          ...
-        },
-        'output': ...,
-        'learning_period': 1500000,
-        'time_quantum': 100
-     },
-     '_version': '2.0.0'
-    },
-    {'error': CraftAiBadRequestError('error-message'),    # deletion failed
-     'id': 'my_second_agent'
-    },
-    {'id': 'my_unknown_agent'}                            # deletion succeeded
-  ]
-  ```
+```python
+[
+  {'id': 'my_first_agent',                              # deletion succeeded
+   'creationDate': 1557492944277,
+   'lastContextUpdate': 1557492944277,
+   'lastTreeUpdate': 1557492944277,
+   'configuration': {
+      'context': {
+        ...
+      },
+      'output': ...,
+      'learning_period': 1500000,
+      'time_quantum': 100
+   },
+   '_version': '2.0.0'
+  },
+  {'error': CraftAiBadRequestError('error-message'),    # deletion failed
+   'id': 'my_second_agent'
+  },
+  {'id': 'my_unknown_agent'}                            # deletion succeeded
+]
+```
 
 #### Bulk - Add context Operations
 
 To add operations to several agents at once, use the method `add_operations_bulk` as the following:
-  ```python
-  agent_id_1 = 'my_first_agent'
-  agent_id_2 = 'my_second_agent'
+```python
+agent_id_1 = 'my_first_agent'
+agent_id_2 = 'my_second_agent'
 
-  operations_agent_1 = [
-    {
+operations_agent_1 = [
+  {
     'timestamp': 1469410200,
     'context': {
       'timezone': '+02:00',
       'peopleCount': 0,
       'lightbulbState': 'OFF'
-    },
-    {
+    }
+  },
+  {
     'timestamp': 1469410200,
     'context': {
       'peopleCount': 1,
       'lightbulbState': 'ON'
-    },
+    }
+  },
     {
     'timestamp': 1469410200,
     'context': {
       'peopleCount': 2
-    },
+    }
+  },
     {
     'timestamp': 1469410200,
     'context': {
       'lightbulbState': 'OFF'
     }
-  ]
-  operations_agent_2 = [ ... ]
+  }
+]
+operations_agent_2 = [ ... ]
 
-  addition_operations_bulk_payload = [
-    {'id': agent_id_1, 'operations': operations_agent_1},
-    {'id': agent_id_2, 'operations': operations_agent_2}
-  ]
+addition_operations_bulk_payload = [
+  {'id': agent_id_1, 'operations': operations_agent_1},
+  {'id': agent_id_2, 'operations': operations_agent_2}
+]
 
-  agents = client.addAgentContextOperationsBulk(addition_operations_bulk_payload)
-  ```
-  The variable `agents` is an **array of responses**. If an agent has successfully received operations, the corresponding response is an object similar to the classic `add_operations()` response. When there are **mixed results**, `agents` should looks like:
+agents = client.addAgentContextOperationsBulk(addition_operations_bulk_payload)
+```
+The variable `agents` is an **array of responses**. If an agent has successfully received operations, the corresponding response is an object similar to the classic `add_operations()` response. When there are **mixed results**, `agents` should looks like:
 
-  ```python
-  [
-    {
+```python
+[
+  {
     'status': 201,                                # Addition of operation succeeded
     'message': 'message',
     'id': 'my_first_agent'
-    }
-    {
+  }
+  {
     'status': 500,                                 # Addition of operation failed
     'error': CraftAiBadRequestError('error_message'),
     'id': 'my_second_agent'
-    }
-  ]
-  ```
+  }
+]
+```
 
 #### Bulk - Compute decision trees
 
 To get the tree of several agents at once, use the method `get_decision_trees_bulk` as the following:
 
-  ```python
-  agent_id_1 = 'my_first_agent'
-  agent_id_2 = 'my_second_agent'
+```python
+agent_id_1 = 'my_first_agent'
+agent_id_2 = 'my_second_agent'
 
-  decision_tree_bulk_payload =  [
-    {'id': agent_id_1},
-    {'id': agent_id_2}
-  ]
+decision_tree_bulk_payload =  [
+  {'id': agent_id_1},
+  {'id': agent_id_2}
+]
 
-  trees = client.get_decision_trees_bulk(decision_tree_bulk_payload)
-  ```
-  The variable `trees` is an **array of responses**. If an agent’s model has successfully been created, the corresponding response is an object similar to the classic `get_decision_trees_bulk()` response. When there are **mixed results**, trees should looks like:
+trees = client.get_decision_trees_bulk(decision_tree_bulk_payload)
+```
+The variable `trees` is an **array of responses**. If an agent’s model has successfully been created, the corresponding response is an object similar to the classic `get_decision_trees_bulk()` response. When there are **mixed results**, trees should looks like:
 
-  ```python
-  [
-    {'id': 'my_first_agent',                              # Getting of the tree succeeded
-     'tree': {
-       'trees': { ... }
-       '_version': '1.1.0',
-       'configuration': { ... }
-     }
-     'timestamp': 1458741735
-     },
-     {
-     'error': CraftAiBadRequestError('error_message'),  # Getting of the tree failed
-     'id': 'my_second_agent'
-     }
-     {
-     'error': CraftAiNotFoundError('error_message'),    # Getting of the tree failed
-     'id': 'my_unknown_agent'
-     }
-  ]
+```python
+[
+  {'id': 'my_first_agent',                              # Getting of the tree succeeded
+   'tree': {
+     'trees': { ... }
+     '_version': '1.1.0',
+     'configuration': { ... }
+   }
+   'timestamp': 1458741735
+   },
+   {
+   'error': CraftAiBadRequestError('error_message'),  # Getting of the tree failed
+   'id': 'my_second_agent'
+   }
+   {
+   'error': CraftAiNotFoundError('error_message'),    # Getting of the tree failed
+   'id': 'my_unknown_agent'
+   }
+]
 
   ```
 
@@ -1242,7 +1599,7 @@ A `decision` for a numerical output type would look like:
   "output": {
     "lightbulbIntensity": {
       "predicted_value": 10.5,
-      "standard_deviation": 1.25, // For numerical types, this field is returned in decisions.
+      "standard_deviation": 1.25, # For numerical types, this field is returned in decisions.
       "min": 8.0,
       "max": 11,
       "nb_samples": 25,
@@ -1260,7 +1617,7 @@ A `decision` for a categorical output type would look like:
     "lightbulbState": {
       "predicted_value": "OFF",
       "nb_samples": 25,
-      "distribution" : [ ... ], // Distribution of the output classes normalized by the number of samples in the reached node.
+      "distribution" : [ ... ], # Distribution of the output classes normalized by the number of samples in the reached node.
       "decision_rules": [ ... ],
       "confidence": ...,
       "decision_path" ...
@@ -1274,8 +1631,8 @@ A `decision` in a case where the tree cannot make a prediction:
   "output": {
     "lightbulbState": {
       "predicted_value": None,
-      "distribution" : [ ... ], // Distribution of the output classes normalized by the number of samples in the reached node.
-      "confidence": 0, // Zero confidence if the decision is null
+      "distribution" : [ ... ], # Distribution of the output classes normalized by the number of samples in the reached node.
+      "confidence": 0, # Zero confidence if the decision is null
       "decision_rules": [ ... ],
       "decision_path" ...
     }
@@ -1312,7 +1669,7 @@ decision = craftai.Interpreter.decide( ... )
 # `decision_rules` is the decision rules that led to decision for the `lightBulbState` value
 decision_rules = decision["output"]["lightbulbState"]["decision_rules"]
 
-# // `decision_rules_str` is a human readable string representation of the rules.
+# `decision_rules_str` is a human readable string representation of the rules.
 decision_rules_str = format_decision_rules(decision_rules)
 ```
 
@@ -1561,4 +1918,3 @@ addition_operations_bulk_payload = [
 client.add_operations_bulk(addition_operations_bulk_payload)
 ```
 Given an object that is not a `DataFrame` this method behave like the _vanilla_ `craftai.Client.add_operations_bulk`.
-
