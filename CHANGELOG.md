@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased](https://github.com/craft-ai/craft-ai-client-python/compare/v1.16.0...HEAD) ##
 
+### Changed
+
+- Root package renamed `craft_ai` (previously `craftai`) to follow python naming conventions.
+- `craft_ai.pandas` now requires `pandas` v1.0.1 or compatible versions.
+- Moving tree traversal utils from `craft_ai.pandas.get_paths` and `craft_ai.pandas.get_neighbours` to `craft_ai.collect_paths_from_tree` and `craft_ai.compute_tree_decision_paths_neighbors`.
+
+### Removed
+
+- Remove support for python v2, now supporting v3.6.1 and later.
+
 ## [1.16.0](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.8...v1.16.0) - 2020-02-21 ##
 
 ### Added
@@ -14,20 +24,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add support for generators with the new `client` methods `create_generator`, `get_generator`, `list_generators`, `delete_generator`, `get_generator_decision_tree` and `get_generator_operations_list`.
 - Support for Python version 3.7
 
-### Changed
-
-- Root package renamed `craft_ai` (previously `craftai`) to follow python naming conventions.
-- `craft_ai.pandas` now requires `pandas` v1.0.1 or compatible versions.
-- Moving tree traversal utils from `craft_ai.pandas.get_paths` and `craft_ai.pandas.get_neighbours` to `craft_ai.collect_paths_from_tree` and `craft_ai.compute_tree_decision_paths_neighbors`.
-
 ### Fixed
 
-- `craftai.pandas.client.decide_from_contexts_df` can use every possible feature name.
 - Rollback `craftai.client` to raise errors for responses with `202` status code.
-
-### Removed
-
-- Remove support for python v2, now supporting v3.6.1 and later.
 
 ## [1.15.8](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.7...v1.15.8) - 2019-11-19 ##
 
