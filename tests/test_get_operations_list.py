@@ -5,6 +5,7 @@ import os
 import craft_ai
 
 from . import settings
+from .utils import generate_entity_id
 from .data import valid_data, invalid_data
 
 HERE = os.path.abspath(os.path.dirname(__file__))
@@ -20,7 +21,7 @@ class TestGetOperationsListSuccess(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = craft_ai.Client(settings.CRAFT_CFG)
-        cls.agent_id = valid_data.VALID_ID + "_" + settings.RUN_ID[-4:]
+        cls.agent_id = generate_entity_id("get_generator")
 
     def setUp(self):
         self.client.delete_agent(self.agent_id)
@@ -78,7 +79,7 @@ class TestGetOperationsListFailure(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = craft_ai.Client(settings.CRAFT_CFG)
-        cls.agent_id = valid_data.VALID_ID + "_" + settings.RUN_ID[-4:]
+        cls.agent_id = generate_entity_id("get_operations")
 
     def setUp(self):
         self.client.delete_agent(self.agent_id)

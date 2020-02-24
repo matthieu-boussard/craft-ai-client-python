@@ -3,6 +3,7 @@ import unittest
 import craft_ai
 
 from . import settings
+from .utils import generate_entity_id
 from .data import valid_data, invalid_data
 
 
@@ -12,7 +13,7 @@ class TestDeleteGeneratorWithValidID(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = craft_ai.Client(settings.CRAFT_CFG)
-        cls.generator_id = valid_data.VALID_GENERATOR_ID + "_" + settings.RUN_ID[-4:]
+        cls.generator_id = generate_entity_id("test_delete_generator")
 
     def setUp(self):
         # Creating a generator may raise an error if one with the same ID
@@ -34,20 +35,20 @@ class TestDeleteGeneratorWithValidID(unittest.TestCase):
 
 class TestDeleteGeneratorWithUnknownID(unittest.TestCase):
     """Checks that the client succeeds when deleting a generator which
-  doesn't exist"""
+    doesn't exist"""
 
     @classmethod
     def setUpClass(cls):
         cls.client = craft_ai.Client(settings.CRAFT_CFG)
-        cls.generator_id = valid_data.VALID_GENERATOR_ID + "_" + settings.RUN_ID[-4:]
+        cls.generator_id = generate_entity_id("test_delete_generator")
 
     def test_delete_generator_with_unknown_id(self):
         """delete_generator should succeed when given a non-string/empty string ID
 
-    It should return a json with just a message upon request for
-    deletion of a generator with an ID that is not of type string,
-    since generator IDs should always be strings.
-    """
+        It should return a json with just a message upon request for
+        deletion of a generator with an ID that is not of type string,
+        since generator IDs should always be strings.
+        """
 
         # Calling delete twice to make sure the ID doesn't exist
         # Since it's the function we are testing, it wouldn't be clean
@@ -71,10 +72,10 @@ class TestDeleteGeneratorWithInvalidID(unittest.TestCase):
     def test_delete_generator_with_invalid_id(self):
         """delete_generator should fail when given a non-string/empty string ID
 
-    It should raise an error upon request for deletion of
-    a generator with an ID that is not of type string, since generator IDs
-    should always be strings.
-    """
+        It should raise an error upon request for deletion of
+        a generator with an ID that is not of type string, since generator IDs
+        should always be strings.
+        """
 
         for empty_id in invalid_data.UNDEFINED_KEY:
             self.assertRaises(

@@ -3,8 +3,8 @@ import unittest
 import craft_ai
 
 from . import settings
-from .data import valid_data
-from .data import invalid_data
+from .utils import generate_entity_id
+from .data import valid_data, invalid_data
 
 
 class TestGetGeneratorSuccess(unittest.TestCase):
@@ -13,7 +13,7 @@ class TestGetGeneratorSuccess(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = craft_ai.Client(settings.CRAFT_CFG)
-        cls.generator_id = valid_data.VALID_GENERATOR_ID + "_" + settings.RUN_ID[-4:]
+        cls.generator_id = generate_entity_id("get_generator")
 
     def setUp(self):
         self.client.delete_generator(self.generator_id)
@@ -44,7 +44,7 @@ class TestGetGeneratorFailure(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = craft_ai.Client(settings.CRAFT_CFG)
-        cls.generator_id = valid_data.VALID_GENERATOR_ID + "_" + settings.RUN_ID[-4:]
+        cls.generator_id = generate_entity_id("get_generator")
 
     def setUp(self):
         # Makes sure that no generator exists with the test id

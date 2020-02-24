@@ -3,6 +3,7 @@ import unittest
 from craft_ai import Client, errors as craft_err
 
 from . import settings
+from .utils import generate_entity_id
 from .data import valid_data
 from .data import invalid_data
 
@@ -13,7 +14,7 @@ class TestCreateAgentSuccess(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = Client(settings.CRAFT_CFG)
-        cls.agent_id = valid_data.VALID_ID + "_" + settings.RUN_ID
+        cls.agent_id = generate_entity_id("test_create_agent")
 
     def setUp(self):
         # Makes sure that no agent with the same ID already exists
@@ -54,7 +55,7 @@ class TestCreateAgentFailure(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = Client(settings.CRAFT_CFG)
-        cls.agent_id = valid_data.VALID_ID + "_" + settings.RUN_ID[-4:]
+        cls.agent_id = generate_entity_id("test_create_agent")
 
     def setUp(self):
         # Makes sure that no agent with the same ID already exists

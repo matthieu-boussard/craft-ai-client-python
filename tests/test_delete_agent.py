@@ -3,6 +3,7 @@ import unittest
 import craft_ai
 
 from . import settings
+from .utils import generate_entity_id
 from .data import valid_data, invalid_data
 
 
@@ -12,7 +13,7 @@ class TestDeleteAgentWithValidID(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = craft_ai.Client(settings.CRAFT_CFG)
-        cls.agent_id = valid_data.VALID_ID + "_" + settings.RUN_ID[-4:]
+        cls.agent_id = generate_entity_id("test_delete_agent_with_valid_id")
 
     def setUp(self):
         # Creating an agent may raise an error if one with the same ID
@@ -37,7 +38,7 @@ class TestDeleteAgentWithUnknownID(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = craft_ai.Client(settings.CRAFT_CFG)
-        cls.agent_id = valid_data.VALID_ID + "_" + settings.RUN_ID[-4:]
+        cls.agent_id = generate_entity_id("test_delete_agent_with_unknown_id")
 
     def test_delete_agent_with_unknown_id(self):
         """delete_agent should succeed when given a non-string/empty string ID

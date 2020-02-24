@@ -4,8 +4,8 @@ import unittest
 from craft_ai import Client, errors as craft_err
 
 from . import settings
-from .data import valid_data
-from .data import invalid_data
+from .utils import generate_entity_id
+from .data import valid_data, invalid_data
 
 
 class TestCreateGeneratorSuccess(unittest.TestCase):
@@ -14,9 +14,9 @@ class TestCreateGeneratorSuccess(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = Client(settings.CRAFT_CFG)
-        cls.agent_id = valid_data.VALID_ID
-        cls.generator_id = valid_data.VALID_GENERATOR_ID + "_" + settings.RUN_ID[-4:]
-        cls.filter = valid_data.VALID_GENERATOR_FILTER
+        cls.agent_id = generate_entity_id("test_create_generator_agent")
+        cls.generator_id = generate_entity_id("test_create_generator_generator")
+        cls.filter = [cls.agent_id]
 
     def setUp(self):
         self.client.delete_agent(self.agent_id)
@@ -51,9 +51,9 @@ class TestCreateGeneratorFailure(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = Client(settings.CRAFT_CFG)
-        cls.agent_id = valid_data.VALID_ID
-        cls.generator_id = valid_data.VALID_GENERATOR_ID + "_" + settings.RUN_ID[-4:]
-        cls.filter = valid_data.VALID_GENERATOR_FILTER
+        cls.agent_id = generate_entity_id("test_create_generator_agent")
+        cls.generator_id = generate_entity_id("test_create_generator_generator")
+        cls.filter = [cls.agent_id]
 
     def setUp(self):
         # Makes sure that no agent with the same ID already exists

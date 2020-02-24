@@ -5,8 +5,8 @@ from craft_ai import Client, errors as craft_err
 from craft_ai.constants import DEFAULT_DECISION_TREE_VERSION
 
 from . import settings
-from .data import valid_data
-from .data import invalid_data
+from .utils import generate_entity_id
+from .data import valid_data, invalid_data
 
 NB_DECISION_TREES_TO_GET = 10
 
@@ -18,8 +18,8 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = Client(settings.CRAFT_CFG)
-        cls.agent_id1 = valid_data.VALID_ID + "_" + settings.RUN_ID[-4:]
-        cls.agent_id2 = valid_data.VALID_ID_TWO + "_" + settings.RUN_ID[-4:]
+        cls.agent_id1 = generate_entity_id("get_decision_tree_bulk")
+        cls.agent_id2 = generate_entity_id("get_decision_tree_bulk")
 
     def setUp(self):
         # Makes sure that no agent with the same ID already exists
@@ -180,9 +180,7 @@ class TestGetGroupDecisionTreesBulkSuccess(unittest.TestCase):
         cls.client = Client(settings.CRAFT_CFG)
         cls.agents = []
         for i in range(NB_DECISION_TREES_TO_GET):
-            cls.agents.append(
-                valid_data.VALID_ID_TEMPLATE + str(i) + "_" + settings.RUN_ID[-4:]
-            )
+            cls.agents.append(generate_entity_id("get_decision_tree_bulk"))
 
     def setUp(self):
         # Makes sure that no agent with the same ID already exists
@@ -230,7 +228,7 @@ class TestGetDecisionTreesBulkFailure(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = Client(settings.CRAFT_CFG)
-        cls.agent_name = valid_data.VALID_ID_TEMPLATE + "{}_" + settings.RUN_ID[-4:]
+        cls.agent_name = generate_entity_id("get_decision_tree_bulk")
 
     def clean_up_agent(self, aid):
         # Makes sure that no agent with the standard ID remains
@@ -283,7 +281,9 @@ class TestGetDecisionTreesBulkFailure(unittest.TestCase):
         agents_lst = []
         # Add all the invalid timestamp to check
         for i, timestamp in enumerate(invalid_data.INVALID_TIMESTAMPS):
-            new_agent_id = self.agent_name.format(i)
+            new_agent_id = generate_entity_id(
+                "test_get_all_decision_trees_invalid_timestamp"
+            )
 
             self.client.delete_agent(new_agent_id)
             self.client.create_agent(valid_data.VALID_CONFIGURATION, new_agent_id)
@@ -312,8 +312,7 @@ class TestGetDecisionTreesBulkSomeFailure(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = Client(settings.CRAFT_CFG)
-        cls.agent_id = valid_data.VALID_ID + "_" + settings.RUN_ID[-4:]
-        cls.agent_name = valid_data.VALID_ID_TEMPLATE + "{}_" + settings.RUN_ID[-4:]
+        cls.agent_id = generate_entity_id("get_decision_tree_bulk")
 
     def setUp(self):
         # Makes sure that no agent with the same ID already exists
@@ -386,7 +385,9 @@ class TestGetDecisionTreesBulkSomeFailure(unittest.TestCase):
         agents_lst = [self.agent_id]
         # Add all the invalid timestamp to check
         for i, timestamp in enumerate(invalid_data.INVALID_TIMESTAMPS):
-            new_agent_id = self.agent_name.format(i)
+            new_agent_id = generate_entity_id(
+                "test_get_all_decision_trees_invalid_timestamp"
+            )
 
             self.client.delete_agent(new_agent_id)
             self.client.create_agent(valid_data.VALID_CONFIGURATION, new_agent_id)

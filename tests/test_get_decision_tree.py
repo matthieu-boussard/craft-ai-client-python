@@ -13,11 +13,11 @@ import craft_ai
 from craft_ai.constants import DEFAULT_DECISION_TREE_VERSION
 
 from . import settings
-from .data import valid_data
-from .data import invalid_data
+from .utils import generate_entity_id
+from .data import valid_data, invalid_data
 
 CLIENT = craft_ai.Client(settings.CRAFT_CFG)
-AGENT_ID = "test_get_decision_tree_" + settings.RUN_ID[-4:]
+AGENT_ID = generate_entity_id("test_get_decision_tree")
 
 VALID_L_CFG = valid_data.VALID_LARGE_CONFIGURATION
 VALID_L_BATCH_DURATION = VALID_L_CFG["learning_period"] * 4

@@ -13,13 +13,13 @@ import craft_ai
 from craft_ai.constants import DEFAULT_DECISION_TREE_VERSION
 
 from . import settings
-from .data import valid_data
-from .data import invalid_data
+from .utils import generate_entity_id
+from .data import valid_data, invalid_data
 
 CLIENT = craft_ai.Client(settings.CRAFT_CFG)
-AGENT_ID_1 = "test_get_decision_tree_" + settings.RUN_ID[-4:] + "_1"
-AGENT_ID_2 = "test_get_decision_tree_" + settings.RUN_ID[-4:] + "_2"
-GENERATOR_ID = "test_generator_decision_tree_" + settings.RUN_ID[-4:]
+AGENT_ID_1 = generate_entity_id("test_get_decision_tree")
+AGENT_ID_2 = generate_entity_id("test_get_decision_tree")
+GENERATOR_ID = generate_entity_id("test_generator_decision_tree")
 FILTER = [AGENT_ID_1, AGENT_ID_2]
 
 

@@ -5,6 +5,7 @@ from craft_ai.client import CraftAIClient
 from craft_ai import errors as craft_err
 
 from . import settings
+from .utils import generate_entity_id
 from .data import valid_data, invalid_data
 
 
@@ -16,7 +17,7 @@ class TestGetContextStateSuccess(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = CraftAIClient(settings.CRAFT_CFG)
-        cls.agent_id = valid_data.VALID_ID + "_" + settings.RUN_ID[-4:]
+        cls.agent_id = generate_entity_id("test_get_context_state")
 
     def setUp(self):
         self.client.delete_agent(self.agent_id)
@@ -50,7 +51,7 @@ class TestGetContextStateFailure(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = CraftAIClient(settings.CRAFT_CFG)
-        cls.agent_id = valid_data.VALID_ID + "_" + settings.RUN_ID[-4:]
+        cls.agent_id = generate_entity_id("test_get_state")
 
     def setUp(self):
         self.client.delete_agent(self.agent_id)

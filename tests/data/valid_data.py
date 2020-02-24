@@ -1,9 +1,3 @@
-VALID_ID_TEMPLATE = "craft_ai_test_agent"
-VALID_ID = VALID_ID_TEMPLATE + "_1"
-VALID_ID_TWO = VALID_ID_TEMPLATE + "_2"
-VALID_GENERATOR_ID = VALID_ID_TEMPLATE + "_gen1"
-VALID_GENERATOR_ID_2 = VALID_ID_TEMPLATE + "_gen2"
-
 VALID_CONTEXT = {
     "tz": {"type": "timezone"},
     "presence": {"type": "enum"},
@@ -11,7 +5,6 @@ VALID_CONTEXT = {
     "lightbulbColor": {"type": "enum"},
 }
 VALID_OUTPUT = ["lightbulbColor"]
-VALID_GENERATOR_FILTER = [VALID_ID]
 VALID_TQ = 100
 VALID_TREE_MAX_OPERATIONS = 50000
 VALID_LEARNING_PERIOD = 6000000
@@ -28,7 +21,7 @@ VALID_GENERATOR_CONFIGURATION = {
     "operations_as_events": True,
     "learning_period": VALID_LEARNING_PERIOD,
     "tree_max_operations": VALID_TREE_MAX_OPERATIONS,
-    "filter": VALID_GENERATOR_FILTER,
+    "filter": ["test_filter"],
 }
 
 VALID_LARGE_CONFIGURATION = {

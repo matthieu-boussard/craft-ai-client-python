@@ -5,6 +5,7 @@ import os
 import craft_ai
 
 from . import settings
+from .utils import generate_entity_id
 from .data import valid_data, invalid_data
 
 HERE = os.path.abspath(os.path.dirname(__file__))
@@ -53,9 +54,9 @@ class TestGetGeneratorOperationsListSuccess(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = craft_ai.Client(settings.CRAFT_CFG)
-        cls.generator_id = valid_data.VALID_GENERATOR_ID + "_" + settings.RUN_ID[-4:]
-        cls.agent_id_1 = valid_data.VALID_ID + "_" + settings.RUN_ID[-4:]
-        cls.agent_id_2 = valid_data.VALID_ID_TWO + "_" + settings.RUN_ID[-4:]
+        cls.generator_id = generate_entity_id("get_generator_operations")
+        cls.agent_id_1 = generate_entity_id("get_generator_operations")
+        cls.agent_id_2 = generate_entity_id("get_generator_operations")
         cls.filter = [cls.agent_id_1, cls.agent_id_2]
 
     def setUp(self):
@@ -155,8 +156,8 @@ class TestGetOperationsListFailure(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = craft_ai.Client(settings.CRAFT_CFG)
-        cls.agent_id = valid_data.VALID_ID + "_" + settings.RUN_ID[-4:]
-        cls.generator_id = valid_data.VALID_GENERATOR_ID + "_" + settings.RUN_ID[-4:]
+        cls.agent_id = generate_entity_id("get_generator_operations")
+        cls.generator_id = generate_entity_id("get_generator_operations")
 
     def setUp(self):
         self.client.delete_agent(self.agent_id)

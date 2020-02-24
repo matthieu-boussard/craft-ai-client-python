@@ -3,6 +3,7 @@ import unittest
 import craft_ai
 
 from . import settings
+from .utils import generate_entity_id
 from .data import valid_data
 
 
@@ -13,10 +14,7 @@ class TestListAgents(unittest.TestCase):
     def setUpClass(cls):
         cls.client = craft_ai.Client(settings.CRAFT_CFG)
         cls.n_agents = 5
-        cls.agents_id = [
-            "{}_{}_{}".format(valid_data.VALID_ID, i, settings.RUN_ID)
-            for i in range(cls.n_agents)
-        ]
+        cls.agents_id = [generate_entity_id("list_agents") for i in range(cls.n_agents)]
 
     def setUp(self):
         for agent_id in self.agents_id:

@@ -9,8 +9,8 @@ if CRAFTAI_PANDAS_ENABLED:
     from craft_ai import errors as craft_err
 
     from . import settings
-    from .data import valid_data, invalid_data
-    from .data import pandas_valid_data, pandas_invalid_data
+    from .utils import generate_entity_id
+    from .data import valid_data, invalid_data, pandas_valid_data, pandas_invalid_data
 
     NB_AGENTS_TO_ADD_OPERATIONS = 50
 
@@ -28,8 +28,8 @@ if CRAFTAI_PANDAS_ENABLED:
         @classmethod
         def setUpClass(cls):
             cls.client = craft_ai.pandas.Client(settings.CRAFT_CFG)
-            cls.agent_id1 = valid_data.VALID_ID + "_" + settings.RUN_ID[-4:]
-            cls.agent_id2 = valid_data.VALID_ID_TWO + "_" + settings.RUN_ID[-4:]
+            cls.agent_id1 = generate_entity_id("add_operations_bulk")
+            cls.agent_id2 = generate_entity_id("add_operations_bulk")
 
         def setUp(self):
             self.client.delete_agent(self.agent_id1)
@@ -178,8 +178,10 @@ if CRAFTAI_PANDAS_ENABLED:
         @classmethod
         def setUpClass(cls):
             cls.client = craft_ai.pandas.Client(settings.CRAFT_CFG)
-            agent = valid_data.VALID_ID_TEMPLATE + "{}_" + settings.RUN_ID[-4:]
-            cls.agents = [agent.format(i) for i in range(NB_AGENTS_TO_ADD_OPERATIONS)]
+            cls.agents = [
+                generate_entity_id("add_operations_bulk")
+                for i in range(NB_AGENTS_TO_ADD_OPERATIONS)
+            ]
 
         def setUp(self):
             for agent_id in self.agents:
@@ -222,7 +224,6 @@ if CRAFTAI_PANDAS_ENABLED:
         @classmethod
         def setUpClass(cls):
             cls.client = craft_ai.pandas.Client(settings.CRAFT_CFG)
-            cls.agent_name = valid_data.VALID_ID_TEMPLATE + "{}_" + settings.RUN_ID[-4:]
 
         def clean_up_agent(self, aid):
             # Makes sure that no agent with the standard ID remains
@@ -264,7 +265,9 @@ if CRAFTAI_PANDAS_ENABLED:
             payload = []
             agents_lst = []
             for i, invalid_operation_set in enumerate(invalid_data.UNDEFINED_KEY):
-                new_agent_id = self.agent_name.format(i)
+                new_agent_id = generate_entity_id(
+                    "test_add_operations_bulk_undefined_operations"
+                )
                 self.client.delete_agent(new_agent_id)
                 self.client.create_agent(valid_data.VALID_CONFIGURATION, new_agent_id)
                 agents_lst.append(new_agent_id)
@@ -289,7 +292,9 @@ if CRAFTAI_PANDAS_ENABLED:
             payload = []
             agents_lst = []
             for i, invalid_operation_set in enumerate(invalid_data.INVALID_OPS_SET):
-                new_agent_id = self.agent_name.format(i)
+                new_agent_id = generate_entity_id(
+                    "test_add_operations_bulk_invalid_operations"
+                )
                 self.client.delete_agent(new_agent_id)
                 self.client.create_agent(valid_data.VALID_CONFIGURATION, new_agent_id)
                 agents_lst.append(new_agent_id)
@@ -312,7 +317,9 @@ if CRAFTAI_PANDAS_ENABLED:
             It should raise an error upon request for operations posting for all agents
             with invalid operations set.
             """
-            agent_id = self.agent_name.format(0)
+            agent_id = generate_entity_id(
+                "test_add_operations_bulk_unexpected_property"
+            )
             self.client.delete_agent(agent_id)
             self.client.create_agent(SIMPLE_AGENT_CONFIGURATION, agent_id)
 
@@ -342,7 +349,7 @@ if CRAFTAI_PANDAS_ENABLED:
             list_agents = []
             payload = []
             for i, index in enumerate(INVALID_DF_INDEX):
-                agent_id = self.agent_name.format(i)
+                agent_id = generate_entity_id("test_add_operations_bulk_invalid_index")
                 self.client.delete_agent(agent_id)
                 self.client.create_agent(SIMPLE_AGENT_CONFIGURATION, agent_id)
 
@@ -372,7 +379,7 @@ if CRAFTAI_PANDAS_ENABLED:
             appears multiple time in the same bulk and the operations are not in
             chronological order.
             """
-            agent_id = self.agent_name.format(0)
+            agent_id = generate_entity_id("test_add_operations_bulk_wrong_order")
             self.client.delete_agent(agent_id)
             self.client.create_agent(SIMPLE_AGENT_CONFIGURATION, agent_id)
 
@@ -401,7 +408,7 @@ if CRAFTAI_PANDAS_ENABLED:
         @classmethod
         def setUpClass(cls):
             cls.client = craft_ai.pandas.Client(settings.CRAFT_CFG)
-            cls.agent_id = valid_data.VALID_ID + "_" + settings.RUN_ID[-4:]
+            cls.agent_id = generate_entity_id("test_add_operations_bulk_some_failure")
 
         def setUp(self):
             self.client.delete_agent(self.agent_id)
@@ -434,13 +441,15 @@ if CRAFTAI_PANDAS_ENABLED:
             def test_add_operations_bulk_invalid_index(self):
                 """add_operations_bulk should fail when given a df with invalid index.
 
-            It should raise an error upon request for operations posting for all agents
-            with invalid index in the operations set.
-            """
+                It should raise an error upon request for operations posting for all agents
+                with invalid index in the operations set.
+                """
                 list_agents = []
                 payload = []
                 for i, index in enumerate(INVALID_DF_INDEX):
-                    agent_id = self.agent_name.format(i)
+                    agent_id = generate_entity_id(
+                        "test_add_operations_bulk_invalid_index"
+                    )
                     self.client.delete_agent(agent_id)
                     self.client.create_agent(SIMPLE_AGENT_CONFIGURATION, agent_id)
 
@@ -460,13 +469,13 @@ if CRAFTAI_PANDAS_ENABLED:
 
             def test_add_operations_bulk_wrong_order(self):
                 """add_operations_bulk should fails when the DataFrame are in a non
-            chrological order.
+                chrological order.
 
-            It should raise an error upon request for operations posting when an agent
-            appears multiple time in the same bulk and the operations are not in
-            chronological order.
-            """
-                agent_id = self.agent_name.format(0)
+                It should raise an error upon request for operations posting when an agent
+                appears multiple time in the same bulk and the operations are not in
+                chronological order.
+                """
+                agent_id = generate_entity_id("test_add_operations_bulk_wrong_order")
                 self.client.delete_agent(agent_id)
                 self.client.create_agent(SIMPLE_AGENT_CONFIGURATION, agent_id)
 
@@ -491,13 +500,15 @@ if CRAFTAI_PANDAS_ENABLED:
 
         class TestAddOperationsBulkSomeFailure(unittest.TestCase):
             """Checks that the client succeed when adding operations to
-        an/multiple agent(s) with bad input and an/multiple agent(s)
-        with valid input"""
+            an/multiple agent(s) with bad input and an/multiple agent(s)
+            with valid input"""
 
             @classmethod
             def setUpClass(cls):
                 cls.client = craft_ai.pandas.Client(settings.CRAFT_CFG)
-                cls.agent_id = valid_data.VALID_ID + "_" + settings.RUN_ID
+                cls.agent_id = generate_entity_id(
+                    "test_add_operations_bulk_some_failure"
+                )
 
             def setUp(self):
                 self.client.delete_agent(self.agent_id)

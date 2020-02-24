@@ -3,6 +3,7 @@ import unittest
 from craft_ai import Client, errors as craft_err
 
 from . import settings
+from .utils import generate_entity_id
 from .data import valid_data, invalid_data
 
 NB_AGENTS_TO_DELETE = 200
@@ -15,8 +16,8 @@ class TestDeleteAgentsBulkSuccess(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = Client(settings.CRAFT_CFG)
-        cls.agent_id1 = valid_data.VALID_ID + "_" + settings.RUN_ID[-4:]
-        cls.agent_id2 = valid_data.VALID_ID_TWO + "_" + settings.RUN_ID[-4:]
+        cls.agent_id1 = generate_entity_id("test_delete_agents_bulk")
+        cls.agent_id2 = generate_entity_id("test_delete_agents_bulk")
 
     def setUp(self):
         try:
@@ -46,8 +47,10 @@ class TestDeleteGroupAgentsBulkSuccess(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = Client(settings.CRAFT_CFG)
-        agent = valid_data.VALID_ID_TEMPLATE + "{}_" + settings.RUN_ID[-4:]
-        cls.agents = [agent.format(i) for i in range(NB_AGENTS_TO_DELETE)]
+        cls.agents = [
+            generate_entity_id("test_delete_agents_bulk")
+            for i in range(NB_AGENTS_TO_DELETE)
+        ]
 
     def setUp(self):
         for agent in self.agents:
@@ -103,7 +106,7 @@ class TestDeleteBulkAgentsBulkSomeFailure(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = Client(settings.CRAFT_CFG)
-        cls.agent_id = valid_data.VALID_ID + "_" + settings.RUN_ID[-4:]
+        cls.agent_id = generate_entity_id("test_delete_agents_bulk")
 
     def setUp(self):
         try:

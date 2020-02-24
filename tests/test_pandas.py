@@ -15,13 +15,14 @@ if CRAFTAI_PANDAS_ENABLED:
     )
 
     import craft_ai.pandas
-    from .data import pandas_valid_data, valid_data
 
+    from .data import pandas_valid_data, valid_data
+    from .utils import generate_entity_id
     from . import settings
 
-    AGENT_ID = "test_pandas_" + settings.RUN_ID[-4:]
-    AGENT_ID_2 = "test_pandas_" + settings.RUN_ID[-4:] + "_2"
-    GENERATOR_ID = "test_pandas_" + settings.RUN_ID[-4:]
+    AGENT_ID = generate_entity_id("test_pandas_agent_1")
+    AGENT_ID_2 = generate_entity_id("test_pandas_agent_2")
+    GENERATOR_ID = generate_entity_id("test_pandas_generator")
 
     SIMPLE_AGENT_CONFIGURATION = pandas_valid_data.SIMPLE_AGENT_CONFIGURATION
     SIMPLE_AGENT_DATA = pandas_valid_data.SIMPLE_AGENT_DATA
@@ -76,6 +77,7 @@ if CRAFTAI_PANDAS_ENABLED:
     def setup_generator_with_agent_with_operations():
         CLIENT.delete_agent(AGENT_ID)
         CLIENT.delete_agent(AGENT_ID_2)
+        CLIENT.delete_generator(GENERATOR_ID)
         CLIENT.create_agent(valid_data.VALID_CONFIGURATION, AGENT_ID)
         CLIENT.create_agent(valid_data.VALID_CONFIGURATION, AGENT_ID_2)
         CLIENT.add_operations(AGENT_ID, valid_data.VALID_OPERATIONS_SET)
@@ -88,6 +90,8 @@ if CRAFTAI_PANDAS_ENABLED:
 
     def teardown():
         CLIENT.delete_agent(AGENT_ID)
+        CLIENT.delete_agent(AGENT_ID_2)
+        CLIENT.delete_generator(GENERATOR_ID)
 
     @with_setup(setup_simple_agent, teardown)
     def test_add_operations_df_bad_index():

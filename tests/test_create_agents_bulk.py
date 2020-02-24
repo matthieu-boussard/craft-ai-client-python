@@ -3,8 +3,8 @@ import unittest
 from craft_ai import Client, errors as craft_err
 
 from . import settings
-from .data import valid_data
-from .data import invalid_data
+from .utils import generate_entity_id
+from .data import valid_data, invalid_data
 
 NB_AGENTS_TO_CREATE = 200
 
@@ -16,9 +16,9 @@ class TestCreateAgentsBulkSuccess(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = Client(settings.CRAFT_CFG)
-        cls.agent_id1 = valid_data.VALID_ID + "_" + settings.RUN_ID[-4:]
-        cls.agent_id2 = valid_data.VALID_ID_TWO + "_" + settings.RUN_ID[-4:]
-        cls.agent_name = valid_data.VALID_ID_TEMPLATE + "{}_" + settings.RUN_ID[-4:]
+        cls.agent_id1 = generate_entity_id("test_create_agents_bulk")
+        cls.agent_id2 = generate_entity_id("test_create_agents_bulk")
+        cls.agent_name = generate_entity_id("test_create_agents_bulk")
 
     def setUp(self):
         # Makes sure that no agent with the same ID already exists
@@ -126,7 +126,7 @@ class TestCreateAgentsBulkSuccess(unittest.TestCase):
         payload = []
         agents_lst = []
         for i in range(NB_AGENTS_TO_CREATE):
-            new_agent_id = self.agent_name.format(i)
+            new_agent_id = generate_entity_id("test_create_lot_of_agents_bulk")
             self.client.delete_agent(new_agent_id)
             payload.append(
                 {"id": new_agent_id, "configuration": valid_data.VALID_CONFIGURATION}
@@ -149,9 +149,9 @@ class TestCreateAgentsBulkFailure(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = Client(settings.CRAFT_CFG)
-        cls.agent_id1 = valid_data.VALID_ID + "_" + settings.RUN_ID[-4:]
-        cls.agent_id2 = valid_data.VALID_ID_TWO + "_" + settings.RUN_ID[-4:]
-        cls.agent_name = valid_data.VALID_ID_TEMPLATE + "{}_" + settings.RUN_ID[-4:]
+        cls.agent_id1 = generate_entity_id("test_create_agents_bulk")
+        cls.agent_id2 = generate_entity_id("test_create_agents_bulk")
+        cls.agent_name = generate_entity_id("test_create_agents_bulk")
 
     def setUp(self):
         # Makes sure that no agent with the same ID already exists
@@ -211,7 +211,9 @@ class TestCreateAgentsBulkFailure(unittest.TestCase):
         agents_lst = []
         # Add all the invalid context to check
         for i, invalid_context in enumerate(invalid_data.INVALID_CONTEXTS):
-            new_agent_id = self.agent_name.format(i)
+            new_agent_id = generate_entity_id(
+                "test_create_agents_bulk_with_invalid_context"
+            )
             invalid_configuration = {
                 "context": invalid_data.INVALID_CONTEXTS[invalid_context],
                 "output": ["lightbulbColor"],
@@ -246,7 +248,9 @@ class TestCreateAgentsBulkFailure(unittest.TestCase):
         agents_lst = []
         # Add all the invalid context to check
         for i, empty_configuration in enumerate(invalid_data.UNDEFINED_KEY):
-            new_agent_id = self.agent_name.format(i)
+            new_agent_id = generate_entity_id(
+                "test_create_agents_bulk_undefined_config"
+            )
             self.client.delete_agent(new_agent_id)
             payload.append(
                 {
@@ -279,7 +283,9 @@ class TestCreateAgentsBulkFailure(unittest.TestCase):
         agents_lst = []
         # Add all the invalid time quantum to check
         for i, inv_tq in enumerate(invalid_data.INVALID_TIME_QUANTA):
-            new_agent_id = self.agent_name.format(i)
+            new_agent_id = generate_entity_id(
+                "test_create_agents_bulk_invalid_time_quantum"
+            )
             invalid_configuration = {
                 "context": valid_data.VALID_CONTEXT,
                 "output": valid_data.VALID_OUTPUT,
@@ -303,8 +309,8 @@ class TestCreateAgentsBulkSomeFailure(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = Client(settings.CRAFT_CFG)
-        cls.agent_id = valid_data.VALID_ID + "_" + settings.RUN_ID[-4:]
-        cls.agent_name = valid_data.VALID_ID_TEMPLATE + "{}_" + settings.RUN_ID[-4:]
+        cls.agent_id = generate_entity_id("test_create_agents_bulk")
+        cls.agent_name = generate_entity_id("test_create_agents_bulk")
 
     def setUp(self):
         # Makes sure that no agent with the same ID already exists
@@ -411,7 +417,9 @@ class TestCreateAgentsBulkSomeFailure(unittest.TestCase):
         agents_lst = [self.agent_id]
         # Add all the invalid context to check
         for i, invalid_context in enumerate(invalid_data.INVALID_CONTEXTS):
-            new_agent_id = self.agent_name.format(i)
+            new_agent_id = generate_entity_id(
+                "test_create_some_agents_bulk_invalid_context"
+            )
             invalid_configuration = {
                 "context": invalid_data.INVALID_CONTEXTS[invalid_context],
                 "output": ["lightbulbColor"],
@@ -457,7 +465,7 @@ class TestCreateAgentsBulkSomeFailure(unittest.TestCase):
         agents_lst = [self.agent_id]
         # Add all the invalid configuration to check
         for i, empty_configuration in enumerate(invalid_data.UNDEFINED_KEY):
-            new_agent_id = self.agent_name.format(i)
+            new_agent_id = generate_entity_id("test_create_some_agents_undef_config")
             self.client.delete_agent(new_agent_id)
             payload.append(
                 {
@@ -502,7 +510,9 @@ class TestCreateAgentsBulkSomeFailure(unittest.TestCase):
         agents_lst = [self.agent_id]
         # Add all the invalid time quantum to check
         for i, inv_tq in enumerate(invalid_data.INVALID_TIME_QUANTA):
-            new_agent_id = self.agent_name.format(i)
+            new_agent_id = generate_entity_id(
+                "test_create_some_agents_inval_time_quant"
+            )
             invalid_configuration = {
                 "context": valid_data.VALID_CONTEXT,
                 "output": valid_data.VALID_OUTPUT,

@@ -3,6 +3,7 @@ import unittest
 from craft_ai import Client as CraftAIClient
 
 from . import settings
+from .utils import generate_entity_id
 from .data import valid_data
 
 
@@ -12,7 +13,7 @@ class TestGetSharedAgentsInspectorUrlSuccess(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = CraftAIClient(settings.CRAFT_CFG)
-        cls.agent_id = valid_data.VALID_ID + "_" + settings.RUN_ID[-4:]
+        cls.agent_id = generate_entity_id("get_inspector_url")
 
     def setUp(self):
         self.client.delete_agent(self.agent_id)

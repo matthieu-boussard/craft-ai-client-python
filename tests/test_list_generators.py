@@ -3,6 +3,7 @@ import unittest
 import craft_ai
 
 from . import settings
+from .utils import generate_entity_id
 from .data import valid_data
 
 
@@ -14,13 +15,12 @@ class TestListGenerators(unittest.TestCase):
         cls.client = craft_ai.Client(settings.CRAFT_CFG)
         cls.n_generators = 5
         cls.generators_id = [
-            "{}_{}_{}".format(valid_data.VALID_ID, i, settings.RUN_ID)
-            for i in range(cls.n_generators)
+            generate_entity_id("list_generators") for i in range(cls.n_generators)
         ]
-        cls.agent_id = valid_data.VALID_ID
+        cls.agent_id = generate_entity_id("list_generators_agent")
 
     def setUp(self):
-        self.client.delete_agent(valid_data.VALID_ID)
+        self.client.delete_agent(self.agent_id)
         self.client.create_agent(
             valid_data.VALID_GENERATOR_CONFIGURATION, self.agent_id
         )
