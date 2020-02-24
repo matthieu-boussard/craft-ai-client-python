@@ -1,8 +1,6 @@
 import unittest
 
-# Preserving the 'old' way to do the imports here to ensure retrocompatibility
-from craft_ai.client import CraftAIClient
-from craft_ai import errors as craft_err
+from craft_ai import Client, errors as craft_err
 
 from . import settings
 from .utils import generate_entity_id
@@ -16,7 +14,7 @@ class TestGetContextStateSuccess(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.client = CraftAIClient(settings.CRAFT_CFG)
+        cls.client = Client(settings.CRAFT_CFG)
         cls.agent_id = generate_entity_id("test_get_agent_state")
 
     def setUp(self):
@@ -50,7 +48,7 @@ class TestGetContextStateFailure(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.client = CraftAIClient(settings.CRAFT_CFG)
+        cls.client = Client(settings.CRAFT_CFG)
         cls.agent_id = generate_entity_id("test_get_state")
 
     def setUp(self):

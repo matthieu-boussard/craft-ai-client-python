@@ -43,7 +43,7 @@ def current_time_ms():
     return int(round(time.time() * 1000))
 
 
-class CraftAIClient(object):
+class Client(object):
     """Client class for craft ai's API"""
 
     def __init__(self, cfg):
@@ -900,14 +900,14 @@ class CraftAIClient(object):
 
         message = "Status code " + str(status_code)
         try:
-            message = CraftAIClient._parse_body(response)["message"]
+            message = Client._parse_body(response)["message"]
         except (CraftAiInternalError, KeyError, TypeError):
             pass
 
         if status_code in [200, 201, 204, 207]:
-            return CraftAIClient._parse_body(response)
+            return Client._parse_body(response)
         else:
-            raise CraftAIClient._get_error_from_status(status_code, message)
+            raise Client._get_error_from_status(status_code, message)
         return None
 
     @staticmethod
@@ -928,9 +928,7 @@ class CraftAIClient(object):
             elif "status" in response:
                 status_code = response["status"]
                 message = response["message"]
-                agent = {
-                    "error": CraftAIClient._get_error_from_status(status_code, message)
-                }
+                agent = {"error": Client._get_error_from_status(status_code, message)}
                 try:
                     agent["id"] = response["id"]
                 except KeyError:

@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Removed
 
 - Remove support for python v2, now supporting v3.6.1 and later.
+- Remove support for `CraftAIClient` import.
 
 ## [1.16.0](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.8...v1.16.0) - 2020-02-21 ##
 

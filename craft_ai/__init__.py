@@ -1,7 +1,7 @@
 __version__ = "2.0.0rc3"
 
 from . import errors
-from .client import CraftAIClient as Client
+from .client import Client
 from .interpreter import Interpreter
 from .time import Time
 from .formatters import format_property, format_decision_rules
