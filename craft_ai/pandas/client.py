@@ -18,7 +18,7 @@ def chunker(to_be_chunked_df, chunk_size):
 class Client(VanillaClient):
     """Client class for craft ai's API using pandas dataframe types"""
 
-    def add_operations(self, agent_id, operations):
+    def add_agent_operations(self, agent_id, operations):
         if isinstance(operations, pd.DataFrame):
             if not isinstance(operations.index, pd.DatetimeIndex):
                 raise CraftAiBadRequestError(
@@ -55,7 +55,7 @@ class Client(VanillaClient):
                     }
                     for _, row in chunk.iterrows()
                 ]
-                super(Client, self).add_operations(agent_id, chunk_operations)
+                super(Client, self).add_agent_operations(agent_id, chunk_operations)
 
             return {
                 "message": 'Successfully added %i operation(s) to the agent "%s/%s/%s" context.'
@@ -67,9 +67,9 @@ class Client(VanillaClient):
                 )
             }
         else:
-            return super(Client, self).add_operations(agent_id, operations)
+            return super(Client, self).add_agent_operations(agent_id, operations)
 
-    def add_operations_bulk(self, payload):
+    def add_agents_operations_bulk(self, payload):
         """Add operations to a group of agents.
 
         :param list payload: contains the informations necessary for the action.
@@ -132,10 +132,10 @@ class Client(VanillaClient):
                     "of dict form for the agent {}.".format(agent["id"])
                 )
 
-        return super(Client, self).add_operations_bulk(new_payload)
+        return super(Client, self).add_agents_operations_bulk(new_payload)
 
-    def get_operations_list(self, agent_id, start=None, end=None):
-        operations_list = super(Client, self).get_operations_list(agent_id, start, end)
+    def get_agent_operations(self, agent_id, start=None, end=None):
+        operations_list = super(Client, self).get_agent_operations(agent_id, start, end)
         return pd.DataFrame(
             [operation["context"] for operation in operations_list],
             index=pd.to_datetime(
@@ -143,13 +143,13 @@ class Client(VanillaClient):
             ).tz_localize("UTC"),
         )
 
-    def get_state_history(self, agent_id, start=None, end=None):
-        state_history = super(Client, self).get_state_history(agent_id, start, end)
+    def get_agent_states(self, agent_id, start=None, end=None):
+        states = super(Client, self).get_agent_states(agent_id, start, end)
 
         return pd.DataFrame(
-            [state["sample"] for state in state_history],
+            [state["sample"] for state in states],
             index=pd.to_datetime(
-                [state["timestamp"] for state in state_history], unit="s"
+                [state["timestamp"] for state in states], unit="s"
             ).tz_localize("UTC"),
         )
 
@@ -169,14 +169,14 @@ class Client(VanillaClient):
             raise CraftAiBadRequestError("Invalid data given, it is not a DataFrame.")
         return Interpreter.decide_from_contexts_df(tree, contexts_df)
 
-    def get_decision_tree(
+    def get_agent_decision_tree(
         self, agent_id, timestamp=None, version=DEFAULT_DECISION_TREE_VERSION
     ):
         # Convert pandas timestamp to a numerical timestamp in seconds
         if isinstance(timestamp, pd.Timestamp):
             timestamp = timestamp.value // 10 ** 9
 
-        return super(Client, self).get_decision_tree(agent_id, timestamp, version)
+        return super(Client, self).get_agent_decision_tree(agent_id, timestamp, version)
 
     def get_generator_decision_tree(
         self, generator_id, timestamp=None, version=DEFAULT_DECISION_TREE_VERSION

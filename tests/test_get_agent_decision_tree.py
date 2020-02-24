@@ -57,14 +57,14 @@ VALID_L_OPERATIONS = [
 def setup_agent_w_operations():
     CLIENT.delete_agent(AGENT_ID)
     CLIENT.create_agent(valid_data.VALID_CONFIGURATION, AGENT_ID)
-    CLIENT.add_operations(AGENT_ID, valid_data.VALID_OPERATIONS_SET)
+    CLIENT.add_agent_operations(AGENT_ID, valid_data.VALID_OPERATIONS_SET)
 
 
 def setup_agent_w_operations_l():
     CLIENT.delete_agent(AGENT_ID)
     CLIENT.create_agent(VALID_L_CFG, AGENT_ID)
     for batch in VALID_L_OPERATIONS:
-        CLIENT.add_operations(AGENT_ID, batch)
+        CLIENT.add_agent_operations(AGENT_ID, batch)
 
 
 def teardown():
@@ -73,7 +73,7 @@ def teardown():
 
 @with_setup(setup_agent_w_operations, teardown)
 def test_get_decision_tree_with_correct_input():
-    decision_tree = CLIENT.get_decision_tree(AGENT_ID, valid_data.VALID_TIMESTAMP)
+    decision_tree = CLIENT.get_agent_decision_tree(AGENT_ID, valid_data.VALID_TIMESTAMP)
 
     assert_is_instance(decision_tree, dict)
     assert_not_equal(decision_tree.get("_version"), None)
@@ -86,7 +86,7 @@ def test_get_decision_tree_with_correct_input():
 @with_setup(setup_agent_w_operations, teardown)
 def test_get_decision_tree_with_specific_version():
     version = 1
-    decision_tree = CLIENT.get_decision_tree(
+    decision_tree = CLIENT.get_agent_decision_tree(
         AGENT_ID, valid_data.VALID_TIMESTAMP, version
     )
 
@@ -101,7 +101,7 @@ def test_get_decision_tree_with_specific_version():
 @with_setup(setup_agent_w_operations, teardown)
 def test_get_decision_tree_with_specific_version2():
     version = 2
-    decision_tree = CLIENT.get_decision_tree(
+    decision_tree = CLIENT.get_agent_decision_tree(
         AGENT_ID, valid_data.VALID_TIMESTAMP, version
     )
 
@@ -116,8 +116,8 @@ def test_get_decision_tree_with_specific_version2():
 @with_setup(setup_agent_w_operations, teardown)
 def test_get_decision_tree_without_timestamp():
     # test if we get the latest decision tree
-    decision_tree = CLIENT.get_decision_tree(AGENT_ID)
-    ground_truth_decision_tree = decision_tree = CLIENT.get_decision_tree(
+    decision_tree = CLIENT.get_agent_decision_tree(AGENT_ID)
+    ground_truth_decision_tree = decision_tree = CLIENT.get_agent_decision_tree(
         AGENT_ID, 1458741230 + 505
     )
     assert_is_instance(decision_tree, dict)
@@ -130,10 +130,10 @@ def test_get_decision_tree_without_timestamp():
 @with_setup(setup_agent_w_operations, teardown)
 def test_get_decision_tree_with_datetimedatetime():
     # test if we get the same decision tree
-    decision_tree = CLIENT.get_decision_tree(
+    decision_tree = CLIENT.get_agent_decision_tree(
         AGENT_ID, datetime.datetime.fromtimestamp(valid_data.VALID_TIMESTAMP)
     )
-    ground_truth_decision_tree = CLIENT.get_decision_tree(
+    ground_truth_decision_tree = CLIENT.get_agent_decision_tree(
         AGENT_ID, valid_data.VALID_TIMESTAMP
     )
     assert_is_instance(decision_tree, dict)
@@ -145,7 +145,7 @@ def test_get_decision_tree_with_datetimedatetime():
 
 @with_setup(setup_agent_w_operations, teardown)
 def test_get_decision_tree_with_invalid_id():
-    """get_decision_tree should fail when given a non-string/empty string ID
+    """get_agent_decision_tree should fail when given a non-string/empty string ID
 
     It should raise an error upon request for retrieval of an agent's
     decision tree with an ID that is not of type string, since agent IDs
@@ -154,7 +154,7 @@ def test_get_decision_tree_with_invalid_id():
     for empty_id in invalid_data.UNDEFINED_KEY:
         assert_raises(
             craft_ai.errors.CraftAiBadRequestError,
-            CLIENT.get_decision_tree,
+            CLIENT.get_agent_decision_tree,
             invalid_data.UNDEFINED_KEY[empty_id],
             valid_data.VALID_TIMESTAMP,
         )
@@ -162,14 +162,14 @@ def test_get_decision_tree_with_invalid_id():
 
 @with_setup(setup_agent_w_operations, teardown)
 def test_get_decision_tree_with_unknown_id():
-    """get_decision_tree should fail when given an unknown agent ID
+    """get_agent_decision_tree should fail when given an unknown agent ID
 
     It should raise an error upon request for the retrieval of an agent
     that doesn't exist.
     """
     assert_raises(
         craft_ai.errors.CraftAiNotFoundError,
-        CLIENT.get_decision_tree,
+        CLIENT.get_agent_decision_tree,
         invalid_data.UNKNOWN_ID,
         valid_data.VALID_TIMESTAMP,
     )
@@ -179,7 +179,7 @@ def test_get_decision_tree_with_unknown_id():
 def test_get_decision_tree_with_negative_timestamp():
     assert_raises(
         craft_ai.errors.CraftAiBadRequestError,
-        CLIENT.get_decision_tree,
+        CLIENT.get_agent_decision_tree,
         AGENT_ID,
         invalid_data.INVALID_TIMESTAMPS["negative_ts"],
     )
@@ -189,7 +189,7 @@ def test_get_decision_tree_with_negative_timestamp():
 def test_get_decision_tree_with_float_timestamp():
     assert_raises(
         craft_ai.errors.CraftAiBadRequestError,
-        CLIENT.get_decision_tree,
+        CLIENT.get_agent_decision_tree,
         AGENT_ID,
         invalid_data.INVALID_TIMESTAMPS["float_ts"],
     )
@@ -200,7 +200,7 @@ def test_get_decision_tree_with_float_timestamp():
 # @with_setup(setup_agent_w_operations_l, teardown)
 # def test_get_decision_tree_from_operations():
 #   last_operation = VALID_L_OPERATIONS[-1][-1]
-#   decision_tree = CLIENT.get_decision_tree(AGENT_ID, last_operation["timestamp"])
+#   decision_tree = CLIENT.get_agent_decision_tree(AGENT_ID, last_operation["timestamp"])
 
 #   assert_is_instance(decision_tree, dict)
 #   assert_not_equal(decision_tree.get("_version"), None)
@@ -215,7 +215,7 @@ def test_get_decision_tree_with_float_timestamp():
 #   last_operation = VALID_L_OPERATIONS[-1][-1]
 #   assert_raises(
 #     craft_ai.errors.CraftAiLongRequestTimeOutError,
-#     other_client.get_decision_tree,
+#     other_client.get_agent_decision_tree,
 #     AGENT_ID,
 #     last_operation["timestamp"])
 
@@ -227,6 +227,6 @@ def test_get_decision_tree_with_float_timestamp():
 #   last_operation = VALID_L_OPERATIONS[-1][-1]
 #   assert_raises(
 #     craft_ai.errors.CraftAiLongRequestTimeOutError,
-#     other_client.get_decision_tree,
+#     other_client.get_agent_decision_tree,
 #     AGENT_ID,
 #     last_operation["timestamp"])

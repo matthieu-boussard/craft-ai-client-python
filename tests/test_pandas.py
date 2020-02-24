@@ -56,7 +56,7 @@ if CRAFTAI_PANDAS_ENABLED:
     def setup_agent_w_operations():
         CLIENT.delete_agent(AGENT_ID)
         CLIENT.create_agent(valid_data.VALID_CONFIGURATION, AGENT_ID)
-        CLIENT.add_operations(AGENT_ID, valid_data.VALID_OPERATIONS_SET)
+        CLIENT.add_agent_operations(AGENT_ID, valid_data.VALID_OPERATIONS_SET)
 
     def setup_complex_agent_2():
         CLIENT.delete_agent(AGENT_ID)
@@ -80,8 +80,8 @@ if CRAFTAI_PANDAS_ENABLED:
         CLIENT.delete_generator(GENERATOR_ID)
         CLIENT.create_agent(valid_data.VALID_CONFIGURATION, AGENT_ID)
         CLIENT.create_agent(valid_data.VALID_CONFIGURATION, AGENT_ID_2)
-        CLIENT.add_operations(AGENT_ID, valid_data.VALID_OPERATIONS_SET)
-        CLIENT.add_operations(AGENT_ID_2, valid_data.VALID_OPERATIONS_SET)
+        CLIENT.add_agent_operations(AGENT_ID, valid_data.VALID_OPERATIONS_SET)
+        CLIENT.add_agent_operations(AGENT_ID_2, valid_data.VALID_OPERATIONS_SET)
         generator_configuration = copy.deepcopy(
             valid_data.VALID_GENERATOR_CONFIGURATION
         )
@@ -94,19 +94,19 @@ if CRAFTAI_PANDAS_ENABLED:
         CLIENT.delete_generator(GENERATOR_ID)
 
     @with_setup(setup_simple_agent, teardown)
-    def test_add_operations_df_bad_index():
+    def test_add_agent_operations_df_bad_index():
         df = pd.DataFrame(randn(10, 5), columns=["a", "b", "c", "d", "e"])
 
         assert_raises(
             craft_ai.pandas.errors.CraftAiBadRequestError,
-            CLIENT.add_operations,
+            CLIENT.add_agent_operations,
             AGENT_ID,
             df,
         )
 
     @with_setup(setup_simple_agent, teardown)
-    def test_add_operations_df():
-        CLIENT.add_operations(AGENT_ID, SIMPLE_AGENT_DATA)
+    def test_add_agent_operations_df():
+        CLIENT.add_agent_operations(AGENT_ID, SIMPLE_AGENT_DATA)
         agent = CLIENT.get_agent(AGENT_ID)
         assert_equal(
             agent["firstTimestamp"],
@@ -118,8 +118,8 @@ if CRAFTAI_PANDAS_ENABLED:
         )
 
     @with_setup(setup_complex_agent, teardown)
-    def test_add_operations_df_complex_agent():
-        CLIENT.add_operations(AGENT_ID, COMPLEX_AGENT_DATA)
+    def test_add_agent_operations_df_complex_agent():
+        CLIENT.add_agent_operations(AGENT_ID, COMPLEX_AGENT_DATA)
         agent = CLIENT.get_agent(AGENT_ID)
         assert_equal(
             agent["firstTimestamp"],
@@ -131,8 +131,8 @@ if CRAFTAI_PANDAS_ENABLED:
         )
 
     @with_setup(setup_missing_agent, teardown)
-    def test_add_operations_df_missing_agent():
-        CLIENT.add_operations(AGENT_ID, MISSING_AGENT_DATA)
+    def test_add_agent_operations_df_missing_agent():
+        CLIENT.add_agent_operations(AGENT_ID, MISSING_AGENT_DATA)
         agent = CLIENT.get_agent(AGENT_ID)
         assert_equal(
             agent["firstTimestamp"],
@@ -144,7 +144,7 @@ if CRAFTAI_PANDAS_ENABLED:
         )
 
     @with_setup(setup_simple_agent, teardown)
-    def test_add_operations_df_unexpected_property():
+    def test_add_agent_operations_df_unexpected_property():
         df = pd.DataFrame(
             randn(300, 6),
             columns=["a", "b", "c", "d", "e", "f"],
@@ -155,15 +155,15 @@ if CRAFTAI_PANDAS_ENABLED:
 
         assert_raises(
             craft_ai.pandas.errors.CraftAiBadRequestError,
-            CLIENT.add_operations,
+            CLIENT.add_agent_operations,
             AGENT_ID,
             df,
         )
 
     @with_setup(setup_complex_agent, teardown)
-    def test_add_operations_df_without_tz():
+    def test_add_agent_operations_df_without_tz():
         test_df = COMPLEX_AGENT_DATA.drop(columns="tz")
-        CLIENT.add_operations(AGENT_ID, test_df)
+        CLIENT.add_agent_operations(AGENT_ID, test_df)
         agent = CLIENT.get_agent(AGENT_ID)
         assert_equal(
             agent["firstTimestamp"],
@@ -176,11 +176,11 @@ if CRAFTAI_PANDAS_ENABLED:
 
     def setup_simple_agent_with_data():
         setup_simple_agent()
-        CLIENT.add_operations(AGENT_ID, SIMPLE_AGENT_DATA)
+        CLIENT.add_agent_operations(AGENT_ID, SIMPLE_AGENT_DATA)
 
     @with_setup(setup_simple_agent_with_data, teardown)
-    def test_get_operations_list_df():
-        df = CLIENT.get_operations_list(AGENT_ID)
+    def test_get_agent_operations_df():
+        df = CLIENT.get_agent_operations(AGENT_ID)
 
         assert_equal(len(df), 300)
         assert_equal(len(df.dtypes), 5)
@@ -194,8 +194,8 @@ if CRAFTAI_PANDAS_ENABLED:
         )
 
     @with_setup(setup_simple_agent_with_data, teardown)
-    def test_get_state_history_df():
-        df = CLIENT.get_state_history(AGENT_ID)
+    def test_get_agent_states_df():
+        df = CLIENT.get_agent_states(AGENT_ID)
 
         assert_equal(len(df), 180)
         assert_equal(len(df.dtypes), 5)
@@ -210,11 +210,11 @@ if CRAFTAI_PANDAS_ENABLED:
 
     def setup_complex_agent_with_data():
         setup_complex_agent()
-        CLIENT.add_operations(AGENT_ID, COMPLEX_AGENT_DATA)
+        CLIENT.add_agent_operations(AGENT_ID, COMPLEX_AGENT_DATA)
 
     @with_setup(setup_complex_agent_with_data, teardown)
-    def test_get_operations_list_df_complex_agent():
-        df = CLIENT.get_operations_list(AGENT_ID)
+    def test_get_agent_operations_df_complex_agent():
+        df = CLIENT.get_agent_operations(AGENT_ID)
 
         assert_equal(
             df["b"].notnull().tolist(),
@@ -234,7 +234,7 @@ if CRAFTAI_PANDAS_ENABLED:
 
     @with_setup(setup_complex_agent_with_data, teardown)
     def test_decide_from_contexts_df():
-        tree = CLIENT.get_decision_tree(
+        tree = CLIENT.get_agent_decision_tree(
             AGENT_ID, COMPLEX_AGENT_DATA.last_valid_index().value // 10 ** 9
         )
         test_df = COMPLEX_AGENT_DATA
@@ -260,7 +260,7 @@ if CRAFTAI_PANDAS_ENABLED:
 
     @with_setup(setup_complex_agent_with_data, teardown)
     def test_decide_from_contexts_df_zero_rows():
-        tree = CLIENT.get_decision_tree(
+        tree = CLIENT.get_agent_decision_tree(
             AGENT_ID, COMPLEX_AGENT_DATA.last_valid_index().value // 10 ** 9
         )
         test_df = COMPLEX_AGENT_DATA.iloc[:0, :]
@@ -273,11 +273,11 @@ if CRAFTAI_PANDAS_ENABLED:
 
     def setup_complex_agent_2_with_data():
         setup_complex_agent_2()
-        CLIENT.add_operations(AGENT_ID, COMPLEX_AGENT_DATA)
+        CLIENT.add_agent_operations(AGENT_ID, COMPLEX_AGENT_DATA)
 
     @with_setup(setup_complex_agent_2_with_data, teardown)
     def test_decide_from_contexts_df_null_decisions():
-        tree = CLIENT.get_decision_tree(
+        tree = CLIENT.get_agent_decision_tree(
             AGENT_ID, COMPLEX_AGENT_DATA.last_valid_index().value // 10 ** 9
         )
 
@@ -299,11 +299,11 @@ if CRAFTAI_PANDAS_ENABLED:
 
     def setup_complex_agent_3_with_data():
         setup_complex_agent_2()
-        CLIENT.add_operations(AGENT_ID, COMPLEX_AGENT_DATA_2)
+        CLIENT.add_agent_operations(AGENT_ID, COMPLEX_AGENT_DATA_2)
 
     @with_setup(setup_complex_agent_3_with_data, teardown)
     def test_decide_from_contexts_df_with_array():
-        tree = CLIENT.get_decision_tree(
+        tree = CLIENT.get_agent_decision_tree(
             AGENT_ID, COMPLEX_AGENT_DATA_2.last_valid_index().value // 10 ** 9
         )
 
@@ -324,11 +324,11 @@ if CRAFTAI_PANDAS_ENABLED:
 
     def setup_missing_agent_with_data():
         setup_missing_agent()
-        CLIENT.add_operations(AGENT_ID, MISSING_AGENT_DATA)
+        CLIENT.add_agent_operations(AGENT_ID, MISSING_AGENT_DATA)
 
     @with_setup(setup_missing_agent_with_data, teardown)
     def test_decide_from_missing_contexts_df():
-        tree = CLIENT.get_decision_tree(
+        tree = CLIENT.get_agent_decision_tree(
             AGENT_ID, MISSING_AGENT_DATA.last_valid_index().value // 10 ** 9, "2"
         )
 
@@ -356,11 +356,11 @@ if CRAFTAI_PANDAS_ENABLED:
 
     def setup_datetime_agent_with_data():
         setup_datetime_agent()
-        CLIENT.add_operations(AGENT_ID, DATETIME_AGENT_DATA)
+        CLIENT.add_agent_operations(AGENT_ID, DATETIME_AGENT_DATA)
 
     @with_setup(setup_datetime_agent_with_data, teardown)
-    def test_datetime_state_history_df():
-        df = CLIENT.get_state_history(AGENT_ID)
+    def test_datetime_states_df():
+        df = CLIENT.get_agent_states(AGENT_ID)
 
         assert_equal(len(df), 10)
         assert_equal(len(df.dtypes), 4)
@@ -369,7 +369,7 @@ if CRAFTAI_PANDAS_ENABLED:
     # This test is commented because of the current non-deterministic behavior of craft ai.
     # @with_setup(setup_datetime_agent_with_data, teardown)
     # def test_datetime_decide_from_contexts_df():
-    #   tree = CLIENT.get_decision_tree(AGENT_ID,
+    #   tree = CLIENT.get_agent_decision_tree(AGENT_ID,
     #                                   DATETIME_AGENT_DATA.last_valid_index().value // 10 ** 9)
 
     #   test_df = pd.DataFrame(
@@ -392,18 +392,18 @@ if CRAFTAI_PANDAS_ENABLED:
 
     @with_setup(setup_simple_agent_with_data, teardown)
     def test_tree_visualization():
-        tree1 = CLIENT.get_decision_tree(
+        tree1 = CLIENT.get_agent_decision_tree(
             AGENT_ID, DATETIME_AGENT_DATA.last_valid_index().value // 10 ** 9
         )
         craft_ai.pandas.utils.create_tree_html(tree1, "", "constant", None, 500)
 
     def setup_agent_with_data_invalid_identifier():
         setup_invalid_python_identifier()
-        CLIENT.add_operations(AGENT_ID, INVALID_PYTHON_IDENTIFIER_DATA)
+        CLIENT.add_agent_operations(AGENT_ID, INVALID_PYTHON_IDENTIFIER_DATA)
 
     @with_setup(setup_agent_with_data_invalid_identifier, teardown)
     def test_decide_from_python_invalid_identifier():
-        tree = CLIENT.get_decision_tree(
+        tree = CLIENT.get_agent_decision_tree(
             AGENT_ID,
             INVALID_PYTHON_IDENTIFIER_DATA.last_valid_index().value // 10 ** 9,
             "2",
@@ -417,10 +417,10 @@ if CRAFTAI_PANDAS_ENABLED:
     @with_setup(setup_agent_w_operations, teardown)
     def test_get_decision_tree_with_pdtimestamp():
         # test if we get the same decision tree
-        decision_tree = CLIENT.get_decision_tree(
+        decision_tree = CLIENT.get_agent_decision_tree(
             AGENT_ID, pd.Timestamp(valid_data.VALID_TIMESTAMP, unit="s", tz="UTC")
         )
-        ground_truth_decision_tree = CLIENT.get_decision_tree(
+        ground_truth_decision_tree = CLIENT.get_agent_decision_tree(
             AGENT_ID, valid_data.VALID_TIMESTAMP
         )
         assert_is_instance(decision_tree, dict)

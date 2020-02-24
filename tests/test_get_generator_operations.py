@@ -65,8 +65,8 @@ class TestGetGeneratorOperationsListSuccess(unittest.TestCase):
         self.client.delete_agent(self.agent_id_2)
         self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id_1)
         self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id_2)
-        self.client.add_operations(self.agent_id_1, LARGE_VALID_OPERATIONS_SET)
-        self.client.add_operations(self.agent_id_2, SMALL_VALID_OPERATIONS_SET)
+        self.client.add_agent_operations(self.agent_id_1, LARGE_VALID_OPERATIONS_SET)
+        self.client.add_agent_operations(self.agent_id_2, SMALL_VALID_OPERATIONS_SET)
 
         def add_agent_name_1_to_operation(operation):
             return {
@@ -102,36 +102,34 @@ class TestGetGeneratorOperationsListSuccess(unittest.TestCase):
         self.client.delete_agent(self.agent_id_1)
         self.client.delete_agent(self.agent_id_2)
 
-    def test_get_generator_operations_list_with_correct_data(self):
-        ops = self.client.get_generator_operations_list(self.generator_id)
+    def test_get_generator_operations_with_correct_data(self):
+        ops = self.client.get_generator_operations(self.generator_id)
         self.assertIsInstance(ops, list)
         self.assertEqual(len(ops), len(self.expected_operations))
         self.assertEqual(ops, self.expected_operations)
 
-    def test_get_generator_operations_list_with_lower_bound(self):
+    def test_get_generator_operations_with_lower_bound(self):
         lower_bound = 1464600406
-        ops = self.client.get_generator_operations_list(self.generator_id, lower_bound)
+        ops = self.client.get_generator_operations(self.generator_id, lower_bound)
         self.assertIsInstance(ops, list)
         expected_ops = [
             op for op in self.expected_operations if op["timestamp"] >= lower_bound
         ]
         self.assertEqual(ops, expected_ops)
 
-    def test_get_generator_operations_list_with_upper_bound(self):
+    def test_get_generator_operations_with_upper_bound(self):
         upper_bound = 1462824549
-        ops = self.client.get_generator_operations_list(
-            self.generator_id, None, upper_bound
-        )
+        ops = self.client.get_generator_operations(self.generator_id, None, upper_bound)
         self.assertIsInstance(ops, list)
         expected_ops = [
             op for op in self.expected_operations if op["timestamp"] <= upper_bound
         ]
         self.assertEqual(ops, expected_ops)
 
-    def test_get_generator_operations_list_with_both_bounds(self):
+    def test_get_generator_operations_with_both_bounds(self):
         lower_bound = 1462824549
         upper_bound = 1464356844
-        ops = self.client.get_generator_operations_list(
+        ops = self.client.get_generator_operations(
             self.generator_id, lower_bound, upper_bound
         )
         self.assertIsInstance(ops, list)
@@ -142,10 +140,10 @@ class TestGetGeneratorOperationsListSuccess(unittest.TestCase):
         ]
         self.assertEqual(ops, expected_ops)
 
-    def test_get_generator_operations_list_with_inverted_bounds(self):
+    def test_get_generator_operations_with_inverted_bounds(self):
         lower_bound = 1464356844
         upper_bound = 1462824549
-        ops = self.client.get_generator_operations_list(
+        ops = self.client.get_generator_operations(
             self.generator_id, lower_bound, upper_bound
         )
         self.assertIsInstance(ops, list)
@@ -162,7 +160,7 @@ class TestGetOperationsListFailure(unittest.TestCase):
     def setUp(self):
         self.client.delete_agent(self.agent_id)
         self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id)
-        self.client.add_operations(self.agent_id, valid_data.VALID_OPERATIONS_SET)
+        self.client.add_agent_operations(self.agent_id, valid_data.VALID_OPERATIONS_SET)
         self.client.delete_generator(self.generator_id)
         generator_configuration = valid_data.VALID_GENERATOR_CONFIGURATION.copy()
         generator_configuration["filter"] = [self.agent_id]
@@ -172,10 +170,10 @@ class TestGetOperationsListFailure(unittest.TestCase):
         self.client.delete_agent(self.agent_id)
         self.client.delete_generator(self.generator_id)
 
-    def test_get_generator_operations_list_with_invalid_id(self):
+    def test_get_generator_operations_with_invalid_id(self):
         for empty_id in invalid_data.UNDEFINED_KEY:
             self.assertRaises(
                 craft_ai.errors.CraftAiBadRequestError,
-                self.client.get_generator_operations_list,
+                self.client.get_generator_operations,
                 invalid_data.UNDEFINED_KEY[empty_id],
             )

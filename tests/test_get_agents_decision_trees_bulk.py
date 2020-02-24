@@ -25,11 +25,15 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
         # Makes sure that no agent with the same ID already exists
         self.client.delete_agent(self.agent_id1)
         self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id1)
-        self.client.add_operations(self.agent_id1, valid_data.VALID_OPERATIONS_SET)
+        self.client.add_agent_operations(
+            self.agent_id1, valid_data.VALID_OPERATIONS_SET
+        )
 
         self.client.delete_agent(self.agent_id2)
         self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id2)
-        self.client.add_operations(self.agent_id2, valid_data.VALID_OPERATIONS_SET)
+        self.client.add_agent_operations(
+            self.agent_id2, valid_data.VALID_OPERATIONS_SET
+        )
 
     def clean_up_agent(self, aid):
         # Makes sure that no agent with the standard ID remains
@@ -41,7 +45,7 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
             self.clean_up_agent(aid)
 
     def test_get_one_decision_tree_with_correct_input(self):
-        """get_decision_trees_bulk should succeed when given a correct input.
+        """get_agents_decision_trees_bulk should succeed when given a correct input.
 
         It should give a proper JSON response with a list containing a dict
         with `id` field being string and 'tree' field being a dict. As we don't
@@ -49,7 +53,7 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
         """
         payload = [{"id": self.agent_id1, "timestamp": valid_data.VALID_LAST_TIMESTAMP}]
 
-        decision_trees = self.client.get_decision_trees_bulk(payload)
+        decision_trees = self.client.get_agents_decision_trees_bulk(payload)
 
         self.assertIsInstance(decision_trees, list)
         self.assertIsInstance(decision_trees[0], dict)
@@ -63,7 +67,7 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
         self.addCleanup(self.clean_up_agents, [self.agent_id1, self.agent_id2])
 
     def test_get_all_decision_trees_with_correct_input(self):
-        """get_decision_trees_bulk should succeed when given an correct input.
+        """get_agents_decision_trees_bulk should succeed when given an correct input.
 
         It should give a proper JSON response with a list containing dicts
         with `id` field being string and 'tree' field being a dict. As we don't
@@ -74,7 +78,7 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
             {"id": self.agent_id2, "timestamp": valid_data.VALID_LAST_TIMESTAMP},
         ]
 
-        decision_trees = self.client.get_decision_trees_bulk(payload)
+        decision_trees = self.client.get_agents_decision_trees_bulk(payload)
 
         self.assertIsInstance(decision_trees, list)
 
@@ -99,7 +103,7 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
         self.addCleanup(self.clean_up_agents, [self.agent_id1, self.agent_id2])
 
     def test_get_decision_trees_bulk_specific_version(self):
-        """get_decision_trees_bulk should succeed when given a specific version.
+        """get_agents_decision_trees_bulk should succeed when given a specific version.
         The version asked is the version 1.
 
         It should give a proper JSON response with a list containing a dict
@@ -111,7 +115,7 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
             {"id": self.agent_id2, "timestamp": valid_data.VALID_LAST_TIMESTAMP},
         ]
         version = 1
-        decision_trees = self.client.get_decision_trees_bulk(payload, version)
+        decision_trees = self.client.get_agents_decision_trees_bulk(payload, version)
 
         self.assertNotEqual(decision_trees[0].get("tree").get("_version"), None)
         tree_version = semver.parse(decision_trees[0].get("tree").get("_version"))
@@ -123,7 +127,7 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
         self.addCleanup(self.clean_up_agents, [self.agent_id1, self.agent_id2])
 
     def test_get_decision_trees_bulk_specific_version2(self):
-        """get_decision_trees_bulk should succeed when given a specific version.
+        """get_agents_decision_trees_bulk should succeed when given a specific version.
         The version asked is the version 2.
 
         It should give a proper JSON response with a list containing a dict
@@ -135,7 +139,7 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
             {"id": self.agent_id2, "timestamp": valid_data.VALID_LAST_TIMESTAMP},
         ]
         version = 2
-        decision_trees = self.client.get_decision_trees_bulk(payload, version)
+        decision_trees = self.client.get_agents_decision_trees_bulk(payload, version)
 
         self.assertNotEqual(decision_trees[0].get("tree").get("_version"), None)
         tree_version = semver.parse(decision_trees[0].get("tree").get("_version"))
@@ -148,20 +152,22 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
         self.addCleanup(self.clean_up_agents, [self.agent_id1, self.agent_id2])
 
     def test_get_decision_trees_bulk_without_timestamp(self):
-        """get_decision_trees_bulk should succeed when given no timestamp.
+        """get_agents_decision_trees_bulk should succeed when given no timestamp.
 
         It should give a proper JSON response with a list containing a dict
         with `id` field being string and 'tree' field being a dict and the
         timestamp should be the same as the one of the last operation.
         """
         payload = [{"id": self.agent_id1}, {"id": self.agent_id2}]
-        decision_trees = self.client.get_decision_trees_bulk(payload)
+        decision_trees = self.client.get_agents_decision_trees_bulk(payload)
 
         true_payload = [
             {"id": self.agent_id1, "timestamp": valid_data.VALID_LAST_TIMESTAMP},
             {"id": self.agent_id2, "timestamp": valid_data.VALID_LAST_TIMESTAMP},
         ]
-        ground_truth_decision_tree = self.client.get_decision_trees_bulk(true_payload)
+        ground_truth_decision_tree = self.client.get_agents_decision_trees_bulk(
+            true_payload
+        )
 
         self.assertEqual(
             decision_trees[0].get("tree"), ground_truth_decision_tree[0].get("tree")
@@ -187,7 +193,7 @@ class TestGetGroupDecisionTreesBulkSuccess(unittest.TestCase):
         for agent_id in self.agents:
             self.client.delete_agent(agent_id)
             self.client.create_agent(valid_data.VALID_CONFIGURATION, agent_id)
-            self.client.add_operations(agent_id, valid_data.VALID_OPERATIONS_SET)
+            self.client.add_agent_operations(agent_id, valid_data.VALID_OPERATIONS_SET)
 
     def clean_up_agent(self, aid):
         # Makes sure that no agent with the standard ID remains
@@ -199,7 +205,7 @@ class TestGetGroupDecisionTreesBulkSuccess(unittest.TestCase):
             self.clean_up_agent(aid)
 
     def test_get_group_decision_trees(self):
-        """get_decision_trees_bulk should succeed when given a lot of decision
+        """get_agents_decision_trees_bulk should succeed when given a lot of decision
         trees to retrieve.
 
         It should give a proper JSON response with a list containing dicts
@@ -211,7 +217,7 @@ class TestGetGroupDecisionTreesBulkSuccess(unittest.TestCase):
                 {"id": agent_id, "timestamp": valid_data.VALID_LAST_TIMESTAMP}
             )
 
-        decision_trees = self.client.get_decision_trees_bulk(payload)
+        decision_trees = self.client.get_agents_decision_trees_bulk(payload)
 
         for decision_tree in decision_trees:
             self.assertIsInstance(decision_tree, dict)
@@ -240,7 +246,7 @@ class TestGetDecisionTreesBulkFailure(unittest.TestCase):
             self.clean_up_agent(aid)
 
     def test_get_all_decision_trees_with_invalid_id(self):
-        """get_decision_trees_bulk should fail when given non-string/empty string ID
+        """get_agents_decision_trees_bulk should fail when given non-string/empty string ID
         or unknown ID.
 
         It should raise an error upon request for retrieval of multiple agents's
@@ -266,12 +272,12 @@ class TestGetDecisionTreesBulkFailure(unittest.TestCase):
 
         self.assertRaises(
             craft_err.CraftAiBadRequestError,
-            self.client.get_decision_trees_bulk,
+            self.client.get_agents_decision_trees_bulk,
             payload,
         )
 
     def test_get_all_decision_trees_invalid_timestamp(self):
-        """get_decision_trees_bulk should fail when given invalid timestamps
+        """get_agents_decision_trees_bulk should fail when given invalid timestamps
 
         It should raise an error upon request for retrieval of multiple agents's
         decision tree with an invalid timestamp, since timestamp should always be
@@ -287,7 +293,9 @@ class TestGetDecisionTreesBulkFailure(unittest.TestCase):
 
             self.client.delete_agent(new_agent_id)
             self.client.create_agent(valid_data.VALID_CONFIGURATION, new_agent_id)
-            self.client.add_operations(new_agent_id, valid_data.VALID_OPERATIONS_SET)
+            self.client.add_agent_operations(
+                new_agent_id, valid_data.VALID_OPERATIONS_SET
+            )
 
             payload.append(
                 {
@@ -299,7 +307,7 @@ class TestGetDecisionTreesBulkFailure(unittest.TestCase):
 
         self.assertRaises(
             craft_err.CraftAiBadRequestError,
-            self.client.get_decision_trees_bulk,
+            self.client.get_agents_decision_trees_bulk,
             payload,
         )
         self.addCleanup(self.clean_up_agents, agents_lst)
@@ -318,7 +326,7 @@ class TestGetDecisionTreesBulkSomeFailure(unittest.TestCase):
         # Makes sure that no agent with the same ID already exists
         self.client.delete_agent(self.agent_id)
         self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id)
-        self.client.add_operations(self.agent_id, valid_data.VALID_OPERATIONS_SET)
+        self.client.add_agent_operations(self.agent_id, valid_data.VALID_OPERATIONS_SET)
 
     def clean_up_agent(self, aid):
         # Makes sure that no agent with the standard ID remains
@@ -330,7 +338,7 @@ class TestGetDecisionTreesBulkSomeFailure(unittest.TestCase):
             self.clean_up_agent(aid)
 
     def test_get_some_decision_trees_with_invalid_id(self):
-        """get_decision_trees_bulk should succeed when given some non-string/empty string IDs
+        """get_agents_decision_trees_bulk should succeed when given some non-string/empty string IDs
         and some valid IDs.
 
         It should give a proper JSON response with a list containing dicts.
@@ -358,7 +366,7 @@ class TestGetDecisionTreesBulkSomeFailure(unittest.TestCase):
                 }
             )
 
-        decision_trees = self.client.get_decision_trees_bulk(payload)
+        decision_trees = self.client.get_agents_decision_trees_bulk(payload)
 
         self.assertEqual(decision_trees[0].get("id"), self.agent_id)
         self.assertIsInstance(decision_trees[0].get("tree"), dict)
@@ -372,7 +380,7 @@ class TestGetDecisionTreesBulkSomeFailure(unittest.TestCase):
         self.addCleanup(self.clean_up_agents, [self.agent_id])
 
     def test_get_all_decision_trees_invalid_timestamp(self):
-        """get_decision_trees_bulk should succeed when given some invalid timestamps
+        """get_agents_decision_trees_bulk should succeed when given some invalid timestamps
         and some valid ones.
 
         It should give a proper JSON response with a list containing dicts.
@@ -391,7 +399,9 @@ class TestGetDecisionTreesBulkSomeFailure(unittest.TestCase):
 
             self.client.delete_agent(new_agent_id)
             self.client.create_agent(valid_data.VALID_CONFIGURATION, new_agent_id)
-            self.client.add_operations(new_agent_id, valid_data.VALID_OPERATIONS_SET)
+            self.client.add_agent_operations(
+                new_agent_id, valid_data.VALID_OPERATIONS_SET
+            )
 
             payload.append(
                 {
@@ -401,7 +411,7 @@ class TestGetDecisionTreesBulkSomeFailure(unittest.TestCase):
             )
             agents_lst.append(new_agent_id)
 
-        decision_trees = self.client.get_decision_trees_bulk(payload)
+        decision_trees = self.client.get_agents_decision_trees_bulk(payload)
 
         self.assertEqual(decision_trees[0].get("id"), self.agent_id)
         self.assertIsInstance(decision_trees[0].get("tree"), dict)

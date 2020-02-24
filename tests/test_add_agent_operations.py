@@ -16,7 +16,7 @@ class TestAddOperationsSuccess(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = craft_ai.Client(settings.CRAFT_CFG)
-        cls.agent_id = generate_entity_id("test_add_operations")
+        cls.agent_id = generate_entity_id("test_add_agent_operations")
 
     def setUp(self):
         self.client.delete_agent(self.agent_id)
@@ -25,13 +25,13 @@ class TestAddOperationsSuccess(unittest.TestCase):
     def tearDown(self):
         self.client.delete_agent(self.agent_id)
 
-    def test_add_operations_with_correct_input(self):
-        """add_operations should succeed when given correct input data
+    def test_add_agent_operations_with_correct_input(self):
+        """add_agent_operations should succeed when given correct input data
 
         It should give a proper JSON response with a `message` fields being a
         string.
         """
-        resp = self.client.add_operations(
+        resp = self.client.add_agent_operations(
             self.agent_id, valid_data.VALID_OPERATIONS_SET
         )
 
@@ -39,8 +39,8 @@ class TestAddOperationsSuccess(unittest.TestCase):
         resp_keys = resp.keys()
         self.assertTrue("message" in resp_keys)
 
-    def test_add_operations_with_many_operations(self):
-        """add_operations should succeed when given lots of operations
+    def test_add_agent_operations_with_many_operations(self):
+        """add_agent_operations should succeed when given lots of operations
 
         It should give a proper JSON response with a `message` fields being a
         string.
@@ -55,7 +55,7 @@ class TestAddOperationsSuccess(unittest.TestCase):
             operations.append(operation.copy())
             length = length + 1
 
-        resp = self.client.add_operations(
+        resp = self.client.add_agent_operations(
             self.agent_id,
             sorted(operations, key=lambda operation: operation["timestamp"]),
         )
@@ -72,7 +72,7 @@ class TestAddOperationsFailure(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = craft_ai.Client(settings.CRAFT_CFG)
-        cls.agent_id = generate_entity_id("test_add_operations")
+        cls.agent_id = generate_entity_id("test_add_agent_operations")
 
     def setUp(self):
         self.client.delete_agent(self.agent_id)
@@ -81,8 +81,8 @@ class TestAddOperationsFailure(unittest.TestCase):
     def tearDown(self):
         self.client.delete_agent(self.agent_id)
 
-    def test_add_operations_with_invalid_agent_id(self):
-        """add_operations should fail when given a non-string/empty string ID
+    def test_add_agent_operations_with_invalid_agent_id(self):
+        """add_agent_operations should fail when given a non-string/empty string ID
 
         It should raise an error upon request for operations posting
         for an agent with an ID that is not of type string, since agent IDs
@@ -91,13 +91,13 @@ class TestAddOperationsFailure(unittest.TestCase):
         for empty_id in invalid_data.UNDEFINED_KEY:
             self.assertRaises(
                 craft_ai.errors.CraftAiBadRequestError,
-                self.client.add_operations,
+                self.client.add_agent_operations,
                 invalid_data.UNDEFINED_KEY[empty_id],
                 valid_data.VALID_OPERATIONS_SET,
             )
 
-    def test_add_operations_with_empty_operations_set(self):
-        """add_operations should fail when given an empty set of operations
+    def test_add_agent_operations_with_empty_operations_set(self):
+        """add_agent_operations should fail when given an empty set of operations
 
         It should raise an error upon request for posting an empty set of
         operations to an agent's configuration.
@@ -105,13 +105,13 @@ class TestAddOperationsFailure(unittest.TestCase):
         for ops_set in invalid_data.UNDEFINED_KEY:
             self.assertRaises(
                 craft_ai.errors.CraftAiBadRequestError,
-                self.client.add_operations,
+                self.client.add_agent_operations,
                 self.agent_id,
                 invalid_data.UNDEFINED_KEY[ops_set],
             )
 
-    def test_add_operations_with_invalid_operation_set(self):
-        """add_operations should fail when given an invalid set of operations
+    def test_add_agent_operations_with_invalid_operation_set(self):
+        """add_agent_operations should fail when given an invalid set of operations
 
         It should raise an error upon request for posting an invalid set of
         operations to an agent's configuration.
@@ -119,7 +119,7 @@ class TestAddOperationsFailure(unittest.TestCase):
         for ops_set in invalid_data.INVALID_OPS_SET:
             self.assertRaises(
                 craft_ai.errors.CraftAiBadRequestError,
-                self.client.add_operations,
+                self.client.add_agent_operations,
                 self.agent_id,
                 invalid_data.INVALID_OPS_SET[ops_set],
             )

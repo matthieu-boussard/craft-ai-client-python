@@ -74,6 +74,6 @@ if CRAFTAI_PANDAS_ENABLED:
     }"""
         tree = json.loads(tree_json)
 
-        state_history = pd.read_csv("tests/data/state_only_month.csv", index_col=0)
-        state_history.index = pd.to_datetime(state_history.index)
-        CLIENT.decide_from_contexts_df(tree, state_history)
+        states = pd.read_csv("tests/data/state_only_month.csv", index_col=0)
+        states.index = pd.to_datetime(states.index)
+        CLIENT.decide_from_contexts_df(tree, states)

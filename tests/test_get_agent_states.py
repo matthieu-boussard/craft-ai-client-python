@@ -17,11 +17,11 @@ with open(
     SMALL_VALID_OPERATIONS_SET = json.load(small_operation_list_file)
 
 
-class TestGetStateHistorySuccess(unittest.TestCase):
+class TestGetAgentStatesSuccess(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = craft_ai.Client(settings.CRAFT_CFG)
-        cls.agent_id = generate_entity_id("get_state_history")
+        cls.agent_id = generate_entity_id("test_get_agent_states")
 
     def setUp(self):
         self.client.delete_agent(self.agent_id)
@@ -38,13 +38,13 @@ class TestGetStateHistorySuccess(unittest.TestCase):
             self.agent_id,
         )
 
-        self.client.add_operations(self.agent_id, SMALL_VALID_OPERATIONS_SET)
+        self.client.add_agent_operations(self.agent_id, SMALL_VALID_OPERATIONS_SET)
 
     def tearDown(self):
         self.client.delete_agent(self.agent_id)
 
-    def test_get_state_history_with_correct_data(self):
-        states = self.client.get_state_history(self.agent_id)
+    def test_get_agent_states_with_correct_data(self):
+        states = self.client.get_agent_states(self.agent_id)
         self.assertIsInstance(states, list)
         self.assertEqual(
             states,
@@ -180,9 +180,9 @@ class TestGetStateHistorySuccess(unittest.TestCase):
             ],
         )
 
-    def test_get_state_history_with_lower_bound(self):
+    def test_get_agent_states_with_lower_bound(self):
         lower_bound = 1464600867
-        states = self.client.get_state_history(self.agent_id, lower_bound)
+        states = self.client.get_agent_states(self.agent_id, lower_bound)
         self.assertIsInstance(states, list)
         self.assertEqual(
             states,
@@ -246,9 +246,9 @@ class TestGetStateHistorySuccess(unittest.TestCase):
             ],
         )
 
-    def test_get_state_history_with_upper_bound(self):
+    def test_get_agent_states_with_upper_bound(self):
         upper_bound = 1464601439
-        states = self.client.get_state_history(self.agent_id, None, upper_bound)
+        states = self.client.get_agent_states(self.agent_id, None, upper_bound)
         self.assertIsInstance(states, list)
         self.assertEqual(
             states,
@@ -376,10 +376,10 @@ class TestGetStateHistorySuccess(unittest.TestCase):
             ],
         )
 
-    def test_get_state_history_with_both_bounds(self):
+    def test_get_agent_states_with_both_bounds(self):
         lower_bound = 1464600449
         upper_bound = 1464601124
-        states = self.client.get_state_history(self.agent_id, lower_bound, upper_bound)
+        states = self.client.get_agent_states(self.agent_id, lower_bound, upper_bound)
         self.assertIsInstance(states, list)
         self.assertEqual(
             states,
@@ -453,15 +453,17 @@ class TestGetOperationsListFailure(unittest.TestCase):
         def setUp(self):
             self.client.delete_agent(self.agent_id)
             self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id)
-            self.client.add_operations(self.agent_id, valid_data.VALID_OPERATIONS_SET)
+            self.client.add_agent_operations(
+                self.agent_id, valid_data.VALID_OPERATIONS_SET
+            )
 
         def tearDown(self):
             self.client.delete_agent(self.agent_id)
 
-        def test_get_state_history_with_invalid_id(self):
+        def test_get_agent_states_with_invalid_id(self):
             for empty_id in invalid_data.UNDEFINED_KEY:
                 self.assertRaises(
                     craft_ai.errors.CraftAiBadRequestError,
-                    self.client.get_state_history,
+                    self.client.get_agent_states,
                     invalid_data.UNDEFINED_KEY[empty_id],
                 )

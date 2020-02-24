@@ -18,8 +18,8 @@ class TestAddOperationsBulkSuccess(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = Client(settings.CRAFT_CFG)
-        cls.agent_id1 = generate_entity_id("test_add_operations_bulk")
-        cls.agent_id2 = generate_entity_id("test_add_operations_bulk")
+        cls.agent_id1 = generate_entity_id("test_add_agents_operations_bulk")
+        cls.agent_id2 = generate_entity_id("test_add_agents_operations_bulk")
 
     def setUp(self):
         self.client.delete_agent(self.agent_id1)
@@ -36,8 +36,8 @@ class TestAddOperationsBulkSuccess(unittest.TestCase):
         for aid in aids:
             self.clean_up_agent(aid)
 
-    def test_add_operations_bulk_with_correct_input(self):
-        """add_operations_bulk should succeed when given correct input data.
+    def test_add_agents_operations_bulk_with_correct_input(self):
+        """add_agents_operations_bulk should succeed when given correct input data.
 
     It should give a proper JSON response with a list containing dicts with
     'id' fields being the same as the one in parameters, 'message' fields
@@ -47,7 +47,7 @@ class TestAddOperationsBulkSuccess(unittest.TestCase):
             {"id": self.agent_id1, "operations": valid_data.VALID_OPERATIONS_SET},
             {"id": self.agent_id2, "operations": valid_data.VALID_OPERATIONS_SET},
         ]
-        resp = self.client.add_operations_bulk(payload)
+        resp = self.client.add_agents_operations_bulk(payload)
 
         self.assertIsInstance(resp, list)
         self.assertEqual(resp[0].get("id"), self.agent_id1)
@@ -59,8 +59,8 @@ class TestAddOperationsBulkSuccess(unittest.TestCase):
 
         self.addCleanup(self.clean_up_agents, [self.agent_id1, self.agent_id2])
 
-    def test_add_operations_bulk_with_many_operations(self):
-        """add_operations_bulk should succeed when given a lot of operations to
+    def test_add_agents_operations_bulk_with_many_operations(self):
+        """add_agents_operations_bulk should succeed when given a lot of operations to
     add.
 
     It should give a proper JSON response with a list containing dicts with
@@ -83,7 +83,7 @@ class TestAddOperationsBulkSuccess(unittest.TestCase):
             {"id": self.agent_id1, "operations": operations},
             {"id": self.agent_id2, "operations": operations},
         ]
-        resp = self.client.add_operations_bulk(payload)
+        resp = self.client.add_agents_operations_bulk(payload)
 
         self.assertIsInstance(resp, list)
         self.assertEqual(resp[0].get("id"), self.agent_id1)
@@ -104,7 +104,7 @@ class TestAddOperationsGroupAgentsBulkSuccess(unittest.TestCase):
     def setUpClass(cls):
         cls.client = Client(settings.CRAFT_CFG)
         cls.agents = [
-            generate_entity_id("test_add_operations_bulk")
+            generate_entity_id("test_add_agents_operations_bulk")
             for i in range(NB_AGENTS_TO_ADD_OPERATIONS)
         ]
 
@@ -123,8 +123,8 @@ class TestAddOperationsGroupAgentsBulkSuccess(unittest.TestCase):
         for aid in aids:
             self.clean_up_agent(aid)
 
-    def test_add_operations_bulk_group_agents(self):
-        """add_operations_bulk should succeed when given a lot of agents to add
+    def test_add_agents_operations_bulk_group_agents(self):
+        """add_agents_operations_bulk should succeed when given a lot of agents to add
         operations to.
 
         It should give a proper JSON response with a list containing dicts with
@@ -137,7 +137,7 @@ class TestAddOperationsGroupAgentsBulkSuccess(unittest.TestCase):
                 {"id": agent_id, "operations": valid_data.VALID_OPERATIONS_SET}
             )
 
-        response = self.client.add_operations_bulk(payload)
+        response = self.client.add_agents_operations_bulk(payload)
 
         for i, resp in enumerate(response):
             self.assertEqual(resp.get("id"), self.agents[i])
@@ -164,8 +164,8 @@ class TestAddOperationsBulkFailure(unittest.TestCase):
         for aid in aids:
             self.clean_up_agent(aid)
 
-    def test_add_operations_bulk_invalid_agent_id(self):
-        """add_operations_bulk should fail when given non-string/empty ID.
+    def test_add_agents_operations_bulk_invalid_agent_id(self):
+        """add_agents_operations_bulk should fail when given non-string/empty ID.
 
         It should raise an error upon request for operations posting
         for all agents with an ID that is not of type string, since agent IDs
@@ -181,11 +181,13 @@ class TestAddOperationsBulkFailure(unittest.TestCase):
             )
 
         self.assertRaises(
-            craft_err.CraftAiBadRequestError, self.client.add_operations_bulk, payload
+            craft_err.CraftAiBadRequestError,
+            self.client.add_agents_operations_bulk,
+            payload,
         )
 
-    def test_add_operations_bulk_undefined_operations(self):
-        """add_operations_bulk should fail when given some undefined operations set.
+    def test_add_agents_operations_bulk_undefined_operations(self):
+        """add_agents_operations_bulk should fail when given some undefined operations set.
 
         It should raise an error upon request for operations posting for all agents
         with invalid operations set.
@@ -194,7 +196,7 @@ class TestAddOperationsBulkFailure(unittest.TestCase):
         agents_lst = []
         for i, invalid_operation_set in enumerate(invalid_data.UNDEFINED_KEY):
             new_agent_id = generate_entity_id(
-                "test_add_operations_bulk_undefined_operations"
+                "test_add_agents_operations_bulk_undefined_operations"
             )
             self.client.delete_agent(new_agent_id)
             self.client.create_agent(valid_data.VALID_CONFIGURATION, new_agent_id)
@@ -202,13 +204,15 @@ class TestAddOperationsBulkFailure(unittest.TestCase):
             payload.append({"id": new_agent_id, "operations": invalid_operation_set})
 
         self.assertRaises(
-            craft_err.CraftAiBadRequestError, self.client.add_operations_bulk, payload
+            craft_err.CraftAiBadRequestError,
+            self.client.add_agents_operations_bulk,
+            payload,
         )
 
         self.addCleanup(self.clean_up_agents, agents_lst)
 
-    def test_add_operations_bulk_invalid_operations(self):
-        """add_operations_bulk should fail when given some invalid operations set.
+    def test_add_agents_operations_bulk_invalid_operations(self):
+        """add_agents_operations_bulk should fail when given some invalid operations set.
 
     It should raise an error upon request for operations posting
     for all agents with invalid operations set.
@@ -217,7 +221,7 @@ class TestAddOperationsBulkFailure(unittest.TestCase):
         agents_lst = []
         for i, invalid_operation_set in enumerate(invalid_data.INVALID_OPS_SET):
             new_agent_id = generate_entity_id(
-                "test_add_operations_bulk_invalid_operations"
+                "test_add_agents_operations_bulk_invalid_operations"
             )
             self.client.delete_agent(new_agent_id)
             self.client.create_agent(valid_data.VALID_CONFIGURATION, new_agent_id)
@@ -225,7 +229,9 @@ class TestAddOperationsBulkFailure(unittest.TestCase):
             payload.append({"id": new_agent_id, "operations": invalid_operation_set})
 
         self.assertRaises(
-            craft_err.CraftAiBadRequestError, self.client.add_operations_bulk, payload
+            craft_err.CraftAiBadRequestError,
+            self.client.add_agents_operations_bulk,
+            payload,
         )
 
         self.addCleanup(self.clean_up_agents, agents_lst)
@@ -239,7 +245,7 @@ class TestAddOperationsBulkSomeFailure(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = Client(settings.CRAFT_CFG)
-        cls.agent_id = generate_entity_id("test_add_operations_bulk")
+        cls.agent_id = generate_entity_id("test_add_agents_operations_bulk")
 
     def setUp(self):
         self.client.delete_agent(self.agent_id)
@@ -249,8 +255,8 @@ class TestAddOperationsBulkSomeFailure(unittest.TestCase):
         # Makes sure that no agent with the standard ID remains
         self.client.delete_agent(aid)
 
-    def test_add_operations_bulk_some_invalid_agent_id(self):
-        """add_operations_bulk should succeed when given some non-string/empty ID
+    def test_add_agents_operations_bulk_some_invalid_agent_id(self):
+        """add_agents_operations_bulk should succeed when given some non-string/empty ID
         and some valid ID.
 
         It should give a proper JSON response with a list containing dicts.
@@ -267,7 +273,7 @@ class TestAddOperationsBulkSomeFailure(unittest.TestCase):
                 }
             )
 
-        resp = self.client.add_operations_bulk(payload)
+        resp = self.client.add_agents_operations_bulk(payload)
 
         self.assertIsInstance(resp, list)
         self.assertEqual(resp[0].get("id"), self.agent_id)

@@ -11,7 +11,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Root package renamed `craft_ai` (previously `craftai`) to follow python naming conventions.
 - `craft_ai.pandas` now requires `pandas` v1.0.1 or compatible versions.
-- Moving tree traversal utils from `craft_ai.pandas.get_paths` and `craft_ai.pandas.get_neighbours` to `craft_ai.collect_paths_from_tree` and `craft_ai.compute_tree_decision_paths_neighbors`.
+- Rename several functions to make them more unique and well defined:
+  - `craft_ai.add_operations` becomes `craft_ai.add_agent_operations`,
+  - `craft_ai.add_operations_bulk` becomes `craft_ai.add_agents_operations_bulk`,
+  - `craft_ai.get_operations_list` becomes `craft_ai.get_agent_operations`,
+  - `craft_ai.get_generator_operations_list` becomes `craft_ai.get_generator_operations`,
+  - `craft_ai.get_state_history` becomes `craft_ai.get_agent_states`,
+  - `craft_ai.get_decision_tree` becomes `craft_ai.get_agent_decision_tree`,
+  - `craft_ai.get_decision_trees_bulk` becomes `craft_ai.get_agents_decision_trees_bulk`,
+  - `craft_ai.pandas.get_paths` becomes `craft_ai.collect_paths_from_tree`,
+  - `craft_ai.pandas.get_neighbours` becomes `craft_ai.compute_tree_decision_paths_neighbors`.
 
 ### Removed
 

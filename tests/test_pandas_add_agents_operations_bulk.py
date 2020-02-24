@@ -28,8 +28,8 @@ if CRAFTAI_PANDAS_ENABLED:
         @classmethod
         def setUpClass(cls):
             cls.client = craft_ai.pandas.Client(settings.CRAFT_CFG)
-            cls.agent_id1 = generate_entity_id("add_operations_bulk")
-            cls.agent_id2 = generate_entity_id("add_operations_bulk")
+            cls.agent_id1 = generate_entity_id("add_agents_operations_bulk")
+            cls.agent_id2 = generate_entity_id("add_agents_operations_bulk")
 
         def setUp(self):
             self.client.delete_agent(self.agent_id1)
@@ -46,8 +46,8 @@ if CRAFTAI_PANDAS_ENABLED:
             for aid in aids:
                 self.clean_up_agent(aid)
 
-        def test_add_operations_bulk_with_df_operations(self):
-            """add_operations_bulk should succeed when given dataframe as input
+        def test_add_agents_operations_bulk_with_df_operations(self):
+            """add_agents_operations_bulk should succeed when given dataframe as input
             data, with correct `id`s and a correct df as `operations`.
 
             It should give a proper JSON response with a list containing dicts with
@@ -58,7 +58,7 @@ if CRAFTAI_PANDAS_ENABLED:
                 {"id": self.agent_id1, "operations": SIMPLE_AGENT_DATA},
                 {"id": self.agent_id2, "operations": SIMPLE_AGENT_DATA},
             ]
-            resp = self.client.add_operations_bulk(payload)
+            resp = self.client.add_agents_operations_bulk(payload)
 
             self.assertIsInstance(resp, list)
             self.assertEqual(resp[0].get("id"), self.agent_id1)
@@ -70,8 +70,8 @@ if CRAFTAI_PANDAS_ENABLED:
 
             self.addCleanup(self.clean_up_agents, [self.agent_id1, self.agent_id2])
 
-        def test_add_operations_bulk_with_dict_operations(self):
-            """add_operations_bulk should succeed when given dictionary as input
+        def test_add_agents_operations_bulk_with_dict_operations(self):
+            """add_agents_operations_bulk should succeed when given dictionary as input
             data, with correct `id`s and a correct dictionary as `operations`.
 
             It should give a proper JSON response with a list containing dicts with
@@ -82,7 +82,7 @@ if CRAFTAI_PANDAS_ENABLED:
                 {"id": self.agent_id1, "operations": SIMPLE_AGENT_DATA_DICT},
                 {"id": self.agent_id2, "operations": SIMPLE_AGENT_DATA_DICT},
             ]
-            resp = self.client.add_operations_bulk(payload)
+            resp = self.client.add_agents_operations_bulk(payload)
 
             self.assertIsInstance(resp, list)
             self.assertEqual(resp[0].get("id"), self.agent_id1)
@@ -94,8 +94,8 @@ if CRAFTAI_PANDAS_ENABLED:
 
             self.addCleanup(self.clean_up_agents, [self.agent_id1, self.agent_id2])
 
-        def test_add_operations_bulk_with_mixed_input(self):
-            """add_operations_bulk should succeed when given correct input data,
+        def test_add_agents_operations_bulk_with_mixed_input(self):
+            """add_agents_operations_bulk should succeed when given correct input data,
             with correct `id`s and a correct dictionary or df as `operations`.
 
             It should give a proper JSON response with a list containing dicts with
@@ -106,7 +106,7 @@ if CRAFTAI_PANDAS_ENABLED:
                 {"id": self.agent_id1, "operations": SIMPLE_AGENT_DATA},
                 {"id": self.agent_id2, "operations": SIMPLE_AGENT_DATA_DICT},
             ]
-            resp = self.client.add_operations_bulk(payload)
+            resp = self.client.add_agents_operations_bulk(payload)
 
             self.assertIsInstance(resp, list)
             self.assertEqual(resp[0].get("id"), self.agent_id1)
@@ -118,8 +118,8 @@ if CRAFTAI_PANDAS_ENABLED:
 
             self.addCleanup(self.clean_up_agents, [self.agent_id1, self.agent_id2])
 
-        def test_add_operations_bulk_with_many_operations(self):
-            """add_operations_bulk should succeed when given a big df as input
+        def test_add_agents_operations_bulk_with_many_operations(self):
+            """add_agents_operations_bulk should succeed when given a big df as input
             data, with correct `id`s and a correct df as `operations`.
 
             It should give a proper JSON response with a list containing dicts with
@@ -130,7 +130,7 @@ if CRAFTAI_PANDAS_ENABLED:
                 {"id": self.agent_id1, "operations": SIMPLE_AGENT_MANY_DATA},
                 {"id": self.agent_id2, "operations": SIMPLE_AGENT_MANY_DATA},
             ]
-            resp = self.client.add_operations_bulk(payload)
+            resp = self.client.add_agents_operations_bulk(payload)
 
             self.assertIsInstance(resp, list)
             self.assertEqual(resp[0].get("id"), self.agent_id1)
@@ -142,8 +142,8 @@ if CRAFTAI_PANDAS_ENABLED:
 
             self.addCleanup(self.clean_up_agents, [self.agent_id1, self.agent_id2])
 
-        def test_add_operations_bulk_correct_order(self):
-            """add_operations_bulk should succeed when given two dataframe as input
+        def test_add_agents_operations_bulk_correct_order(self):
+            """add_agents_operations_bulk should succeed when given two dataframe as input
             data which are in a chronological order with the same correct `id`s.
 
             It should give a proper JSON response with a list containing dicts with
@@ -161,7 +161,7 @@ if CRAFTAI_PANDAS_ENABLED:
                 {"id": self.agent_id2, "operations": data_part1},
                 {"id": self.agent_id2, "operations": data_part2},
             ]
-            resp = self.client.add_operations_bulk(payload)
+            resp = self.client.add_agents_operations_bulk(payload)
 
             self.assertIsInstance(resp, list)
             self.assertEqual(resp[0].get("id"), self.agent_id1)
@@ -179,7 +179,7 @@ if CRAFTAI_PANDAS_ENABLED:
         def setUpClass(cls):
             cls.client = craft_ai.pandas.Client(settings.CRAFT_CFG)
             cls.agents = [
-                generate_entity_id("add_operations_bulk")
+                generate_entity_id("add_agents_operations_bulk")
                 for i in range(NB_AGENTS_TO_ADD_OPERATIONS)
             ]
 
@@ -197,8 +197,8 @@ if CRAFTAI_PANDAS_ENABLED:
             for aid in aids:
                 self.clean_up_agent(aid)
 
-        def test_add_operations_bulk_group_agents(self):
-            """add_operations_bulk should succeed when given many agents to add
+        def test_add_agents_operations_bulk_group_agents(self):
+            """add_agents_operations_bulk should succeed when given many agents to add
             operations to, with correct `id`s and a correct df as `operations`.
 
             It should give a proper JSON response with a list containing dicts with
@@ -208,7 +208,7 @@ if CRAFTAI_PANDAS_ENABLED:
             payload = []
             for agent_id in self.agents:
                 payload.append({"id": agent_id, "operations": SIMPLE_AGENT_DATA})
-            response = self.client.add_operations_bulk(payload)
+            response = self.client.add_agents_operations_bulk(payload)
 
             for i, resp in enumerate(response):
                 self.assertEqual(resp.get("id"), self.agents[i])
@@ -234,8 +234,8 @@ if CRAFTAI_PANDAS_ENABLED:
             for aid in aids:
                 self.clean_up_agent(aid)
 
-        def test_add_operations_bulk_invalid_agent_id(self):
-            """add_operations_bulk should fail when given non-string/empty ID.
+        def test_add_agents_operations_bulk_invalid_agent_id(self):
+            """add_agents_operations_bulk should fail when given non-string/empty ID.
 
             It should raise an error upon request for operations posting
             for all agents with an ID that is not of type string, since agent IDs
@@ -252,12 +252,12 @@ if CRAFTAI_PANDAS_ENABLED:
 
             self.assertRaises(
                 craft_err.CraftAiBadRequestError,
-                self.client.add_operations_bulk,
+                self.client.add_agents_operations_bulk,
                 payload,
             )
 
-        def test_add_operations_bulk_undefined_operations(self):
-            """add_operations_bulk should fail when given some undefined operations set.
+        def test_add_agents_operations_bulk_undefined_operations(self):
+            """add_agents_operations_bulk should fail when given some undefined operations set.
 
             It should raise an error upon request for operations posting for all agents
             with invalid operations set.
@@ -266,7 +266,7 @@ if CRAFTAI_PANDAS_ENABLED:
             agents_lst = []
             for i, invalid_operation_set in enumerate(invalid_data.UNDEFINED_KEY):
                 new_agent_id = generate_entity_id(
-                    "test_add_operations_bulk_undefined_operations"
+                    "test_add_agents_operations_bulk_undefined_operations"
                 )
                 self.client.delete_agent(new_agent_id)
                 self.client.create_agent(valid_data.VALID_CONFIGURATION, new_agent_id)
@@ -277,14 +277,14 @@ if CRAFTAI_PANDAS_ENABLED:
 
             self.assertRaises(
                 craft_err.CraftAiBadRequestError,
-                self.client.add_operations_bulk,
+                self.client.add_agents_operations_bulk,
                 payload,
             )
 
             self.addCleanup(self.clean_up_agents, agents_lst)
 
-        def test_add_operations_bulk_invalid_operations(self):
-            """add_operations_bulk should fail when given some invalid operations set.
+        def test_add_agents_operations_bulk_invalid_operations(self):
+            """add_agents_operations_bulk should fail when given some invalid operations set.
 
             It should raise an error upon request for operations posting for all agents
             with invalid operations set.
@@ -293,7 +293,7 @@ if CRAFTAI_PANDAS_ENABLED:
             agents_lst = []
             for i, invalid_operation_set in enumerate(invalid_data.INVALID_OPS_SET):
                 new_agent_id = generate_entity_id(
-                    "test_add_operations_bulk_invalid_operations"
+                    "test_add_agents_operations_bulk_invalid_operations"
                 )
                 self.client.delete_agent(new_agent_id)
                 self.client.create_agent(valid_data.VALID_CONFIGURATION, new_agent_id)
@@ -304,21 +304,21 @@ if CRAFTAI_PANDAS_ENABLED:
 
             self.assertRaises(
                 craft_err.CraftAiBadRequestError,
-                self.client.add_operations_bulk,
+                self.client.add_agents_operations_bulk,
                 payload,
             )
 
             self.addCleanup(self.clean_up_agents, agents_lst)
 
-        def test_add_operations_bulk_unexpected_property(self):
-            """add_operations_bulk should fail when given a df with unexpected property
+        def test_add_agents_operations_bulk_unexpected_property(self):
+            """add_agents_operations_bulk should fail when given a df with unexpected property
             which is not in the context.
 
             It should raise an error upon request for operations posting for all agents
             with invalid operations set.
             """
             agent_id = generate_entity_id(
-                "test_add_operations_bulk_unexpected_property"
+                "test_add_agents_operations_bulk_unexpected_property"
             )
             self.client.delete_agent(agent_id)
             self.client.create_agent(SIMPLE_AGENT_CONFIGURATION, agent_id)
@@ -334,14 +334,14 @@ if CRAFTAI_PANDAS_ENABLED:
 
             self.assertRaises(
                 craft_err.CraftAiBadRequestError,
-                self.client.add_operations_bulk,
+                self.client.add_agents_operations_bulk,
                 payload,
             )
 
             self.addCleanup(self.clean_up_agent, agent_id)
 
-        def test_add_operations_bulk_invalid_index(self):
-            """add_operations_bulk should fail when given a df with invalid index.
+        def test_add_agents_operations_bulk_invalid_index(self):
+            """add_agents_operations_bulk should fail when given a df with invalid index.
 
             It should raise an error upon request for operations posting for all agents
             with invalid index in the operations set.
@@ -349,7 +349,9 @@ if CRAFTAI_PANDAS_ENABLED:
             list_agents = []
             payload = []
             for i, index in enumerate(INVALID_DF_INDEX):
-                agent_id = generate_entity_id("test_add_operations_bulk_invalid_index")
+                agent_id = generate_entity_id(
+                    "test_add_agents_operations_bulk_invalid_index"
+                )
                 self.client.delete_agent(agent_id)
                 self.client.create_agent(SIMPLE_AGENT_CONFIGURATION, agent_id)
 
@@ -365,21 +367,21 @@ if CRAFTAI_PANDAS_ENABLED:
 
             self.assertRaises(
                 craft_err.CraftAiBadRequestError,
-                self.client.add_operations_bulk,
+                self.client.add_agents_operations_bulk,
                 payload,
             )
 
             self.addCleanup(self.clean_up_agents, list_agents)
 
-        def test_add_operations_bulk_wrong_order(self):
-            """add_operations_bulk should fails when the DataFrame are in a non
+        def test_add_agents_operations_bulk_wrong_order(self):
+            """add_agents_operations_bulk should fails when the DataFrame are in a non
             chrological order.
 
             It should raise an error upon request for operations posting when an agent
             appears multiple time in the same bulk and the operations are not in
             chronological order.
             """
-            agent_id = generate_entity_id("test_add_operations_bulk_wrong_order")
+            agent_id = generate_entity_id("test_add_agents_operations_bulk_wrong_order")
             self.client.delete_agent(agent_id)
             self.client.create_agent(SIMPLE_AGENT_CONFIGURATION, agent_id)
 
@@ -394,7 +396,7 @@ if CRAFTAI_PANDAS_ENABLED:
             ]
             self.assertRaises(
                 craft_err.CraftAiBadRequestError,
-                self.client.add_operations_bulk,
+                self.client.add_agents_operations_bulk,
                 payload,
             )
 
@@ -408,7 +410,9 @@ if CRAFTAI_PANDAS_ENABLED:
         @classmethod
         def setUpClass(cls):
             cls.client = craft_ai.pandas.Client(settings.CRAFT_CFG)
-            cls.agent_id = generate_entity_id("test_add_operations_bulk_some_failure")
+            cls.agent_id = generate_entity_id(
+                "test_add_agents_operations_bulk_some_failure"
+            )
 
         def setUp(self):
             self.client.delete_agent(self.agent_id)
@@ -418,8 +422,8 @@ if CRAFTAI_PANDAS_ENABLED:
             # Makes sure that no agent with the standard ID remains
             self.client.delete_agent(aid)
 
-        def test_add_operations_bulk_some_invalid_agent_id(self):
-            """add_operations_bulk should succeed when given some non-string/empty ID
+        def test_add_agents_operations_bulk_some_invalid_agent_id(self):
+            """add_agents_operations_bulk should succeed when given some non-string/empty ID
             and some valid ID.
 
             It should give a proper JSON response with a list containing dicts.
@@ -438,8 +442,8 @@ if CRAFTAI_PANDAS_ENABLED:
 
                 self.addCleanup(self.clean_up_agent, self.agent_id)
 
-            def test_add_operations_bulk_invalid_index(self):
-                """add_operations_bulk should fail when given a df with invalid index.
+            def test_add_agents_operations_bulk_invalid_index(self):
+                """add_agents_operations_bulk should fail when given a df with invalid index.
 
                 It should raise an error upon request for operations posting for all agents
                 with invalid index in the operations set.
@@ -448,7 +452,7 @@ if CRAFTAI_PANDAS_ENABLED:
                 payload = []
                 for i, index in enumerate(INVALID_DF_INDEX):
                     agent_id = generate_entity_id(
-                        "test_add_operations_bulk_invalid_index"
+                        "test_add_agents_operations_bulk_invalid_index"
                     )
                     self.client.delete_agent(agent_id)
                     self.client.create_agent(SIMPLE_AGENT_CONFIGURATION, agent_id)
@@ -461,21 +465,23 @@ if CRAFTAI_PANDAS_ENABLED:
 
                 self.assertRaises(
                     craft_err.CraftAiBadRequestError,
-                    self.client.add_operations_bulk,
+                    self.client.add_agents_operations_bulk,
                     payload,
                 )
 
                 self.addCleanup(self.clean_up_agents, list_agents)
 
-            def test_add_operations_bulk_wrong_order(self):
-                """add_operations_bulk should fails when the DataFrame are in a non
+            def test_add_agents_operations_bulk_wrong_order(self):
+                """add_agents_operations_bulk should fails when the DataFrame are in a non
                 chrological order.
 
                 It should raise an error upon request for operations posting when an agent
                 appears multiple time in the same bulk and the operations are not in
                 chronological order.
                 """
-                agent_id = generate_entity_id("test_add_operations_bulk_wrong_order")
+                agent_id = generate_entity_id(
+                    "test_add_agents_operations_bulk_wrong_order"
+                )
                 self.client.delete_agent(agent_id)
                 self.client.create_agent(SIMPLE_AGENT_CONFIGURATION, agent_id)
 
@@ -492,7 +498,7 @@ if CRAFTAI_PANDAS_ENABLED:
                 ]
                 self.assertRaises(
                     craft_err.CraftAiBadRequestError,
-                    self.client.add_operations_bulk,
+                    self.client.add_agents_operations_bulk,
                     payload,
                 )
 
@@ -507,7 +513,7 @@ if CRAFTAI_PANDAS_ENABLED:
             def setUpClass(cls):
                 cls.client = craft_ai.pandas.Client(settings.CRAFT_CFG)
                 cls.agent_id = generate_entity_id(
-                    "test_add_operations_bulk_some_failure"
+                    "test_add_agents_operations_bulk_some_failure"
                 )
 
             def setUp(self):
@@ -518,8 +524,8 @@ if CRAFTAI_PANDAS_ENABLED:
                 # Makes sure that no agent with the standard ID remains
                 self.client.delete_agent(aid)
 
-            def test_add_operations_bulk_some_invalid_agent_id(self):
-                """add_operations_bulk should succeed when given some non-string/empty ID
+            def test_add_agents_operations_bulk_some_invalid_agent_id(self):
+                """add_agents_operations_bulk should succeed when given some non-string/empty ID
             and some valid ID.
 
             It should give a proper JSON response with a list containing dicts.
@@ -536,7 +542,7 @@ if CRAFTAI_PANDAS_ENABLED:
                         }
                     )
 
-                resp = self.client.add_operations_bulk(payload)
+                resp = self.client.add_agents_operations_bulk(payload)
 
                 self.assertIsInstance(resp, list)
                 self.assertEqual(resp[0].get("id"), self.agent_id)

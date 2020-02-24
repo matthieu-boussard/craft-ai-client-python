@@ -472,7 +472,7 @@ class CraftAIClient(object):
                 # Do nothing and continue.
                 continue
 
-    def _get_generator_operations_list_pages(self, url, ops_list):
+    def _get_generator_operations_pages(self, url, ops_list):
         if url is None:
             return ops_list
 
@@ -481,11 +481,11 @@ class CraftAIClient(object):
         new_ops_list = self._decode_response(resp)
         next_page_url = resp.headers.get("x-craft-ai-next-page-url")
 
-        return self._get_generator_operations_list_pages(
+        return self._get_generator_operations_pages(
             next_page_url, ops_list + new_ops_list
         )
 
-    def get_generator_operations_list(self, generator_id, start=None, end=None):
+    def get_generator_operations(self, generator_id, start=None, end=None):
         # Raises an error when generator_id is invalid
         self._check_entity_id(generator_id)
 
@@ -496,15 +496,13 @@ class CraftAIClient(object):
         initial_ops_list = self._decode_response(resp)
         next_page_url = resp.headers.get("x-craft-ai-next-page-url")
 
-        return self._get_generator_operations_list_pages(
-            next_page_url, initial_ops_list
-        )
+        return self._get_generator_operations_pages(next_page_url, initial_ops_list)
 
     ###################
     # Context methods #
     ###################
 
-    def add_operations(self, agent_id, operations):
+    def add_agent_operations(self, agent_id, operations):
         """Add operations to an agent.
 
         :param str agent_id: The id of the agent to delete. It must be
@@ -553,8 +551,8 @@ class CraftAIClient(object):
             % (len(operations), self.config["owner"], self.config["project"], agent_id)
         }
 
-    def _add_operations_bulk(self, chunked_data):
-        """Tool for the function add_operations_bulk. It send the requests to
+    def _add_agents_operations_bulk(self, chunked_data):
+        """Tool for the function add_agents_operations_bulk. It send the requests to
         add the operations to the agents.
 
         :param list chunked_data: list of list of the agents and their operations
@@ -585,7 +583,9 @@ class CraftAIClient(object):
                 resp = self._decode_response(resp)
                 responses += resp
             elif chunk:
-                message = self.add_operations(chunk[0]["id"], chunk[0]["operations"])
+                message = self.add_agent_operations(
+                    chunk[0]["id"], chunk[0]["operations"]
+                )
                 responses.append(
                     {"id": chunk[0]["id"], "status": 201, "message": message}
                 )
@@ -595,7 +595,7 @@ class CraftAIClient(object):
 
         return responses
 
-    def add_operations_bulk(self, payload):
+    def add_agents_operations_bulk(self, payload):
         """Add operations to a group of agents.
 
         :param list payload: contains the informations necessary for the action.
@@ -640,9 +640,9 @@ class CraftAIClient(object):
         if current_chunk:
             chunked_data.append(current_chunk)
 
-        return self._add_operations_bulk(chunked_data)
+        return self._add_agents_operations_bulk(chunked_data)
 
-    def _get_operations_list_pages(self, url, ops_list):
+    def _get_agent_operations_pages(self, url, ops_list):
         if url is None:
             return ops_list
 
@@ -651,9 +651,9 @@ class CraftAIClient(object):
         new_ops_list = self._decode_response(resp)
         next_page_url = resp.headers.get("x-craft-ai-next-page-url")
 
-        return self._get_operations_list_pages(next_page_url, ops_list + new_ops_list)
+        return self._get_agent_operations_pages(next_page_url, ops_list + new_ops_list)
 
-    def get_operations_list(self, agent_id, start=None, end=None):
+    def get_agent_operations(self, agent_id, start=None, end=None):
         # Raises an error when agent_id is invalid
         self._check_entity_id(agent_id)
 
@@ -664,22 +664,20 @@ class CraftAIClient(object):
         initial_ops_list = self._decode_response(resp)
         next_page_url = resp.headers.get("x-craft-ai-next-page-url")
 
-        return self._get_operations_list_pages(next_page_url, initial_ops_list)
+        return self._get_agent_operations_pages(next_page_url, initial_ops_list)
 
-    def _get_state_history_pages(self, url, state_history):
+    def _get_agent_states_pages(self, url, states):
         if url is None:
-            return state_history
+            return states
 
         resp = self._requests_session.get(url)
 
-        new_state_history = self._decode_response(resp)
+        new_states = self._decode_response(resp)
         next_page_url = resp.headers.get("x-craft-ai-next-page-url")
 
-        return self._get_state_history_pages(
-            next_page_url, state_history + new_state_history
-        )
+        return self._get_agent_states_pages(next_page_url, states + new_states)
 
-    def get_state_history(self, agent_id, start=None, end=None):
+    def get_agent_states(self, agent_id, start=None, end=None):
         # Raises an error when agent_id is invalid
         self._check_entity_id(agent_id)
 
@@ -690,9 +688,9 @@ class CraftAIClient(object):
         initial_states_history = self._decode_response(resp)
         next_page_url = resp.headers.get("x-craft-ai-next-page-url")
 
-        return self._get_state_history_pages(next_page_url, initial_states_history)
+        return self._get_agent_states_pages(next_page_url, initial_states_history)
 
-    def get_context_state(self, agent_id, timestamp):
+    def get_agent_state(self, agent_id, timestamp):
         # Raises an error when agent_id is invalid
         self._check_entity_id(agent_id)
 
@@ -709,10 +707,10 @@ class CraftAIClient(object):
     # Decision tree methods #
     #########################
 
-    def _get_decision_tree(
+    def _get_agent_decision_tree(
         self, agent_id, timestamp, version=DEFAULT_DECISION_TREE_VERSION
     ):
-        """Tool for the function get_decision_tree.
+        """Tool for the function get_agent_decision_tree.
 
 <<<<<<< HEAD
         :param str agent_id: the id of the agent whose tree to get. It
@@ -749,7 +747,7 @@ class CraftAIClient(object):
 
         return decision_tree
 
-    def get_decision_tree(
+    def get_agent_decision_tree(
         self, agent_id, timestamp=None, version=DEFAULT_DECISION_TREE_VERSION
     ):
         """Get decision tree.
@@ -782,7 +780,7 @@ class CraftAIClient(object):
         self._check_entity_id(agent_id)
         if self._config["decisionTreeRetrievalTimeout"] is False:
             # Don't retry
-            return self._get_decision_tree(agent_id, timestamp, version)
+            return self._get_agent_decision_tree(agent_id, timestamp, version)
 
         start = current_time_ms()
         while True:
@@ -791,19 +789,19 @@ class CraftAIClient(object):
                 # Client side timeout
                 raise CraftAiLongRequestTimeOutError()
             try:
-                return self._get_decision_tree(agent_id, timestamp, version)
+                return self._get_agent_decision_tree(agent_id, timestamp, version)
             except CraftAiLongRequestTimeOutError:
                 # Do nothing and continue.
                 continue
 
-    def _get_decision_trees_bulk(
+    def _get_agents_decision_trees_bulk(
         self, payload, valid_indices, invalid_indices, invalid_dts
     ):
-        """Tool for the function get_decision_trees_bulk.
+        """Tool for the function get_agents_decision_trees_bulk.
 
         :param list payload: contains the informations necessary for getting
         the trees. Its form is the same than for the function.
-        get_decision_trees_bulk.
+        get_agents_decision_trees_bulk.
         :param list valid_indices: list of the indices of the valid agent id.
         :param list invalid_indices: list of the indices of the valid agent id.
         :param list invalid_dts: list of the invalid agent id.
@@ -825,7 +823,9 @@ class CraftAIClient(object):
             valid_indices, valid_dts, invalid_indices, invalid_dts
         )
 
-    def get_decision_trees_bulk(self, payload, version=DEFAULT_DECISION_TREE_VERSION):
+    def get_agents_decision_trees_bulk(
+        self, payload, version=DEFAULT_DECISION_TREE_VERSION
+    ):
         """Get a group of decision trees.
 
         :param list payload: contains the informations necessary for getting
@@ -856,7 +856,7 @@ class CraftAIClient(object):
 
         if self._config["decisionTreeRetrievalTimeout"] is False:
             # Don't retry
-            return self._get_decision_trees_bulk(
+            return self._get_agents_decision_trees_bulk(
                 payload, valid_indices, invalid_indices, invalid_dts
             )
         start = current_time_ms()
@@ -866,7 +866,7 @@ class CraftAIClient(object):
                 # Client side timeout
                 raise CraftAiLongRequestTimeOutError()
             try:
-                return self._get_decision_trees_bulk(
+                return self._get_agents_decision_trees_bulk(
                     payload, valid_indices, invalid_indices, invalid_dts
                 )
             except CraftAiLongRequestTimeOutError:
