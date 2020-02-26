@@ -1,8 +1,13 @@
 import json
 import os
 
-from nose.tools import assert_equal, assert_true
-from craft_ai import collect_paths_from_tree, compute_tree_decision_paths_neighbors
+from nose.tools import assert_equal, assert_true, assert_is_instance, assert_raises
+from craft_ai import (
+    errors,
+    retrieve_decision_paths_from_tree,
+    retrieve_decision_path_neighbors,
+    retrieve_output_tree,
+)
 
 
 HERE = os.path.abspath(os.path.dirname(__file__))
@@ -15,7 +20,47 @@ NEIGHBOURS_DIR = os.path.join(
 )
 
 
-def test_path():
+def test_retrieve_output_tree_invalid_tree_1():
+    path = os.path.join(DATA_DIR, "decide", "trees", "v1", "emptyArray.json")
+    tree = None
+    with open(path) as f:
+        tree = json.load(f)
+    assert_raises(errors.CraftAiError, retrieve_output_tree, tree)
+
+
+def test_retrieve_output_tree_invalid_tree_2():
+    path = os.path.join(DATA_DIR, "decide", "trees", "v1", "emptyObject.json")
+    tree = None
+    with open(path) as f:
+        tree = json.load(f)
+    assert_raises(errors.CraftAiError, retrieve_output_tree, tree)
+
+
+def test_retrieve_output_tree_default_v2():
+    path = os.path.join(DATA_DIR, "decide", "trees", "v2", "boolean_operator.json")
+    tree = None
+    with open(path) as f:
+        tree = json.load(f)
+    assert_is_instance(retrieve_output_tree(tree), dict)
+
+
+def test_retrieve_output_tree_specific_output():
+    path = os.path.join(DATA_DIR, "decide", "trees", "v2", "oneColor.json")
+    tree = None
+    with open(path) as f:
+        tree = json.load(f)
+    assert_is_instance(retrieve_output_tree(tree, "value"), dict)
+
+
+def test_retrieve_output_tree_bad_output():
+    path = os.path.join(DATA_DIR, "decide", "trees", "v2", "oneColor.json")
+    tree = None
+    with open(path) as f:
+        tree = json.load(f)
+    assert_raises(errors.CraftAiError, retrieve_output_tree, tree, "foo")
+
+
+def test_retrieve_decision_paths_from_tree():
     """
     Testing expectations
         in data/interpreter/tree_computations_expectations/get_paths`/
@@ -24,8 +69,12 @@ def test_path():
     for version in os.listdir(PATH_DIR):
         for filename in os.listdir(os.path.join(PATH_DIR, version)):
             # Loading the json tree
+            tree = None
             with open(os.path.join(TREES_DIR, version, filename)) as f:
-                results = collect_paths_from_tree(json.load(f))
+                tree = json.load(f)
+
+            results = retrieve_decision_paths_from_tree(tree)
+
             # Loading the expectation for this tree
             with open(os.path.join(PATH_DIR, version, filename)) as f:
                 expectation = json.load(f)
@@ -33,7 +82,7 @@ def test_path():
             assert_true(sorted(list(results)) == expectation)
 
 
-def test_neighbors():
+def test_retrieve_decision_path_neighbors():
     """
     Testing expectations
         in data/interpreter/tree_computations_expectations/get_neighbours/
@@ -50,7 +99,7 @@ def test_neighbors():
                 expectations = json.load(f)
 
             for expect in expectations:
-                result = compute_tree_decision_paths_neighbors(
+                result = retrieve_decision_path_neighbors(
                     tree=tree,
                     decision_path=expect["decision_path"],
                     max_depth=expect["max_depth"],

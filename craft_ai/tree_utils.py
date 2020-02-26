@@ -48,34 +48,72 @@ def _get_neighbours(paths, decision_path):
     return neighbours
 
 
-def _extract_tree(tree):
+def retrieve_output_tree(tree, output_property=None):
+    """
+    Extract the output decision tree specific for a given output property from a full decision tree.
+
+    This function accepts trees as retrieved from `craft_ai.Client.get_generator_decision_tree`.
+
+    Parameters:
+        tree: A tree.
+        output_property (optional): If provided, the output property for which the tree predicts
+            values, otherwise the first defined tree is retrieved.
+    """
     if not isinstance(tree, dict):
         raise CraftAiError(
-            """Invalid input given. The tree should be a dict, """
-            """but a {} has been received.""".format(type(tree))
+            """Unable to retrieve the output tree, """
+            """the given decision tree format is not a valid, expected a 'dict' got a {}.""".format(
+                type(tree)
+            )
         )
-    if "trees" in tree:
-        target = list(tree["trees"])[0]
-        tree = tree["trees"][target]
-    return tree
+    if "trees" not in tree:
+        raise CraftAiError(
+            """Unable to retrieve the output tree, """
+            """the given decision tree format is not a valid, no 'trees' property defined."""
+        )
+    trees = tree["trees"]
+    if not output_property:
+        output_property = list(trees)[0]
+    if output_property not in trees:
+        raise CraftAiError(
+            """'{}' output tree can't be found in the given decision tree.""".format(
+                output_property
+            )
+        )
+        tree = tree["trees"][output_property]
+    return trees[output_property]
 
 
-def collect_paths_from_tree(tree):
-    """ return a set of all decision paths in a craft_ai tree """
-    return _get_paths(_extract_tree(tree))
+def retrieve_decision_paths_from_tree(tree):
+    """
+    Retrieve all the decision paths from a tree.
+
+    This function accepts trees as retrieved from `craft_ai.Client.get_generator_decision_tree`.
+
+    Parameters:
+        tree: A tree.
+    Returns: e.g. ['0', '0-0', '0-1']
+    """
+    return _get_paths(retrieve_output_tree(tree))
 
 
-def compute_tree_decision_paths_neighbors(
+def retrieve_decision_path_neighbors(
     tree, decision_path, max_depth=None, include_self=False
 ):
     """
-    collect all neighbors decision paths of the given decision path
-    param: tree: craft_ai tree or simple tree
-    param: decision_path: string tree path eg. "0-2-1"
-    param: max_depth: positive int filter neighbours on their depth
-    param: include_self: boolean. include the given decision_path to the neighbours.
+    Retrieve neighbor of a decision path in a tree.
+
+    This function accepts trees as retrieved from `craft_ai.Client.get_generator_decision_tree`.
+
+    Parameters:
+        tree: A tree.
+        decision_path: string tree path eg. "0-2-1".
+        max_depth (int, optional): positive int filter neighbours on their depth,
+            default is None.
+        include_self (bool, optional): include the given decision_path to the neighbours,
+            default is False.
     """
-    paths = _get_paths(_extract_tree(tree))
+    paths = _get_paths(retrieve_output_tree(tree))
     if decision_path not in paths:
         raise CraftAiError(
             """Invalid decision path given. """

@@ -18,9 +18,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - `craft_ai.get_generator_operations_list` becomes `craft_ai.get_generator_operations`,
   - `craft_ai.get_state_history` becomes `craft_ai.get_agent_states`,
   - `craft_ai.get_decision_tree` becomes `craft_ai.get_agent_decision_tree`,
-  - `craft_ai.get_decision_trees_bulk` becomes `craft_ai.get_agents_decision_trees_bulk`,
-  - `craft_ai.pandas.get_paths` becomes `craft_ai.collect_paths_from_tree`,
-  - `craft_ai.pandas.get_neighbours` becomes `craft_ai.compute_tree_decision_paths_neighbors`.
+  - `craft_ai.get_decision_trees_bulk` becomes `craft_ai.get_agents_decision_trees_bulk`.
+- Tree traversal utils have been reorganized:
+  - Introducing `craft_ai.retrieve_output_tree` able to extract output decision tree, was previously a private function called `craft_ai.pandas._extract_tree`,
+  - Renaming `craft_ai.pandas.get_paths` to `craft_ai.retrieve_decision_paths_from_tree`,
+  - Renaming `craft_ai.pandas.get_neighbours` to `craft_ai.retrieve_decision_path_neighbors`.
 
 ### Removed
 
