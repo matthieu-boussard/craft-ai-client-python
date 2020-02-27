@@ -1917,8 +1917,5 @@ addition_operations_bulk_payload = [
 
 client.add_operations_bulk(addition_operations_bulk_payload)
 ```
-<<<<<<< HEAD
-Given an object that is not a `DataFrame` this method behave like the _vanilla_ `craftai.Client.add_operations_bulk`.
-=======
+
 Given an object that is not a `DataFrame` this method behave like the _vanilla_ `craft_ai.Client.add_operations_bulk`.
->>>>>>> Migrating to poetry + Renaming package craftai to craft_ai

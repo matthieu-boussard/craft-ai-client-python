@@ -712,11 +712,7 @@ class Client(object):
     ):
         """Tool for the function get_agent_decision_tree.
 
-<<<<<<< HEAD
         :param str agent_id: the id of the agent whose tree to get. It
-=======
-        :param str agent_id: the id of the agent to get the tree. It
->>>>>>> Using flake8 for style check
         must be an str containing only characters in "a-zA-Z0-9_-" and
         must be between 1 and 36 characters.
         :param int timestamp: Optional. The decision tree is comptuted
