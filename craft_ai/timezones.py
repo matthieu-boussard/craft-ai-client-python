@@ -37,6 +37,8 @@ TIMEZONES = {
 
 
 def is_timezone(value):
+    # Valid time zone range is -12:00 (-720 min) and +14:00 (+840 min)
+    # cf. https://en.wikipedia.org/wiki/List_of_UTC_time_offsets
     if isinstance(value, int) and value <= 840 and value >= -720:
         return True
     if not isinstance(value, str):
