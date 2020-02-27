@@ -143,6 +143,9 @@ class TestAddOperationsGroupAgentsBulkSuccess(unittest.TestCase):
             self.assertEqual(resp.get("id"), self.agents[i])
             self.assertEqual(resp.get("status"), 201)
             self.assertTrue("message" in resp.keys())
+            self.assertEqual(
+                resp["added_operations_count"], len(valid_data.VALID_OPERATIONS_SET)
+            )
 
         self.addCleanup(self.clean_up_agents, self.agents)
 
@@ -214,9 +217,9 @@ class TestAddOperationsBulkFailure(unittest.TestCase):
     def test_add_agents_operations_bulk_invalid_operations(self):
         """add_agents_operations_bulk should fail when given some invalid operations set.
 
-    It should raise an error upon request for operations posting
-    for all agents with invalid operations set.
-    """
+        It should raise an error upon request for operations posting
+        for all agents with invalid operations set.
+        """
         payload = []
         agents_lst = []
         for i, invalid_operation_set in enumerate(invalid_data.INVALID_OPS_SET):

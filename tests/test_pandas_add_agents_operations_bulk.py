@@ -139,6 +139,12 @@ if CRAFTAI_PANDAS_ENABLED:
             self.assertEqual(resp[1].get("status"), 201)
             self.assertTrue("message" in resp[0].keys())
             self.assertTrue("message" in resp[1].keys())
+            self.assertEqual(
+                resp[0].get("added_operations_count"), len(SIMPLE_AGENT_MANY_DATA)
+            )
+            self.assertEqual(
+                resp[1].get("added_operations_count"), len(SIMPLE_AGENT_MANY_DATA)
+            )
 
             self.addCleanup(self.clean_up_agents, [self.agent_id1, self.agent_id2])
 
@@ -165,9 +171,13 @@ if CRAFTAI_PANDAS_ENABLED:
 
             self.assertIsInstance(resp, list)
             self.assertEqual(resp[0].get("id"), self.agent_id1)
+            self.assertEqual(resp[0].get("added_operations_count"), len(data_part1))
             self.assertEqual(resp[1].get("id"), self.agent_id1)
+            self.assertEqual(resp[1].get("added_operations_count"), len(data_part2))
             self.assertEqual(resp[2].get("id"), self.agent_id2)
+            self.assertEqual(resp[2].get("added_operations_count"), len(data_part1))
             self.assertEqual(resp[3].get("id"), self.agent_id2)
+            self.assertEqual(resp[3].get("added_operations_count"), len(data_part2))
 
             self.addCleanup(self.clean_up_agents, [self.agent_id1, self.agent_id2])
 
@@ -214,6 +224,7 @@ if CRAFTAI_PANDAS_ENABLED:
                 self.assertEqual(resp.get("id"), self.agents[i])
                 self.assertEqual(resp.get("status"), 201)
                 self.assertTrue("message" in resp.keys())
+                self.assertEqual(resp["added_operations_count"], len(SIMPLE_AGENT_DATA))
 
             self.addCleanup(self.clean_up_agents, self.agents)
 

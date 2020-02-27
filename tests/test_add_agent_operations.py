@@ -7,8 +7,6 @@ from . import settings
 from .utils import generate_entity_id
 from .data import valid_data, invalid_data
 
-NB_OPERATIONS_TO_ADD = 2000
-
 
 class TestAddOperationsSuccess(unittest.TestCase):
     """Checks that the client succeeds when getting an agent with OK input"""
@@ -38,6 +36,9 @@ class TestAddOperationsSuccess(unittest.TestCase):
         self.assertIsInstance(resp, dict)
         resp_keys = resp.keys()
         self.assertTrue("message" in resp_keys)
+        self.assertEqual(
+            resp["added_operations_count"], len(valid_data.VALID_OPERATIONS_SET)
+        )
 
     def test_add_agent_operations_with_many_operations(self):
         """add_agent_operations should succeed when given lots of operations
@@ -46,14 +47,11 @@ class TestAddOperationsSuccess(unittest.TestCase):
         string.
         """
         operations = copy.deepcopy(valid_data.VALID_OPERATIONS_SET[:])
-        operation = operations[-1]
-        timestamp = operation["timestamp"]
-        length = len(operations)
 
-        while length < NB_OPERATIONS_TO_ADD:
-            operation["timestamp"] = timestamp + length
-            operations.append(operation.copy())
-            length = length + 1
+        while len(operations) < 2000:
+            new_operation = operations[-1].copy()
+            new_operation["timestamp"] += 10
+            operations.append(new_operation)
 
         resp = self.client.add_agent_operations(
             self.agent_id,
@@ -63,6 +61,31 @@ class TestAddOperationsSuccess(unittest.TestCase):
         self.assertIsInstance(resp, dict)
         resp_keys = resp.keys()
         self.assertTrue("message" in resp_keys)
+        self.assertEqual(resp["added_operations_count"], len(operations))
+
+    def test_add_agent_operations_with_some_duplicates(self):
+        """add_agent_operations should succeed and lmerge duplicate timestamps
+        """
+        operations = copy.deepcopy(valid_data.VALID_OPERATIONS_SET[:])
+
+        while len(operations) < 500:
+            new_operation = operations[-1].copy()
+            new_operation["timestamp"] += 10
+            operations.append(new_operation)
+
+        # Creating two duplicates
+        operations[100]["timestamp"] = operations[101]["timestamp"]
+        operations[300]["timestamp"] = operations[301]["timestamp"]
+
+        resp = self.client.add_agent_operations(
+            self.agent_id,
+            sorted(operations, key=lambda operation: operation["timestamp"]),
+        )
+
+        self.assertIsInstance(resp, dict)
+        resp_keys = resp.keys()
+        self.assertTrue("message" in resp_keys)
+        self.assertEqual(resp["added_operations_count"], len(operations) - 2)
 
 
 class TestAddOperationsFailure(unittest.TestCase):

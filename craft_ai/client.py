@@ -17,13 +17,12 @@ from .errors import (
     CraftAiCredentialsError,
     CraftAiBadRequestError,
     CraftAiNotFoundError,
-)
-from .errors import (
     CraftAiUnknownError,
     CraftAiInternalError,
     CraftAiLongRequestTimeOutError,
+    CraftAiNetworkError,
 )
-from .errors import CraftAiNetworkError
+from .helpers import extract_operations_count_from_message
 from .interpreter import Interpreter
 from .jwt_decode import jwt_decode
 
@@ -501,7 +500,6 @@ class Client(object):
     ###################
     # Context methods #
     ###################
-
     def add_agent_operations(self, agent_id, operations):
         """Add operations to an agent.
 
@@ -524,6 +522,7 @@ class Client(object):
         # Extra header in addition to the main session's
         ct_header = {"Content-Type": "application/json; charset=utf-8"}
         offset = 0
+        added_operations_count = 0
 
         is_looping = True
 
@@ -539,7 +538,11 @@ class Client(object):
 
             req_url = "{}/agents/{}/context".format(self._base_url, agent_id)
             resp = self._requests_session.post(req_url, headers=ct_header, data=json_pl)
-            self._decode_response(resp)
+            decoded_response = self._decode_response(resp)
+
+            added_operations_count += extract_operations_count_from_message(
+                decoded_response["message"]
+            )
 
             if next_offset >= len(operations):
                 is_looping = False
@@ -547,8 +550,13 @@ class Client(object):
             offset = next_offset
 
         return {
-            "message": 'Successfully added %i operation(s) to the agent "%s/%s/%s" context.'
-            % (len(operations), self.config["owner"], self.config["project"], agent_id)
+            "message": 'Successfully added %i operation(s) to the agent "%s/%s/%s" context.'.format(
+                added_operations_count,
+                self.config["owner"],
+                self.config["project"],
+                agent_id,
+            ),
+            "added_operations_count": added_operations_count,
         }
 
     def _add_agents_operations_bulk(self, chunked_data):
@@ -580,14 +588,26 @@ class Client(object):
                         )
                     )
                 resp = self._requests_session.post(url, headers=ct_header, data=json_pl)
-                resp = self._decode_response(resp)
-                responses += resp
+                decoded_response = self._decode_response(resp)
+                responses += [
+                    {
+                        **r,
+                        "added_operations_count": extract_operations_count_from_message(
+                            r["message"]
+                        ),
+                    }
+                    for r in decoded_response
+                ]
             elif chunk:
-                message = self.add_agent_operations(
+                add_agent_operations_response = self.add_agent_operations(
                     chunk[0]["id"], chunk[0]["operations"]
                 )
                 responses.append(
-                    {"id": chunk[0]["id"], "status": 201, "message": message}
+                    {
+                        "id": chunk[0]["id"],
+                        "status": 201,
+                        **add_agent_operations_response,
+                    }
                 )
 
         if responses == []:
