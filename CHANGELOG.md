@@ -20,9 +20,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - `craft_ai.get_decision_tree` becomes `craft_ai.get_agent_decision_tree`,
   - `craft_ai.get_decision_trees_bulk` becomes `craft_ai.get_agents_decision_trees_bulk`.
 - Tree traversal utils have been reorganized:
-  - Introducing `craft_ai.retrieve_output_tree` able to extract output decision tree, was previously a private function called `craft_ai.pandas._extract_tree`,
-  - Renaming `craft_ai.pandas.get_paths` to `craft_ai.retrieve_decision_paths_from_tree`,
-  - Renaming `craft_ai.pandas.get_neighbours` to `craft_ai.retrieve_decision_path_neighbors`.
+  - Introducing `craft_ai.extract_output_tree` able to extract output decision tree, was previously a private function called `craft_ai.pandas._extract_tree`,
+  - Renaming `craft_ai.pandas.get_paths` to `craft_ai.extract_decision_paths_from_tree`,
+  - Renaming `craft_ai.pandas.get_neighbours` to `craft_ai.extract_decision_path_neighbors`.
 - Operations addition functions now also returns the number of added operations as `"added_operations_count"`.
 
 ### Removed

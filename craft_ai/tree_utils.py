@@ -48,7 +48,7 @@ def _get_neighbours(paths, decision_path):
     return neighbours
 
 
-def retrieve_output_tree(tree, output_property=None):
+def extract_output_tree(tree, output_property=None):
     """
     Extract the output decision tree specific for a given output property from a full decision tree.
 
@@ -84,7 +84,7 @@ def retrieve_output_tree(tree, output_property=None):
     return trees[output_property]
 
 
-def retrieve_decision_paths_from_tree(tree):
+def extract_decision_paths_from_tree(tree):
     """
     Retrieve all the decision paths from a tree.
 
@@ -94,10 +94,10 @@ def retrieve_decision_paths_from_tree(tree):
         tree: A tree.
     Returns: e.g. ['0', '0-0', '0-1']
     """
-    return _get_paths(retrieve_output_tree(tree))
+    return _get_paths(extract_output_tree(tree))
 
 
-def retrieve_decision_path_neighbors(
+def extract_decision_path_neighbors(
     tree, decision_path, max_depth=None, include_self=False
 ):
     """
@@ -113,7 +113,7 @@ def retrieve_decision_path_neighbors(
         include_self (bool, optional): include the given decision_path to the neighbours,
             default is False.
     """
-    paths = _get_paths(retrieve_output_tree(tree))
+    paths = _get_paths(extract_output_tree(tree))
     if decision_path not in paths:
         raise CraftAiError(
             """Invalid decision path given. """
