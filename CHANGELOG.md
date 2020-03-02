@@ -43,6 +43,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- `craftai.pandas.client.decide_from_contexts_df` can use every possible feature name.
 - Rollback `craftai.client` to raise errors for responses with `202` status code.
 
 ## [1.15.8](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.7...v1.15.8) - 2019-11-19 ##
@@ -65,7 +66,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
-- `craftai.pandas.utils.collect_paths_from_tree` to list all paths of a craftai tree.
+- `craftai.pandas.utils.get_paths` to list all paths of a craftai tree.
 - `craftai.pandas.utils.get_neighbours` to list all neighbours paths of a given decision path.
 
 ## [1.15.5](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.4...v1.15.5) - 2019-09-05 ##
