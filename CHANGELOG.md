@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased](https://github.com/craft-ai/craft-ai-client-python/compare/v1.16.0...HEAD) ##
 
+### Changed
+
+- Root package renamed `craft_ai` (previously `craftai`) to follow python naming conventions.
+- `craft_ai.pandas` now requires `pandas` v1.0.1 or compatible versions.
+- Rename several functions to make them more unique and well defined:
+  - `craft_ai.add_operations` becomes `craft_ai.add_agent_operations`,
+  - `craft_ai.add_operations_bulk` becomes `craft_ai.add_agents_operations_bulk`,
+  - `craft_ai.get_operations_list` becomes `craft_ai.get_agent_operations`,
+  - `craft_ai.get_generator_operations_list` becomes `craft_ai.get_generator_operations`,
+  - `craft_ai.get_state_history` becomes `craft_ai.get_agent_states`,
+  - `craft_ai.get_decision_tree` becomes `craft_ai.get_agent_decision_tree`,
+  - `craft_ai.get_decision_trees_bulk` becomes `craft_ai.get_agents_decision_trees_bulk`.
+- Tree traversal utils have been reorganized:
+  - Introducing `craft_ai.extract_output_tree` able to extract output decision tree, was previously a private function called `craft_ai.pandas._extract_tree`,
+  - Renaming `craft_ai.pandas.get_paths` to `craft_ai.extract_decision_paths_from_tree`,
+  - Renaming `craft_ai.pandas.get_neighbours` to `craft_ai.extract_decision_path_neighbors`.
+- Operations addition functions now also returns the number of added operations as `"added_operations_count"`.
+
+### Removed
+
+- Remove support for python v2, now supporting v3.6.1 and later.
+- Remove support for `CraftAIClient` import.
+
+### Fixed
+
+- Messages returned when adding operations now correctly reflects the operations merging that can occur server-side.
+
 ## [1.16.0](https://github.com/craft-ai/craft-ai-client-python/compare/v1.15.8...v1.16.0) - 2020-02-21 ##
 
 ### Added

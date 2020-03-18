@@ -1,7 +1,8 @@
 #!/bin/bash
 
 AVAILABLE_INCREMENTS=(major minor patch)
-INIT_PY_FILE="craftai/__init__.py"
+INIT_PY_FILE="craft_ai/__init__.py"
+PROJECT_TOML_FILE="pyproject.toml"
 CHANGELOG_MD_FILE="./CHANGELOG.md"
 GH_ORG="craft-ai"
 GH_REPO="craft-ai-client-python"
@@ -102,6 +103,7 @@ echo "Increment version from v$current_major.$current_minor.$current_patch to v$
 TODAY=`date +%Y-%m-%d`
 
 eval "sed -i.bak 's/$current_major.$current_minor.$current_patch/$next_major.$next_minor.$next_patch/g' $INIT_PY_FILE"
+eval "sed -i.bak 's/$current_major.$current_minor.$current_patch/$next_major.$next_minor.$next_patch/g' $PROJECT_TOML_FILE"
 eval "sed -i.bak 's/.*\[Unreleased\].*/## [Unreleased](https:\/\/github.com\/$GH_ORG\/$GH_REPO\/compare\/v$next_major.$next_minor.$next_patch...HEAD) ##$NL$NL## [$next_major.$next_minor.$next_patch](https:\/\/github.com\/$GH_ORG\/$GH_REPO\/compare\/v$current_major.$current_minor.$current_patch...v$next_major.$next_minor.$next_patch) - $TODAY ##/g' $CHANGELOG_MD_FILE"
 
 if [ $do_git == 1 ]; then

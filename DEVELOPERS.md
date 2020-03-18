@@ -3,8 +3,9 @@
 ## Running the tests locally ##
 
 1. Make sure you have the following installed:
-  - [Python](https://www.python.org) (any version >2.7 should work),
-  - bash, make and sed (needed for the build scripts).
+  - [Python](https://www.python.org) (any version >3.5 should work),
+  - [Poetry](https://python-poetry.org),
+  - bash and sed (needed for the build scripts).
 2. Create a test **craft ai** project and retrieve its **write token**.
 3. At the root of your local clone, create a file named `.env` with the following content.
 
@@ -21,13 +22,19 @@
 5. Install the dependencies. For the following steps, you may want use in a Python virtual environment.
 
   ```console
-  $ make init
+  $ poetry install -E pandas
+  ```
+
+6. Run the coding style checks.
+
+  ```console
+  $ poetry run task lint
   ```
 
 6. Run the tests!
 
   ```console
-  $ make test
+  $ poetry run task test
   ```
 
 ## Releasing a new version (needs administrator rights) ##
@@ -49,20 +56,20 @@
 
 
   ```console
-  $ make update-readme
+  $ ./scripts/update_readme.sh
   ```
 
   > This will create a git commit.
 
 
-4. Increment the version in `craftai/__init__.py` and move _Unreleased_ section
+4. Increment the version in `craft_ai/__init__.py` and move _Unreleased_ section
    of `CHANGELOG.md` to a newly created section for this version.
 
   ```console
-  $ make version-increment-patch
+  $ ./scripts/update_version.sh patch
   ```
 
-  `make version-increment-minor` and `make version-increment-major` are
+  `./scripts/update_version.sh minor` and `./scripts/update_version.sh major` are
   also available - see [semver](http://semver.org) for a guideline on when to
   use which.
 
@@ -71,8 +78,7 @@
 5. Push everything!
 
   ```console
-  $ git push origin master
-  $ git push --tags
+  $ git push origin master --tags
   ```
 
   > This will trigger the publishing of this new version to
