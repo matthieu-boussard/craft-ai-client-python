@@ -180,7 +180,7 @@ context_list = [
     }
   }
 ]
-client.add_operations(agent_id, context_list)
+client.add_agent_operations(agent_id, context_list)
 print("Successfully added initial operations to agent", agent_id, "!")
 ```
 
@@ -205,11 +205,11 @@ agent = client.create_agent(configuration, agent_id)
 print("Agent", agent["id"], "has successfully been created")
 
 context_list = ...
-client.add_operations(agent_id, context_list)
+client.add_agent_operations(agent_id, context_list)
 print("Successfully added initial operations to agent", agent_id, "!")
 
 dt_timestamp = 1469476800
-decision_tree = client.get_decision_tree(agent_id, dt_timestamp)
+decision_tree = client.get_agent_decision_tree(agent_id, dt_timestamp)
 print("The full decision tree at timestamp", dt_timestamp, "is the following:")
 print(decision_tree)
 """ Outputted tree is the following
@@ -371,11 +371,11 @@ agent = client.create_agent(configuration, agent_id)
 print("Agent", agent["id"], "has successfully been created")
 
 context_list = ...
-client.add_operations(agent_id, context_list)
+client.add_agent_operations(agent_id, context_list)
 print("Successfully added initial operations to agent", agent_id, "!")
 
 dt_timestamp = 1469476800
-decision_tree = client.get_decision_tree(agent_id, dt_timestamp)
+decision_tree = client.get_agent_decision_tree(agent_id, dt_timestamp)
 print("The decision tree at timestamp", dt_timestamp, "is the following:")
 print(decision_tree)
 
@@ -866,12 +866,12 @@ GENERATOR_NAME = 'smarthome_gen'
 START_TIMESTAMP = 1478894153
 END_TIMESTAMP = 1478895266
 
-client.get_operations_list(
-  GENERATOR_NAME, # The agent id
-  START_TIMESTAMP, # Optional, the **start** timestamp from which the
-              # operations are retrieved (inclusive bound)
-  END_TIMESTAMP # Optional, the **end** timestamp up to which the
-              # operations are retrieved (inclusive bound)
+client.get_generator_operations(
+  GENERATOR_NAME,   # The generator id
+  START_TIMESTAMP,  # Optional, the **start** timestamp from which the
+                    # operations are retrieved (inclusive bound)
+  END_TIMESTAMP     # Optional, the **end** timestamp up to which the
+                    # operations are retrieved (inclusive bound)
 )
 ```
 
@@ -883,7 +883,7 @@ client.get_operations_list(
 DECISION_TREE_TIMESTAMP = 1469473600
 GENERATOR_NAME = 'smarthome_gen'
 client.get_generator_decision_tree(
-  GENERATOR_NAME, # The agent id
+  GENERATOR_NAME, # The generator id
   DECISION_TREE_TIMESTAMP # The timestamp at which the decision tree is retrieved
 )
 
@@ -1112,7 +1112,7 @@ client.computeGeneratorDecision(
 #### Add operations
 
 ```python
-client.add_operations(
+client.add_agent_operations(
   "my_new_agent", # The agent id
   [ # The list of context operations
     {
@@ -1211,7 +1211,7 @@ A context with an optional value looks like:
 #### List operations
 
 ```python
-client.get_operations_list(
+client.get_agent_operations(
   "my_new_agent", # The agent id
   1478894153, # Optional, the **start** timestamp from which the
               # operations are retrieved (inclusive bound)
@@ -1234,7 +1234,7 @@ client.get_context_state(
 #### Retrieve state history
 
 ```python
-client.get_state_history(
+client.get_agent_states(
   "my_new_agent", # The agent id
   1478894153, # Optional, the **start** timestamp from which the
               # operations are retrieved (inclusive bound)
@@ -1260,7 +1260,7 @@ When you [compute](#compute) a decision tree, **craft ai** returns an object con
 #### Compute
 
 ```python
-client.get_decision_tree(
+client.get_agent_decision_tree(
   "my_new_agent", # The agent id
   1469473600 # Optional the timestamp at which we want the decision
              # tree, default behavior is to return the decision tree
@@ -1375,7 +1375,7 @@ The variable `deleted_agents` is an **array of responses**. If an agent has been
 
 #### Bulk - Add context Operations
 
-To add operations to several agents at once, use the method `add_operations_bulk` as the following:
+To add operations to several agents at once, use the method `add_agents_operations_bulk` as the following:
 ```python
 agent_id_1 = 'my_first_agent'
 agent_id_2 = 'my_second_agent'
@@ -1418,7 +1418,7 @@ addition_operations_bulk_payload = [
 
 agents = client.addAgentContextOperationsBulk(addition_operations_bulk_payload)
 ```
-The variable `agents` is an **array of responses**. If an agent has successfully received operations, the corresponding response is an object similar to the classic `add_operations()` response. When there are **mixed results**, `agents` should looks like:
+The variable `agents` is an **array of responses**. If an agent has successfully received operations, the corresponding response is an object similar to the classic `add_agent_operations()` response. When there are **mixed results**, `agents` should looks like:
 
 ```python
 [
@@ -1437,7 +1437,7 @@ The variable `agents` is an **array of responses**. If an agent has successfully
 
 #### Bulk - Compute decision trees
 
-To get the tree of several agents at once, use the method `get_decision_trees_bulk` as the following:
+To get the tree of several agents at once, use the method `get_agents_decision_trees_bulk` as the following:
 
 ```python
 agent_id_1 = 'my_first_agent'
@@ -1448,9 +1448,9 @@ decision_tree_bulk_payload =  [
   {'id': agent_id_2}
 ]
 
-trees = client.get_decision_trees_bulk(decision_tree_bulk_payload)
+trees = client.get_agents_decision_trees_bulk(decision_tree_bulk_payload)
 ```
-The variable `trees` is an **array of responses**. If an agent’s model has successfully been created, the corresponding response is an object similar to the classic `get_decision_trees_bulk()` response. When there are **mixed results**, trees should looks like:
+The variable `trees` is an **array of responses**. If an agent’s model has successfully been created, the corresponding response is an object similar to the classic `get_agents_decision_trees_bulk()` response. When there are **mixed results**, trees should looks like:
 
 ```python
 [
@@ -1480,7 +1480,7 @@ The simple configuration to create the `client` is just the token. For special n
 
 #### Amount of operations sent in one chunk ####
 
-`client.add_operations` splits the provided operations into chunks in order to limit the size of the http requests to the craft ai API. In the client configuration, `operationsChunksSize` can be increased in order to limit the number of request, or decreased when large http requests cause errors.
+`client.add_agent_operations` splits the provided operations into chunks in order to limit the size of the http requests to the craft ai API. In the client configuration, `operationsChunksSize` can be increased in order to limit the number of request, or decreased when large http requests cause errors.
 
 ```python
 client = craft_ai.Client({
@@ -1493,7 +1493,7 @@ client = craft_ai.Client({
 
 #### Timeout duration for decision trees retrieval ####
 
-It is possible to increase or decrease the timeout duration of `client.get_decision_tree`, for exemple to account for especially long computations.
+It is possible to increase or decrease the timeout duration of `client.get_agent_decision_tree`, for exemple to account for especially long computations.
 
 ```python
 client = craft_ai.Client({
@@ -1687,7 +1687,13 @@ The `decide` method only raises `CrafAIDecisionError` of `CraftAiNullDecisionEr
 
 The craft ai python client optionally supports [pandas](http://pandas.pydata.org/) a very popular library used for all things data.
 
-Basically instead of importing the default module, you can do the following
+You'll need to install `craft-ai` with its `pandas` [extra](https://packaging.python.org/tutorials/installing-packages/#installing-setuptools-extras)
+
+```sh
+pip install --upgrade craft-ai[pandas]
+```
+
+Then, instead of importing the default module, do the following
 
 ```python
 import craft_ai.pandas
@@ -1704,7 +1710,7 @@ client = craft_ai.pandas.Client({
 
 The craft ai pandas module is derived for the _vanilla_ one, with the following methods are overriden to support pandas' [`DataFrame`](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html).
 
-#### `craft_ai.pandas.Client.get_operations_list` #####
+#### `craft_ai.pandas.Client.get_agent_operations` #####
 
 Retrieves the desired operations as a `DataFrame` where:
 
@@ -1714,7 +1720,7 @@ Retrieves the desired operations as a `DataFrame` where:
 - `np.NaN` means no value were given at this property for this timestamp.
 
 ```python
-df = client.get_operations_list("my_new_agent")
+df = client.get_agent_operations("my_new_agent")
 
 # `df` is a pd.DataFrame looking like
 #
@@ -1726,7 +1732,7 @@ df = client.get_operations_list("my_new_agent")
 # 2013-01-05 00:00:00+00:00   0            NaN              NaN
 ```
 
-#### `craft_ai.pandas.Client.add_operations` #####
+#### `craft_ai.pandas.Client.add_agent_operations` #####
 
 Add a `DataFrame` of operations to the desired agent. The format is the same as above.
 
@@ -1742,10 +1748,10 @@ df = pd.DataFrame(
   columns=['peopleCount', 'lightbulbState', 'timezone'],
   index=pd.date_range('20130101', periods=5, freq='D').tz_localize("UTC")
 )
-client.add_operations("my_new_agent", df)
+client.add_agent_operations("my_new_agent", df)
 ```
 
-Given an object that is not a `DataFrame` this method behave like the _vanilla_ `craft_ai.Client.add_operations`.
+Given an object that is not a `DataFrame` this method behave like the _vanilla_ `craft_ai.Client.add_agent_operations`.
 
 Furthermore, missing values and optional values can be handled by the craft ai pandas client. To do so, we introduce two new types that are `craft_ai.pandas.MISSING_VALUE` for [missing values](#missing-values) and `craft_ai.pandas.OPTIONAL_VALUE` for [optional values](#optional-values).
 To send your `DataFrame` with actual missing values or optional values, you must use one of these types:
@@ -1764,7 +1770,7 @@ df = pd.DataFrame(
   columns=['peopleCount', 'timezone'],
   index=pd.date_range('20130101', periods=5, freq='D').tz_localize("UTC")
 )
-client.add_operations("my_new_agent", df)
+client.add_agent_operations("my_new_agent", df)
 ```
 
 To ensure that all the missing values contained in your `DataFrame` are to the right format and can be handled by the craft ai pandas client, it is suggested to preprocess this latter by replacing all `na` values by the desired one:
@@ -1773,7 +1779,7 @@ To ensure that all the missing values contained in your `DataFrame` are to the r
 contexts_df.fillna(MISSING_VALUE) # Or OPTIONAL_VALUE
 ```
 
-#### `craft_ai.pandas.Client.get_state_history` #####
+#### `craft_ai.pandas.Client.get_agent_states` #####
 
 Retrieves the desired state history as a `DataFrame` where:
 
@@ -1782,7 +1788,7 @@ Retrieves the desired state history as a `DataFrame` where:
 - the index is [_time based_](https://pandas.pydata.org/pandas-docs/stable/timeseries.html), [timezone-aware](https://pandas.pydata.org/pandas-docs/stable/timeseries.html#working-with-time-zones) and matching the operations timestamps.
 
 ```python
-df = client.get_state_history("my_new_agent")
+df = client.get_agent_states("my_new_agent")
 
 # `df` is a pd.DataFrame looking like
 #
@@ -1849,7 +1855,7 @@ a browser to be visualized.
 
 from  craft_ai.pandas.utils import create_tree_html
 
-tree = client.get_decision_tree(
+tree = client.get_agent_decision_tree(
   "my_agent", # The agent id
   timestamp # The timestamp at which the decision tree is retrieved
 )
@@ -1876,7 +1882,7 @@ This function can be useful for analyzing the induced decision trees.
 
 from  craft_ai.pandas.utils import display_tree
 
-tree = client.get_decision_tree(
+tree = client.get_agent_decision_tree(
   "my_agent", # The agent id
   timestamp # The timestamp at which the decision tree is retrieved
 )
@@ -1890,7 +1896,7 @@ display_tree(
 )
 ```
 
-#### `craft_ai.pandas.client.add_operations_bulk` #####
+#### `craft_ai.pandas.client.add_agents_operations_bulk` #####
 
 Add operations to several agents at once.
 ```python
@@ -1915,7 +1921,6 @@ addition_operations_bulk_payload = [
     {'id': agent_id_2, 'operations': operations_agent_2}
 ]
 
-client.add_operations_bulk(addition_operations_bulk_payload)
+client.add_agents_operations_bulk(addition_operations_bulk_payload)
 ```
-
-Given an object that is not a `DataFrame` this method behave like the _vanilla_ `craft_ai.Client.add_operations_bulk`.
+Given an object that is not a `DataFrame` this method behave like the _vanilla_ `craft_ai.Client.add_agents_operations_bulk`.
