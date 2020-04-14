@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased](https://github.com/craft-ai/craft-ai-client-python/compare/v2.0.0...HEAD) ##
 
+### Fixed
+
+- A specific error is now raised for a tree based on no context operations.
+
 ## [2.0.0](https://github.com/craft-ai/craft-ai-client-python/compare/v1.16.0...v2.0.0) - 2020-03-18 ##
 
 > :warning: craft-ai-client-python v2.0.0 drop support for python v2.
