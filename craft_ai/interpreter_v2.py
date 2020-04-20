@@ -147,7 +147,7 @@ class InterpreterV2(object):
     @staticmethod
     def compute_distribution(node, output_values, output_type, path):
         result = InterpreterV2._distribution(node, output_type)
-        if output_type == "enum":
+        if output_type in ["enum", "boolean"]:
             distribution, nb_samples = result
             final_result = {
                 "predicted_value": output_values[distribution.index(max(distribution))],
@@ -174,8 +174,8 @@ class InterpreterV2(object):
             prediction = node["prediction"]
             value_distribution = prediction["distribution"]
             nb_samples = prediction["nb_samples"]
-            # It is a classification problem
-            if output_type == "enum":
+            if output_type in ["enum", "boolean"]:
+                # It is a classification problem
                 return [value_distribution, nb_samples]
             else:
                 # It is a regression problem
@@ -199,8 +199,8 @@ class InterpreterV2(object):
             return InterpreterV2._distribution(_child, output_type)
 
         values_sizes = list(map(recurse, node.get("children")))
-        # It is a classification problem
-        if output_type == "enum":
+        if output_type in ["enum", "boolean"]:
+            # It is a classification problem
             values, sizes = zip(*values_sizes)
             return InterpreterV2.compute_mean_distributions(values, sizes)
         values, sizes, stds = zip(*values_sizes)
