@@ -41,6 +41,16 @@ class InterpreterV1(object):
         decision_result = {}
         decision_result["output"] = {}
         for output in configuration.get("output"):
+            root = bare_tree[output]
+
+            if not ("children" in root and len(root.get("children"))):
+                predicted_value = root.get("predicted_value")
+                if predicted_value is None:
+                    raise CraftAiNullDecisionError(
+                        """Unable to take decision: the decision tree is not based"""
+                        """ on any context operations.""",
+                    )
+
             decision = InterpreterV1._decide_recursion(bare_tree[output], context)
             decision_result["output"][output] = decision
 
@@ -54,7 +64,7 @@ class InterpreterV1(object):
     @staticmethod
     def _decide_recursion(node, context):
         # If we are on a leaf
-        if not (node.get("children") is not None and len(node.get("children"))):
+        if not ("children" in node and len(node.get("children"))):
             predicted_value = node.get("predicted_value")
             if predicted_value is None:
                 raise CraftAiNullDecisionError(

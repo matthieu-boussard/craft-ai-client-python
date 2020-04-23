@@ -41,6 +41,21 @@ class InterpreterV2(object):
         decision_result["output"] = {}
         for output in configuration.get("output"):
             output_type = configuration["context"][output]["type"]
+
+            root = bare_tree[output]
+            if not ("children" in root and len(root.get("children"))):
+                # We check if a leaf has the key 'prediction' corresponging to a v2 tree
+                prediction = root.get("prediction")
+                if prediction is None:
+                    prediction = root
+
+                predicted_value = prediction.get("value")
+                if predicted_value is None:
+                    raise CraftAiNullDecisionError(
+                        """Unable to take decision: the decision tree is not based"""
+                        """ on any context operations."""
+                    )
+
             decision_result["output"][output] = InterpreterV2._decide_recursion(
                 bare_tree[output],
                 context,
