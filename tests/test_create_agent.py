@@ -131,13 +131,12 @@ class TestCreateAgentFailure(unittest.TestCase):
         # Testing all non dict configuration cases
         for empty_configuration in invalid_data.UNDEFINED_KEY:
             self.assertRaises(
-            craft_err.CraftAiBadRequestError,
-            self.client.create_agent,
-            invalid_data.UNDEFINED_KEY[empty_configuration],
-            self.agent_id)
-            self.addCleanup(
-            self.clean_up_agent,
-            self.agent_id)
+                craft_err.CraftAiBadRequestError,
+                self.client.create_agent,
+                invalid_data.UNDEFINED_KEY[empty_configuration],
+                self.agent_id,
+            )
+            self.addCleanup(self.clean_up_agent, self.agent_id)
 
     def test_create_agent_with_invalid_time_quantum(self):
         """create_agent should fail when given an invalid time quantum
