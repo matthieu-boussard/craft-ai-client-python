@@ -121,23 +121,23 @@ class TestCreateAgentFailure(unittest.TestCase):
             self.addCleanup(self.clean_up_agent, self.agent_id)
 
     # this test is commented because current agent creation fails with no configuration key.
-    # def should fail when given no configuration key in the request body(self):
-    #   """create_agent should fail when given no configuration key in the request body
+    def test_should_fail_when_given_no_configuration_key_in_the_request_body(self):
+        """create_agent should fail when given no configuration key in the request body
 
-    #   It should raise an error upon request for creation of an agent with
-    #   no configuration key in the request body, since it is a mandatory field to
-    #   create an agent.
-    #   """
-    #   # Testing all non dict configuration cases
-    #   for empty_configuration in invalid_data.UNDEFINED_KEY:
-    #     self.assertRaises(
-    #       craft_err.CraftAiBadRequestError,
-    #       self.client.create_agent,
-    #       invalid_data.UNDEFINED_KEY[empty_configuration],
-    #       self.agent_id)
-    #     self.addCleanup(
-    #       self.clean_up_agent,
-    #       self.agent_id)
+        It should raise an error upon request for creation of an agent with
+        no configuration key in the request body, since it is a mandatory field to
+        create an agent.
+        """
+        # Testing all non dict configuration cases
+        for empty_configuration in invalid_data.UNDEFINED_KEY:
+            self.assertRaises(
+            craft_err.CraftAiBadRequestError,
+            self.client.create_agent,
+            invalid_data.UNDEFINED_KEY[empty_configuration],
+            self.agent_id)
+            self.addCleanup(
+            self.clean_up_agent,
+            self.agent_id)
 
     def test_create_agent_with_invalid_time_quantum(self):
         """create_agent should fail when given an invalid time quantum
