@@ -40,7 +40,7 @@ IPython = { version = "^5.8.0", optional = true }
 [tool.taskipy.tasks]
 test = "nosetests"
 lint = "task lint_black && task lint_flake8"
-lint_black = "black . --check"
+lint_black = "black . --check --diff"
 lint_flake8 = "flake8 ."
 
 [build-system]

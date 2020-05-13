@@ -9,14 +9,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
-- Boolean outputs are properly supported
+- Boolean outputs are properly supported.
 - A specific error is now raised for a tree based on no context operations.
+- Re-enable the creation of agent with configuration test.
+- Print the error when one of the linter failed.
 
 ## [2.0.0](https://github.com/craft-ai/craft-ai-client-python/compare/v1.16.0...v2.0.0) - 2020-03-18 ##
 
 > :warning: craft-ai-client-python v2.0.0 drop support for python v2.
 >
-> If you are still using python v2, consider migrating to v3 as python v2 is [no longer supported since January 2020](https://www.python.org/doc/sunset-python-2/). 
+> If you are still using python v2, consider migrating to v3 as python v2 is [no longer supported since January 2020](https://www.python.org/doc/sunset-python-2/).
 > You can still use craft-ai-client-python v1.X for the time being.
 
 ### Changed
