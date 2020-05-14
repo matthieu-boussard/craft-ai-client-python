@@ -550,12 +550,7 @@ class Client(object):
             offset = next_offset
 
         return {
-            "message": 'Successfully added %i operation(s) to the agent "%s/%s/%s" context.'.format(
-                added_operations_count,
-                self.config["owner"],
-                self.config["project"],
-                agent_id,
-            ),
+            "message": f'Successfully added {added_operations_count} operation(s) to the agent \"{self.config["owner"]}/{self.config["project"]}/{agent_id}\" context.',
             "added_operations_count": added_operations_count,
         }
 
