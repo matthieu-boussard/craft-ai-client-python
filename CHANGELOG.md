@@ -13,7 +13,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - A specific error is now raised for a tree based on no context operations.
 - Re-enable the creation of agent with configuration test.
 - Print the error when one of the linter failed.
-- Removing .pylintrc file
+- Remove .pylintrc file
+- Fix the `add_agent_operations` message to display the number of added operations.
 
 ## [2.0.0](https://github.com/craft-ai/craft-ai-client-python/compare/v1.16.0...v2.0.0) - 2020-03-18 ##
 
