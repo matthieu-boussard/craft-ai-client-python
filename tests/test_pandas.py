@@ -443,3 +443,14 @@ if CRAFTAI_PANDAS_ENABLED:
         assert_not_equal(decision_tree.get("configuration"), None)
         assert_not_equal(decision_tree.get("trees"), None)
         assert_equal(decision_tree, ground_truth_decision_tree)
+
+    @with_setup(setup_simple_agent_with_data, teardown)
+    def test_display_tree_raised_error():
+        tree1 = CLIENT.get_agent_decision_tree(
+            AGENT_ID, DATETIME_AGENT_DATA.last_valid_index().value // 10 ** 9
+        )
+        assert_raises(
+            craft_ai.pandas.errors.CraftAiError,
+            craft_ai.pandas.utils.display_tree,
+            tree1,
+        )

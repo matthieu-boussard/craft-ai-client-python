@@ -2,7 +2,7 @@ import json
 from random import choice
 import re
 import string
-from IPython.core.display import display, HTML
+import importlib
 
 import pandas as pd
 import semver
@@ -176,7 +176,15 @@ def create_tree_html(tree_object, selected_node, edge_type, folded_nodes, height
 def display_tree(
     tree_object, decision_path="", edge_type="constant", folded_nodes=None, height=500
 ):
+    display = None
+    try:
+        display = importlib.import_module(".core.display", "IPython")
+
+    except ImportError as err:
+        raise CraftAiError(
+            """Diplay_tree could only be used with IPython installed: {}""".format(err)
+        )
     tree_html = create_tree_html(
         tree_object, decision_path, edge_type, folded_nodes, height
     )
-    display(HTML(tree_html))
+    display.display(display.HTML(tree_html))
