@@ -22,7 +22,7 @@ install:
 cache: pip
 script:
   - poetry run task lint
-  - poetry run task test
+  - travis_wait 100 poetry run task test
   - poetry build
 env:
   jobs:
