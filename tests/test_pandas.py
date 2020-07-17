@@ -36,6 +36,7 @@ if CRAFTAI_PANDAS_ENABLED:
     INVALID_PYTHON_IDENTIFIER_DECISION = (
         pandas_valid_data.INVALID_PYTHON_IDENTIFIER_DECISION
     )
+    EMPTY_TREE = pandas_valid_data.EMPTY_TREE
 
     CLIENT = craft_ai.pandas.Client(settings.CRAFT_CFG)
 
@@ -338,6 +339,25 @@ class TestPandasComplexAgent3WithData(unittest.TestCase):
         CLIENT.delete_agent(self.agent_id)
         CLIENT.create_agent(COMPLEX_AGENT_CONFIGURATION_2, self.agent_id)
         CLIENT.add_agent_operations(self.agent_id, COMPLEX_AGENT_DATA_2)
+
+    def test_decide_from_contexts_df_empty_tree():
+
+        test_df = pd.DataFrame(
+            [[0, "Jean-Pierre", "+02:00"], [1, "Paul", "+02:00"]],
+            columns=["a", "b", "tz"],
+            index=pd.date_range("20130201", periods=2, freq="D").tz_localize(
+                "Europe/Paris"
+            ),
+        )
+
+        df = CLIENT.decide_from_contexts_df(EMPTY_TREE, test_df)
+
+        expected_error_message = "Unable to take decision: the decision tree is not " \
+                                 "based on any context operations."
+        assert_equal(len(df), 2)
+        assert_equal(df.columns, ["error"])
+        assert_equal(df["error"][0], expected_error_message)
+        assert_equal(df["error"][1], expected_error_message)
 
     def tearDown(self):
         CLIENT.delete_agent(self.agent_id)
