@@ -1,23 +1,15 @@
+import unittest
+
 import random
 import datetime
 import semver
 
-from nose.tools import (
-    assert_equal,
-    assert_is_instance,
-    assert_not_equal,
-    assert_raises,
-    with_setup,
-)
 import craft_ai
 from craft_ai.constants import DEFAULT_DECISION_TREE_VERSION
 
 from . import settings
 from .utils import generate_entity_id
 from .data import valid_data, invalid_data
-
-CLIENT = craft_ai.Client(settings.CRAFT_CFG)
-AGENT_ID = generate_entity_id("test_get_decision_tree")
 
 VALID_L_CFG = valid_data.VALID_LARGE_CONFIGURATION
 VALID_L_BATCH_DURATION = VALID_L_CFG["learning_period"] * 4
@@ -53,150 +45,141 @@ VALID_L_OPERATIONS = [
     for batch_offset in range(0, 60)
 ]
 
+class TestGetAgentDecisionTreeWithOperation(unittest.TestCase):
+    
+    @classmethod
+    def setUpClass(cls):
+        cls.client = craft_ai.Client(settings.CRAFT_CFG)
+        cls.agent_id = generate_entity_id("test_get_decision_tree")
 
-def setup_agent_w_operations():
-    CLIENT.delete_agent(AGENT_ID)
-    CLIENT.create_agent(valid_data.VALID_CONFIGURATION, AGENT_ID)
-    CLIENT.add_agent_operations(AGENT_ID, valid_data.VALID_OPERATIONS_SET)
+    def setUp(self):
+        self.client.delete_agent(self.agent_id)
+        self.client.create_agent(valid_data.VALID_CONFIGURATION,  self.agent_id)
+        self.client.add_agent_operations(self.agent_id, valid_data.VALID_OPERATIONS_SET)
 
+    def tearDown(self):
+        self.client.delete_agent(self.agent_id)
 
-def setup_agent_w_operations_l():
-    CLIENT.delete_agent(AGENT_ID)
-    CLIENT.create_agent(VALID_L_CFG, AGENT_ID)
-    for batch in VALID_L_OPERATIONS:
-        CLIENT.add_agent_operations(AGENT_ID, batch)
+    def test_delete_agent_with_valid_id(self):
+        resp = self.client.delete_agent(self.agent_id)
+        self.assertIsInstance(resp, dict)
+        self.assertTrue("id" in resp.keys())
 
+    def test_get_decision_tree_with_correct_input(self):
+        decision_tree = self.client.get_agent_decision_tree(self.agent_id, valid_data.VALID_TIMESTAMP)
 
-def teardown():
-    CLIENT.delete_agent(AGENT_ID)
+        self.assertIsInstance(decision_tree, dict)
+        self.assertNotEqual(decision_tree.get("_version"), None)
+        self.assertNotEqual(decision_tree.get("configuration"), None)
+        self.assertNotEqual(decision_tree.get("trees"), None)
+        tree_version = semver.parse(decision_tree.get("_version"))
+        self.assertEqual(tree_version["major"], int(DEFAULT_DECISION_TREE_VERSION))
 
+    def test_get_decision_tree_with_specific_version(self):
+        version = 1
+        decision_tree = self.client.get_agent_decision_tree(
+            self.agent_id, valid_data.VALID_TIMESTAMP, version
+        )
 
-@with_setup(setup_agent_w_operations, teardown)
-def test_get_decision_tree_with_correct_input():
-    decision_tree = CLIENT.get_agent_decision_tree(AGENT_ID, valid_data.VALID_TIMESTAMP)
+        self.assertIsInstance(decision_tree, dict)
+        self.assertNotEqual(decision_tree.get("_version"), None)
+        tree_version = semver.parse(decision_tree.get("_version"))
+        self.assertEqual(tree_version["major"], version)
+        self.assertNotEqual(decision_tree.get("configuration"), None)
+        self.assertNotEqual(decision_tree.get("trees"), None)
 
-    assert_is_instance(decision_tree, dict)
-    assert_not_equal(decision_tree.get("_version"), None)
-    assert_not_equal(decision_tree.get("configuration"), None)
-    assert_not_equal(decision_tree.get("trees"), None)
-    tree_version = semver.parse(decision_tree.get("_version"))
-    assert_equal(tree_version["major"], int(DEFAULT_DECISION_TREE_VERSION))
+    def test_get_decision_tree_with_specific_version2(self):
+        version = 2
+        decision_tree = self.client.get_agent_decision_tree(
+            self.agent_id, valid_data.VALID_TIMESTAMP, version
+        )
 
+        self.assertIsInstance(decision_tree, dict)
+        self.assertNotEqual(decision_tree.get("_version"), None)
+        tree_version = semver.parse(decision_tree.get("_version"))
+        self.assertEqual(tree_version["major"], version)
+        self.assertNotEqual(decision_tree.get("configuration"), None)
+        self.assertNotEqual(decision_tree.get("trees"), None)
+    
+    def test_get_decision_tree_without_timestamp(self):
+        # test if we get the latest decision tree
+        decision_tree = self.client.get_agent_decision_tree(self.agent_id)
+        ground_truth_decision_tree = decision_tree = self.client.get_agent_decision_tree(
+            self.agent_id, 1458741230 + 505
+        )
+        self.assertIsInstance(decision_tree, dict)
+        self.assertNotEqual(decision_tree.get("_version"), None)
+        self.assertNotEqual(decision_tree.get("configuration"), None)
+        self.assertNotEqual(decision_tree.get("trees"), None)
+        self.assertEqual(decision_tree, ground_truth_decision_tree)
 
-@with_setup(setup_agent_w_operations, teardown)
-def test_get_decision_tree_with_specific_version():
-    version = 1
-    decision_tree = CLIENT.get_agent_decision_tree(
-        AGENT_ID, valid_data.VALID_TIMESTAMP, version
-    )
+    def test_get_decision_tree_with_datetimedatetime(self):
+        # test if we get the same decision tree
+        decision_tree = self.client.get_agent_decision_tree(
+            self.agent_id, datetime.datetime.fromtimestamp(valid_data.VALID_TIMESTAMP)
+        )
+        ground_truth_decision_tree = self.client.get_agent_decision_tree(
+            self.agent_id, valid_data.VALID_TIMESTAMP
+        )
+        self.assertIsInstance(decision_tree, dict)
+        self.assertNotEqual(decision_tree.get("_version"), None)
+        self.assertNotEqual(decision_tree.get("configuration"), None)
+        self.assertNotEqual(decision_tree.get("trees"), None)
+        self.assertEqual(decision_tree, ground_truth_decision_tree)
 
-    assert_is_instance(decision_tree, dict)
-    assert_not_equal(decision_tree.get("_version"), None)
-    tree_version = semver.parse(decision_tree.get("_version"))
-    assert_equal(tree_version["major"], version)
-    assert_not_equal(decision_tree.get("configuration"), None)
-    assert_not_equal(decision_tree.get("trees"), None)
+    def test_get_decision_tree_with_invalid_id(self):
+        """get_agent_decision_tree should fail when given a non-string/empty string ID
 
+        It should raise an error upon request for retrieval of an agent's
+        decision tree with an ID that is not of type string, since agent IDs
+        should always be strings.
+        """
+        for empty_id in invalid_data.UNDEFINED_KEY:
+            self.assertRaises(
+                craft_ai.errors.CraftAiBadRequestError,
+                self.client.get_agent_decision_tree,
+                invalid_data.UNDEFINED_KEY[empty_id],
+                valid_data.VALID_TIMESTAMP,
+            )
+    def test_get_decision_tree_with_unknown_id(self):
+        """get_agent_decision_tree should fail when given an unknown agent ID
 
-@with_setup(setup_agent_w_operations, teardown)
-def test_get_decision_tree_with_specific_version2():
-    version = 2
-    decision_tree = CLIENT.get_agent_decision_tree(
-        AGENT_ID, valid_data.VALID_TIMESTAMP, version
-    )
-
-    assert_is_instance(decision_tree, dict)
-    assert_not_equal(decision_tree.get("_version"), None)
-    tree_version = semver.parse(decision_tree.get("_version"))
-    assert_equal(tree_version["major"], version)
-    assert_not_equal(decision_tree.get("configuration"), None)
-    assert_not_equal(decision_tree.get("trees"), None)
-
-
-@with_setup(setup_agent_w_operations, teardown)
-def test_get_decision_tree_without_timestamp():
-    # test if we get the latest decision tree
-    decision_tree = CLIENT.get_agent_decision_tree(AGENT_ID)
-    ground_truth_decision_tree = decision_tree = CLIENT.get_agent_decision_tree(
-        AGENT_ID, 1458741230 + 505
-    )
-    assert_is_instance(decision_tree, dict)
-    assert_not_equal(decision_tree.get("_version"), None)
-    assert_not_equal(decision_tree.get("configuration"), None)
-    assert_not_equal(decision_tree.get("trees"), None)
-    assert_equal(decision_tree, ground_truth_decision_tree)
-
-
-@with_setup(setup_agent_w_operations, teardown)
-def test_get_decision_tree_with_datetimedatetime():
-    # test if we get the same decision tree
-    decision_tree = CLIENT.get_agent_decision_tree(
-        AGENT_ID, datetime.datetime.fromtimestamp(valid_data.VALID_TIMESTAMP)
-    )
-    ground_truth_decision_tree = CLIENT.get_agent_decision_tree(
-        AGENT_ID, valid_data.VALID_TIMESTAMP
-    )
-    assert_is_instance(decision_tree, dict)
-    assert_not_equal(decision_tree.get("_version"), None)
-    assert_not_equal(decision_tree.get("configuration"), None)
-    assert_not_equal(decision_tree.get("trees"), None)
-    assert_equal(decision_tree, ground_truth_decision_tree)
-
-
-@with_setup(setup_agent_w_operations, teardown)
-def test_get_decision_tree_with_invalid_id():
-    """get_agent_decision_tree should fail when given a non-string/empty string ID
-
-    It should raise an error upon request for retrieval of an agent's
-    decision tree with an ID that is not of type string, since agent IDs
-    should always be strings.
-    """
-    for empty_id in invalid_data.UNDEFINED_KEY:
-        assert_raises(
-            craft_ai.errors.CraftAiBadRequestError,
-            CLIENT.get_agent_decision_tree,
-            invalid_data.UNDEFINED_KEY[empty_id],
+        It should raise an error upon request for the retrieval of an agent
+        that doesn't exist.
+        """
+        self.assertRaises(
+            craft_ai.errors.CraftAiNotFoundError,
+            self.client.get_agent_decision_tree,
+            invalid_data.UNKNOWN_ID,
             valid_data.VALID_TIMESTAMP,
         )
 
+    def test_get_decision_tree_with_negative_timestamp(self):
+        self.assertRaises(
+            craft_ai.errors.CraftAiBadRequestError,
+            self.client.get_agent_decision_tree,
+            self.agent_id,
+            invalid_data.INVALID_TIMESTAMPS["negative_ts"],
+        )
 
-@with_setup(setup_agent_w_operations, teardown)
-def test_get_decision_tree_with_unknown_id():
-    """get_agent_decision_tree should fail when given an unknown agent ID
-
-    It should raise an error upon request for the retrieval of an agent
-    that doesn't exist.
-    """
-    assert_raises(
-        craft_ai.errors.CraftAiNotFoundError,
-        CLIENT.get_agent_decision_tree,
-        invalid_data.UNKNOWN_ID,
-        valid_data.VALID_TIMESTAMP,
-    )
-
-
-@with_setup(setup_agent_w_operations, teardown)
-def test_get_decision_tree_with_negative_timestamp():
-    assert_raises(
-        craft_ai.errors.CraftAiBadRequestError,
-        CLIENT.get_agent_decision_tree,
-        AGENT_ID,
-        invalid_data.INVALID_TIMESTAMPS["negative_ts"],
-    )
-
-
-@with_setup(setup_agent_w_operations, teardown)
-def test_get_decision_tree_with_float_timestamp():
-    assert_raises(
-        craft_ai.errors.CraftAiBadRequestError,
-        CLIENT.get_agent_decision_tree,
-        AGENT_ID,
-        invalid_data.INVALID_TIMESTAMPS["float_ts"],
-    )
+    
+    def test_get_decision_tree_with_float_timestamp(self):
+        self.assertRaises(
+            craft_ai.errors.CraftAiBadRequestError,
+            self.client.get_agent_decision_tree,
+            self.agent_id,
+            invalid_data.INVALID_TIMESTAMPS["float_ts"],
+        )
 
 
 # The following tests are quite long, they are disabled atm.
 
+    # def setup_agent_w_operations_l():
+    # CLIENT.delete_agent(AGENT_ID)
+    # CLIENT.create_agent(VALID_L_CFG, AGENT_ID)
+    # for batch in VALID_L_OPERATIONS:
+    #     CLIENT.add_agent_operations(AGENT_ID, batch)
+    
 # @with_setup(setup_agent_w_operations_l, teardown)
 # def test_get_decision_tree_from_operations():
 #   last_operation = VALID_L_OPERATIONS[-1][-1]
