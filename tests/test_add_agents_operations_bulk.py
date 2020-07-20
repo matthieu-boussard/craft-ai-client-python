@@ -8,7 +8,7 @@ from .data import valid_data, invalid_data
 from .utils import generate_entity_id
 
 NB_OPERATIONS_TO_ADD = 1000
-NB_AGENTS_TO_ADD_OPERATIONS = 50
+NB_AGENTS_TO_ADD_OPERATIONS = 5
 
 
 class TestAddOperationsBulkSuccess(unittest.TestCase):

@@ -6,7 +6,7 @@ from . import settings
 from .utils import generate_entity_id
 from .data import valid_data, invalid_data
 
-NB_AGENTS_TO_CREATE = 200
+NB_AGENTS_TO_CREATE = 5
 
 
 class TestCreateAgentsBulkSuccess(unittest.TestCase):
