@@ -352,8 +352,11 @@ class TestPandasComplexAgent3WithData(unittest.TestCase):
 
         df = CLIENT.decide_from_contexts_df(EMPTY_TREE, test_df)
 
-        expected_error_message = "Unable to take decision: the decision tree is not " \
-                                 "based on any context operations."
+        expected_error_message = (
+            "Unable to take decision: the decision tree is not "
+            "based on any context operations."
+        )
+
         assert_equal(len(df), 2)
         assert_equal(df.columns, ["error"])
         assert_equal(df["error"][0], expected_error_message)
