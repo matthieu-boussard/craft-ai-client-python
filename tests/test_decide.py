@@ -44,7 +44,7 @@ class TestInterpreter(unittest.TestCase):
             decision = CLIENT.decide(tree, exp_context, time)
             self.assertEqual(decision, expected_decision)
 
-    def test_works_as_expected(self):
+    def test_interpreter(self):
         versions = os.listdir(TREES_DIR)
         for version in versions:
             tree_files = os.listdir(os.path.join(TREES_DIR, version))
