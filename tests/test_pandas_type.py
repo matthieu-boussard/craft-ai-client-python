@@ -1,3 +1,5 @@
+import unittest
+
 from craft_ai.pandas import CRAFTAI_PANDAS_ENABLED
 
 if CRAFTAI_PANDAS_ENABLED:
@@ -5,22 +7,19 @@ if CRAFTAI_PANDAS_ENABLED:
     import json
     import pandas as pd
 
-    from nose.tools import with_setup
-
     import craft_ai.pandas
 
     from . import settings
 
-    CLIENT = craft_ai.pandas.Client(settings.CRAFT_CFG)
 
-    def setup_nothing():
-        pass
+@unittest.skipIf(CRAFTAI_PANDAS_ENABLED==False, "pandas is not enabled")
+class TestPandasType(unittest.TestCase):
 
-    def teardown_nothing():
-        pass
-
-    @with_setup(setup_nothing, teardown_nothing)
-    def test_predict_month():
+    @classmethod
+    def setUp(self):
+        self.client = craft_ai.pandas.Client(settings.CRAFT_CFG)
+    
+    def test_predict_month(self):
         tree_json = """{
             \"_version\": \"1.1.0\",
             \"trees\": {
@@ -71,9 +70,9 @@ if CRAFTAI_PANDAS_ENABLED:
                     \"scream\"
                 ]
             }
-    }"""
+        }"""
         tree = json.loads(tree_json)
 
         states = pd.read_csv("tests/data/state_only_month.csv", index_col=0)
         states.index = pd.to_datetime(states.index)
-        CLIENT.decide_from_contexts_df(tree, states)
+        self.client.decide_from_contexts_df(tree, states)
