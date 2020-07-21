@@ -12,7 +12,7 @@ if CRAFTAI_PANDAS_ENABLED:
     from .utils import generate_entity_id
     from .data import valid_data, invalid_data, pandas_valid_data, pandas_invalid_data
 
-    NB_AGENTS_TO_ADD_OPERATIONS = 5
+    NB_AGENTS_TO_ADD_OPERATIONS = 3
 
     SIMPLE_AGENT_CONFIGURATION = pandas_valid_data.SIMPLE_AGENT_CONFIGURATION
     SIMPLE_AGENT_DATA = pandas_valid_data.SIMPLE_AGENT_DATA
