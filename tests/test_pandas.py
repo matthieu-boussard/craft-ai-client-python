@@ -40,6 +40,7 @@ if CRAFTAI_PANDAS_ENABLED:
     CLIENT = craft_ai.pandas.Client(settings.CRAFT_CFG)
 
 
+@unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
 class TestPandasSimpleAgent(unittest.TestCase):
     def setUp(self):
         CLIENT.delete_agent(AGENT_ID)
@@ -87,6 +88,7 @@ class TestPandasSimpleAgent(unittest.TestCase):
         )
 
 
+@unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
 class TestPandasComplexAgent(unittest.TestCase):
     def setUp(self):
         CLIENT.delete_agent(AGENT_ID)
@@ -121,6 +123,7 @@ class TestPandasComplexAgent(unittest.TestCase):
         )
 
 
+@unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
 class TestPandasMissingAgent(unittest.TestCase):
     def setUp(self):
         CLIENT.delete_agent(AGENT_ID)
@@ -142,6 +145,7 @@ class TestPandasMissingAgent(unittest.TestCase):
         )
 
 
+@unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
 class TestPandasSimpleAgentWithData(unittest.TestCase):
     def setUp(self):
         CLIENT.delete_agent(AGENT_ID)
@@ -196,6 +200,7 @@ class TestPandasSimpleAgentWithData(unittest.TestCase):
         )
 
 
+@unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
 class TestPandasSimpleAgentWithOperations(unittest.TestCase):
     def setUp(self):
         CLIENT.delete_agent(AGENT_ID)
@@ -220,6 +225,7 @@ class TestPandasSimpleAgentWithOperations(unittest.TestCase):
         self.assertEqual(decision_tree, ground_truth_decision_tree)
 
 
+@unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
 class TestPandasComplexAgentWithData(unittest.TestCase):
     def setUp(self):
         CLIENT.delete_agent(AGENT_ID)
@@ -286,6 +292,7 @@ class TestPandasComplexAgentWithData(unittest.TestCase):
         self.assertTrue(test_df.equals(test_df_copy))
 
 
+@unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
 class TestPandasComplexAgent2WithData(unittest.TestCase):
     def setUp(self):
         CLIENT.delete_agent(AGENT_ID)
@@ -317,6 +324,7 @@ class TestPandasComplexAgent2WithData(unittest.TestCase):
         self.assertTrue(pd.notnull(df["a_predicted_value"][1]))
 
 
+@unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
 class TestPandasComplexAgent3WithData(unittest.TestCase):
     def setUp(self):
         CLIENT.delete_agent(AGENT_ID)
@@ -347,6 +355,7 @@ class TestPandasComplexAgent3WithData(unittest.TestCase):
         self.assertTrue(pd.notnull(df["a_predicted_value"][1]))
 
 
+@unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
 class TestPandasMissingAgentWithData(unittest.TestCase):
     def setUp(self):
         CLIENT.delete_agent(AGENT_ID)
@@ -384,6 +393,7 @@ class TestPandasMissingAgentWithData(unittest.TestCase):
         self.assertTrue(pd.notnull(output["output"]["a"]["predicted_value"]))
 
 
+@unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
 class TestPandasDatetimeAgentWithData(unittest.TestCase):
     def setUp(self):
         CLIENT.delete_agent(AGENT_ID)
@@ -424,6 +434,7 @@ class TestPandasDatetimeAgentWithData(unittest.TestCase):
     #   self.assertTrue(test_df.equals(test_df_copy))
 
 
+@unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
 class TestPandasAgentWithInvalidIdentifier(unittest.TestCase):
     def setUp(self):
         CLIENT.delete_agent(AGENT_ID)
@@ -446,6 +457,7 @@ class TestPandasAgentWithInvalidIdentifier(unittest.TestCase):
         self.assertEqual(len(df.dtypes), 8)
 
 
+@unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
 class TestPandasGeneratorWithOperation(unittest.TestCase):
     def setUp(self):
         CLIENT.delete_agent(AGENT_ID)

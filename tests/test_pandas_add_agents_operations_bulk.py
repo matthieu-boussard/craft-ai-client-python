@@ -21,6 +21,7 @@ if CRAFTAI_PANDAS_ENABLED:
     INVALID_DF_INDEX = pandas_invalid_data.INVALID_DF_INDEX
     SIMPLE_AGENT_MANY_DATA = pandas_valid_data.SIMPLE_AGENT_MANY_DATA
 
+    @unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
     class TestAddOperationsBulkSuccess(unittest.TestCase):
         """Checks that the client succeeds when adding operations to
         multiple agent(s) with OK input"""
@@ -181,6 +182,7 @@ if CRAFTAI_PANDAS_ENABLED:
 
             self.addCleanup(self.clean_up_agents, [self.agent_id1, self.agent_id2])
 
+    @unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
     class TestAddOperationsGroupAgentBulkSuccess(unittest.TestCase):
         """Checks that the client succeeds when adding operations to
         multiple agent(s) with OK input"""
@@ -228,6 +230,7 @@ if CRAFTAI_PANDAS_ENABLED:
 
             self.addCleanup(self.clean_up_agents, self.agents)
 
+    @unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
     class TestAddOperationsBulkFailure(unittest.TestCase):
         """Checks that the client fail when adding operations to
         multiple agent(s) with incorrect input"""
@@ -413,6 +416,7 @@ if CRAFTAI_PANDAS_ENABLED:
 
             self.addCleanup(self.clean_up_agent, agent_id)
 
+    @unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
     class TestAddOperationsBulkSomeFailure(unittest.TestCase):
         """Checks that the client succeed when adding operations to
         an/multiple agent(s) with bad input and an/multiple agent(s)
@@ -515,6 +519,7 @@ if CRAFTAI_PANDAS_ENABLED:
 
                 self.addCleanup(self.clean_up_agent, agent_id)
 
+        @unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
         class TestAddOperationsBulkSomeFailure(unittest.TestCase):
             """Checks that the client succeed when adding operations to
             an/multiple agent(s) with bad input and an/multiple agent(s)
