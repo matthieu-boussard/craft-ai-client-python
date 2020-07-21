@@ -11,17 +11,21 @@ from . import settings
 from .utils import generate_entity_id
 from .data import valid_data, invalid_data
 
+AGENT_ID_1_BASE = "get_gen_dt_1"
+AGENT_ID_2_BASE = "get_gen_dt_2"
+GENERATOR_BASE = "get_gen_dt_gen"
+
 
 class TestGeneratorDecisionTree(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = craft_ai.Client(settings.CRAFT_CFG)
-        cls.agent_id_1 = generate_entity_id("test_get_decision_tree")
-        cls.agent_id_2 = generate_entity_id("test_get_decision_tree")
-        cls.generator_id = generate_entity_id("test_generator_decision_tree")
-        cls.filter = [cls.agent_id_1, cls.agent_id_2]
 
     def setUp(self):
+        self.agent_id_1 = generate_entity_id(AGENT_ID_1_BASE + "dt")
+        self.agent_id_2 = generate_entity_id(AGENT_ID_2_BASE + "dt")
+        self.generator_id = generate_entity_id(GENERATOR_BASE + "dt")
+        self.filter = [self.agent_id_1, self.agent_id_2]
         self.client.delete_agent(self.agent_id_1)
         self.client.delete_agent(self.agent_id_2)
         self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id_1)

@@ -14,8 +14,8 @@ class TestCreateGeneratorSuccess(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = Client(settings.CRAFT_CFG)
-        cls.agent_id = generate_entity_id("test_create_generator_agent")
-        cls.generator_id = generate_entity_id("test_create_generator_generator")
+        cls.agent_id = generate_entity_id("test_create_gen_agent_SUCC")
+        cls.generator_id = generate_entity_id("test_create_gen_gen_SUCC")
         cls.filter = [cls.agent_id]
 
     def setUp(self):
@@ -42,7 +42,6 @@ class TestCreateGeneratorSuccess(unittest.TestCase):
         generator_configuration["filter"] = self.filter
         resp = self.client.create_generator(generator_configuration, self.generator_id)
         self.assertEqual(resp.get("id"), self.generator_id)
-        self.addCleanup(self.clean_up_generator, self.generator_id)
 
 
 class TestCreateGeneratorFailure(unittest.TestCase):
@@ -51,8 +50,8 @@ class TestCreateGeneratorFailure(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = Client(settings.CRAFT_CFG)
-        cls.agent_id = generate_entity_id("test_create_generator_agent")
-        cls.generator_id = generate_entity_id("test_create_generator_generator")
+        cls.agent_id = generate_entity_id("test_create_gen_agent_FAIL")
+        cls.generator_id = generate_entity_id("test_create_gen_gen_FAIL")
         cls.filter = [cls.agent_id]
 
     def setUp(self):
@@ -87,7 +86,6 @@ class TestCreateGeneratorFailure(unittest.TestCase):
             generator_configuration,
             self.generator_id,
         )
-        self.addCleanup(self.clean_up_generator, self.generator_id)
 
     def test_create_generator_with_invalid_generator_id(self):
         """create_generator should fail whith an invalid generator id
@@ -124,7 +122,6 @@ class TestCreateGeneratorFailure(unittest.TestCase):
                 configuration,
                 self.generator_id,
             )
-            self.addCleanup(self.clean_up_generator, self.generator_id)
 
     def test_create_generator_with_undefined_configuration(self):
         """create_generator should fail when given no configuration key in the request body
@@ -141,7 +138,6 @@ class TestCreateGeneratorFailure(unittest.TestCase):
                 invalid_data.UNDEFINED_KEY[empty_configuration],
                 self.generator_id,
             )
-            self.addCleanup(self.clean_up_generator, self.generator_id)
 
     def test_create_generator_with_invalid_time_quantum(self):
         """create_generator should fail when given an invalid time quantum
@@ -163,7 +159,6 @@ class TestCreateGeneratorFailure(unittest.TestCase):
                 configuration,
                 self.generator_id,
             )
-            self.addCleanup(self.clean_up_generator, self.generator_id)
 
     def test_create_generator_with_invalid_agent_name_in_filter(self):
         """create_generator should fail when given an invalid filter
@@ -185,4 +180,3 @@ class TestCreateGeneratorFailure(unittest.TestCase):
                 configuration_invalid_filter,
                 self.generator_id,
             )
-            self.addCleanup(self.clean_up_generator, self.generator_id)

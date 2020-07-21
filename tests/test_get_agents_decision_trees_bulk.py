@@ -9,6 +9,8 @@ from .utils import generate_entity_id
 from .data import valid_data, invalid_data
 
 NB_DECISION_TREES_TO_GET = 10
+AGENT_ID_1_BASE = "get_dt_bulk_1"
+AGENT_ID_2_BASE = "get_dt_bulk_2"
 
 
 class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
@@ -18,11 +20,11 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = Client(settings.CRAFT_CFG)
-        cls.agent_id1 = generate_entity_id("get_decision_tree_bulk")
-        cls.agent_id2 = generate_entity_id("get_decision_tree_bulk")
 
     def setUp(self):
-        # Makes sure that no agent with the same ID already exists
+        self.agent_id1 = generate_entity_id(AGENT_ID_1_BASE + "Success")
+        self.agent_id2 = generate_entity_id(AGENT_ID_2_BASE + "Success")
+
         self.client.delete_agent(self.agent_id1)
         self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id1)
         self.client.add_agent_operations(
@@ -185,10 +187,11 @@ class TestGetGroupDecisionTreesBulkSuccess(unittest.TestCase):
         cls.client = Client(settings.CRAFT_CFG)
         cls.client = Client(settings.CRAFT_CFG)
         cls.agents = []
-        for i in range(NB_DECISION_TREES_TO_GET):
-            cls.agents.append(generate_entity_id("get_decision_tree_bulk"))
 
     def setUp(self):
+        for i in range(NB_DECISION_TREES_TO_GET):
+            self.agents.append(generate_entity_id(AGENT_ID_1_BASE + "GroupSucc"))
+
         # Makes sure that no agent with the same ID already exists
         for agent_id in self.agents:
             self.client.delete_agent(agent_id)
@@ -234,7 +237,9 @@ class TestGetDecisionTreesBulkFailure(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = Client(settings.CRAFT_CFG)
-        cls.agent_name = generate_entity_id("get_decision_tree_bulk")
+
+    def setUp(self):
+        self.agent_name = generate_entity_id(AGENT_ID_1_BASE + "Failure")
 
     def clean_up_agent(self, aid):
         # Makes sure that no agent with the standard ID remains
@@ -320,9 +325,9 @@ class TestGetDecisionTreesBulkSomeFailure(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = Client(settings.CRAFT_CFG)
-        cls.agent_id = generate_entity_id("get_decision_tree_bulk")
 
     def setUp(self):
+        self.agent_id = generate_entity_id(AGENT_ID_1_BASE + "SomeFailure")
         # Makes sure that no agent with the same ID already exists
         self.client.delete_agent(self.agent_id)
         self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id)

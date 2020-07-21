@@ -14,6 +14,7 @@ if CRAFTAI_PANDAS_ENABLED:
 
     NB_AGENTS_TO_ADD_OPERATIONS = 3
 
+    AGENT_ID_BASE = "add_agents_op_bulk"
     SIMPLE_AGENT_CONFIGURATION = pandas_valid_data.SIMPLE_AGENT_CONFIGURATION
     SIMPLE_AGENT_DATA = pandas_valid_data.SIMPLE_AGENT_DATA
     SIMPLE_AGENT_MANY_DATA = pandas_valid_data.SIMPLE_AGENT_MANY_DATA
@@ -29,10 +30,10 @@ if CRAFTAI_PANDAS_ENABLED:
         @classmethod
         def setUpClass(cls):
             cls.client = craft_ai.pandas.Client(settings.CRAFT_CFG)
-            cls.agent_id1 = generate_entity_id("add_agents_operations_bulk")
-            cls.agent_id2 = generate_entity_id("add_agents_operations_bulk")
 
         def setUp(self):
+            self.agent_id1 = generate_entity_id(AGENT_ID_BASE + "BulkSuccess")
+            self.agent_id2 = generate_entity_id(AGENT_ID_BASE + "BulkSuccess")
             self.client.delete_agent(self.agent_id1)
             self.client.delete_agent(self.agent_id2)
             self.client.create_agent(SIMPLE_AGENT_CONFIGURATION, self.agent_id1)
@@ -190,12 +191,12 @@ if CRAFTAI_PANDAS_ENABLED:
         @classmethod
         def setUpClass(cls):
             cls.client = craft_ai.pandas.Client(settings.CRAFT_CFG)
-            cls.agents = [
-                generate_entity_id("add_agents_operations_bulk")
-                for i in range(NB_AGENTS_TO_ADD_OPERATIONS)
-            ]
 
         def setUp(self):
+            self.agents = [
+                generate_entity_id(AGENT_ID_BASE + "GroupBulkSuccess")
+                for i in range(NB_AGENTS_TO_ADD_OPERATIONS)
+            ]
             for agent_id in self.agents:
                 self.client.delete_agent(agent_id)
                 self.client.create_agent(SIMPLE_AGENT_CONFIGURATION, agent_id)
@@ -425,11 +426,11 @@ if CRAFTAI_PANDAS_ENABLED:
         @classmethod
         def setUpClass(cls):
             cls.client = craft_ai.pandas.Client(settings.CRAFT_CFG)
-            cls.agent_id = generate_entity_id(
-                "test_add_agents_operations_bulk_some_failure"
-            )
 
         def setUp(self):
+            self.agent_id = generate_entity_id(
+                "test_add_agents_operations_bulk_some_failure"
+            )
             self.client.delete_agent(self.agent_id)
             self.client.create_agent(SIMPLE_AGENT_CONFIGURATION, self.agent_id)
 
@@ -528,11 +529,11 @@ if CRAFTAI_PANDAS_ENABLED:
             @classmethod
             def setUpClass(cls):
                 cls.client = craft_ai.pandas.Client(settings.CRAFT_CFG)
-                cls.agent_id = generate_entity_id(
-                    "test_add_agents_operations_bulk_some_failure"
-                )
 
             def setUp(self):
+                self.agent_id = generate_entity_id(
+                    "test_add_agents_operations_bulk_some_failure"
+                )
                 self.client.delete_agent(self.agent_id)
                 self.client.create_agent(SIMPLE_AGENT_CONFIGURATION, self.agent_id)
 

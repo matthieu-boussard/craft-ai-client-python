@@ -14,9 +14,9 @@ if CRAFTAI_PANDAS_ENABLED:
     from .utils import generate_entity_id
     from . import settings
 
-    AGENT_ID = generate_entity_id("test_pandas_agent_1")
-    AGENT_ID_2 = generate_entity_id("test_pandas_agent_2")
-    GENERATOR_ID = generate_entity_id("test_pandas_generator")
+    AGENT_ID_1_BASE = "test_pandas_1"
+    AGENT_ID_2_BASE = "test_pandas_2"
+    GENERATOR_ID_BASE = "test_pandas_generator"
 
     SIMPLE_AGENT_CONFIGURATION = pandas_valid_data.SIMPLE_AGENT_CONFIGURATION
     SIMPLE_AGENT_DATA = pandas_valid_data.SIMPLE_AGENT_DATA
@@ -43,11 +43,12 @@ if CRAFTAI_PANDAS_ENABLED:
 @unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
 class TestPandasSimpleAgent(unittest.TestCase):
     def setUp(self):
-        CLIENT.delete_agent(AGENT_ID)
-        CLIENT.create_agent(SIMPLE_AGENT_CONFIGURATION, AGENT_ID)
+        self.agent_id = generate_entity_id(AGENT_ID_1_BASE + "SimpleAgent")
+        CLIENT.delete_agent(self.agent_id)
+        CLIENT.create_agent(SIMPLE_AGENT_CONFIGURATION, self.agent_id)
 
     def tearDown(self):
-        CLIENT.delete_agent(AGENT_ID)
+        CLIENT.delete_agent(self.agent_id)
 
     def test_add_agent_operations_df_bad_index(self):
         df = pd.DataFrame(randn(10, 5), columns=["a", "b", "c", "d", "e"])
@@ -55,13 +56,13 @@ class TestPandasSimpleAgent(unittest.TestCase):
         self.assertRaises(
             craft_ai.pandas.errors.CraftAiBadRequestError,
             CLIENT.add_agent_operations,
-            AGENT_ID,
+            self.agent_id,
             df,
         )
 
     def test_add_agent_operations_df(self):
-        CLIENT.add_agent_operations(AGENT_ID, SIMPLE_AGENT_DATA)
-        agent = CLIENT.get_agent(AGENT_ID)
+        CLIENT.add_agent_operations(self.agent_id, SIMPLE_AGENT_DATA)
+        agent = CLIENT.get_agent(self.agent_id)
         self.assertEqual(
             agent["firstTimestamp"],
             SIMPLE_AGENT_DATA.first_valid_index().value // 10 ** 9,
@@ -83,7 +84,7 @@ class TestPandasSimpleAgent(unittest.TestCase):
         self.assertRaises(
             craft_ai.pandas.errors.CraftAiBadRequestError,
             CLIENT.add_agent_operations,
-            AGENT_ID,
+            self.agent_id,
             df,
         )
 
@@ -91,15 +92,16 @@ class TestPandasSimpleAgent(unittest.TestCase):
 @unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
 class TestPandasComplexAgent(unittest.TestCase):
     def setUp(self):
-        CLIENT.delete_agent(AGENT_ID)
-        CLIENT.create_agent(COMPLEX_AGENT_CONFIGURATION, AGENT_ID)
+        self.agent_id = generate_entity_id(AGENT_ID_1_BASE + "ComplexAgent")
+        CLIENT.delete_agent(self.agent_id)
+        CLIENT.create_agent(COMPLEX_AGENT_CONFIGURATION, self.agent_id)
 
     def tearDown(self):
-        CLIENT.delete_agent(AGENT_ID)
+        CLIENT.delete_agent(self.agent_id)
 
     def test_add_agent_operations_df_complex_agent(self):
-        CLIENT.add_agent_operations(AGENT_ID, COMPLEX_AGENT_DATA)
-        agent = CLIENT.get_agent(AGENT_ID)
+        CLIENT.add_agent_operations(self.agent_id, COMPLEX_AGENT_DATA)
+        agent = CLIENT.get_agent(self.agent_id)
         self.assertEqual(
             agent["firstTimestamp"],
             COMPLEX_AGENT_DATA.first_valid_index().value // 10 ** 9,
@@ -111,8 +113,8 @@ class TestPandasComplexAgent(unittest.TestCase):
 
     def test_add_agent_operations_df_without_tz(self):
         test_df = COMPLEX_AGENT_DATA.drop(columns="tz")
-        CLIENT.add_agent_operations(AGENT_ID, test_df)
-        agent = CLIENT.get_agent(AGENT_ID)
+        CLIENT.add_agent_operations(self.agent_id, test_df)
+        agent = CLIENT.get_agent(self.agent_id)
         self.assertEqual(
             agent["firstTimestamp"],
             COMPLEX_AGENT_DATA.first_valid_index().value // 10 ** 9,
@@ -126,15 +128,16 @@ class TestPandasComplexAgent(unittest.TestCase):
 @unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
 class TestPandasMissingAgent(unittest.TestCase):
     def setUp(self):
-        CLIENT.delete_agent(AGENT_ID)
-        CLIENT.create_agent(MISSING_AGENT_CONFIGURATION, AGENT_ID)
+        self.agent_id = generate_entity_id(AGENT_ID_1_BASE + "MissingAgent")
+        CLIENT.delete_agent(self.agent_id)
+        CLIENT.create_agent(MISSING_AGENT_CONFIGURATION, self.agent_id)
 
     def tearDown(self):
-        CLIENT.delete_agent(AGENT_ID)
+        CLIENT.delete_agent(self.agent_id)
 
     def test_add_agent_operations_df_missing_agent(self):
-        CLIENT.add_agent_operations(AGENT_ID, MISSING_AGENT_DATA)
-        agent = CLIENT.get_agent(AGENT_ID)
+        CLIENT.add_agent_operations(self.agent_id, MISSING_AGENT_DATA)
+        agent = CLIENT.get_agent(self.agent_id)
         self.assertEqual(
             agent["firstTimestamp"],
             MISSING_AGENT_DATA.first_valid_index().value // 10 ** 9,
@@ -148,15 +151,16 @@ class TestPandasMissingAgent(unittest.TestCase):
 @unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
 class TestPandasSimpleAgentWithData(unittest.TestCase):
     def setUp(self):
-        CLIENT.delete_agent(AGENT_ID)
-        CLIENT.create_agent(SIMPLE_AGENT_CONFIGURATION, AGENT_ID)
-        CLIENT.add_agent_operations(AGENT_ID, SIMPLE_AGENT_DATA)
+        self.agent_id = generate_entity_id(AGENT_ID_1_BASE + "SimpleAgentWData")
+        CLIENT.delete_agent(self.agent_id)
+        CLIENT.create_agent(SIMPLE_AGENT_CONFIGURATION, self.agent_id)
+        CLIENT.add_agent_operations(self.agent_id, SIMPLE_AGENT_DATA)
 
     def tearDown(self):
-        CLIENT.delete_agent(AGENT_ID)
+        CLIENT.delete_agent(self.agent_id)
 
     def test_get_agent_operations_df(self):
-        df = CLIENT.get_agent_operations(AGENT_ID)
+        df = CLIENT.get_agent_operations(self.agent_id)
 
         self.assertEqual(len(df), 300)
         self.assertEqual(len(df.dtypes), 5)
@@ -170,7 +174,7 @@ class TestPandasSimpleAgentWithData(unittest.TestCase):
         )
 
     def test_get_agent_states_df(self):
-        df = CLIENT.get_agent_states(AGENT_ID)
+        df = CLIENT.get_agent_states(self.agent_id)
 
         self.assertEqual(len(df), 180)
         self.assertEqual(len(df.dtypes), 5)
@@ -185,13 +189,13 @@ class TestPandasSimpleAgentWithData(unittest.TestCase):
 
     def test_tree_visualization(self):
         tree1 = CLIENT.get_agent_decision_tree(
-            AGENT_ID, DATETIME_AGENT_DATA.last_valid_index().value // 10 ** 9
+            self.agent_id, DATETIME_AGENT_DATA.last_valid_index().value // 10 ** 9
         )
         craft_ai.pandas.utils.create_tree_html(tree1, "", "constant", None, 500)
 
     def test_display_tree_raised_error(self):
         tree1 = CLIENT.get_agent_decision_tree(
-            AGENT_ID, DATETIME_AGENT_DATA.last_valid_index().value // 10 ** 9
+            self.agent_id, DATETIME_AGENT_DATA.last_valid_index().value // 10 ** 9
         )
         self.assertRaises(
             craft_ai.pandas.errors.CraftAiError,
@@ -203,20 +207,21 @@ class TestPandasSimpleAgentWithData(unittest.TestCase):
 @unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
 class TestPandasSimpleAgentWithOperations(unittest.TestCase):
     def setUp(self):
-        CLIENT.delete_agent(AGENT_ID)
-        CLIENT.create_agent(valid_data.VALID_CONFIGURATION, AGENT_ID)
-        CLIENT.add_agent_operations(AGENT_ID, valid_data.VALID_OPERATIONS_SET)
+        self.agent_id = generate_entity_id(AGENT_ID_1_BASE + "SimpleAgentWOp")
+        CLIENT.delete_agent(self.agent_id)
+        CLIENT.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id)
+        CLIENT.add_agent_operations(self.agent_id, valid_data.VALID_OPERATIONS_SET)
 
     def tearDown(self):
-        CLIENT.delete_agent(AGENT_ID)
+        CLIENT.delete_agent(self.agent_id)
 
     def test_get_decision_tree_with_pdtimestamp(self):
         # test if we get the same decision tree
         decision_tree = CLIENT.get_agent_decision_tree(
-            AGENT_ID, pd.Timestamp(valid_data.VALID_TIMESTAMP, unit="s", tz="UTC")
+            self.agent_id, pd.Timestamp(valid_data.VALID_TIMESTAMP, unit="s", tz="UTC")
         )
         ground_truth_decision_tree = CLIENT.get_agent_decision_tree(
-            AGENT_ID, valid_data.VALID_TIMESTAMP
+            self.agent_id, valid_data.VALID_TIMESTAMP
         )
         self.assertIsInstance(decision_tree, dict)
         self.assertNotEqual(decision_tree.get("_version"), None)
@@ -228,15 +233,16 @@ class TestPandasSimpleAgentWithOperations(unittest.TestCase):
 @unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
 class TestPandasComplexAgentWithData(unittest.TestCase):
     def setUp(self):
-        CLIENT.delete_agent(AGENT_ID)
-        CLIENT.create_agent(COMPLEX_AGENT_CONFIGURATION, AGENT_ID)
-        CLIENT.add_agent_operations(AGENT_ID, COMPLEX_AGENT_DATA)
+        self.agent_id = generate_entity_id(AGENT_ID_1_BASE + "ComplexAgentWData")
+        CLIENT.delete_agent(self.agent_id)
+        CLIENT.create_agent(COMPLEX_AGENT_CONFIGURATION, self.agent_id)
+        CLIENT.add_agent_operations(self.agent_id, COMPLEX_AGENT_DATA)
 
     def tearDown(self):
-        CLIENT.delete_agent(AGENT_ID)
+        CLIENT.delete_agent(self.agent_id)
 
     def test_get_agent_operations_df_complex_agent(self):
-        df = CLIENT.get_agent_operations(AGENT_ID)
+        df = CLIENT.get_agent_operations(self.agent_id)
 
         self.assertEqual(
             df["b"].notnull().tolist(),
@@ -256,7 +262,7 @@ class TestPandasComplexAgentWithData(unittest.TestCase):
 
     def test_decide_from_contexts_df(self):
         tree = CLIENT.get_agent_decision_tree(
-            AGENT_ID, COMPLEX_AGENT_DATA.last_valid_index().value // 10 ** 9
+            self.agent_id, COMPLEX_AGENT_DATA.last_valid_index().value // 10 ** 9
         )
         test_df = COMPLEX_AGENT_DATA
         test_df_copy = test_df.copy(deep=True)
@@ -281,7 +287,7 @@ class TestPandasComplexAgentWithData(unittest.TestCase):
 
     def test_decide_from_contexts_df_zero_rows(self):
         tree = CLIENT.get_agent_decision_tree(
-            AGENT_ID, COMPLEX_AGENT_DATA.last_valid_index().value // 10 ** 9
+            self.agent_id, COMPLEX_AGENT_DATA.last_valid_index().value // 10 ** 9
         )
         test_df = COMPLEX_AGENT_DATA.iloc[:0, :]
         test_df_copy = test_df.copy(deep=True)
@@ -295,16 +301,17 @@ class TestPandasComplexAgentWithData(unittest.TestCase):
 @unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
 class TestPandasComplexAgent2WithData(unittest.TestCase):
     def setUp(self):
-        CLIENT.delete_agent(AGENT_ID)
-        CLIENT.create_agent(COMPLEX_AGENT_CONFIGURATION_2, AGENT_ID)
-        CLIENT.add_agent_operations(AGENT_ID, COMPLEX_AGENT_DATA)
+        self.agent_id = generate_entity_id(AGENT_ID_1_BASE + "ComplexAgent2WData")
+        CLIENT.delete_agent(self.agent_id)
+        CLIENT.create_agent(COMPLEX_AGENT_CONFIGURATION_2, self.agent_id)
+        CLIENT.add_agent_operations(self.agent_id, COMPLEX_AGENT_DATA)
 
     def tearDown(self):
-        CLIENT.delete_agent(AGENT_ID)
+        CLIENT.delete_agent(self.agent_id)
 
     def test_decide_from_contexts_df_null_decisions(self):
         tree = CLIENT.get_agent_decision_tree(
-            AGENT_ID, COMPLEX_AGENT_DATA.last_valid_index().value // 10 ** 9
+            self.agent_id, COMPLEX_AGENT_DATA.last_valid_index().value // 10 ** 9
         )
 
         test_df = pd.DataFrame(
@@ -327,16 +334,17 @@ class TestPandasComplexAgent2WithData(unittest.TestCase):
 @unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
 class TestPandasComplexAgent3WithData(unittest.TestCase):
     def setUp(self):
-        CLIENT.delete_agent(AGENT_ID)
-        CLIENT.create_agent(COMPLEX_AGENT_CONFIGURATION_2, AGENT_ID)
-        CLIENT.add_agent_operations(AGENT_ID, COMPLEX_AGENT_DATA_2)
+        self.agent_id = generate_entity_id(AGENT_ID_1_BASE + "ComplexAgent3WData")
+        CLIENT.delete_agent(self.agent_id)
+        CLIENT.create_agent(COMPLEX_AGENT_CONFIGURATION_2, self.agent_id)
+        CLIENT.add_agent_operations(self.agent_id, COMPLEX_AGENT_DATA_2)
 
     def tearDown(self):
-        CLIENT.delete_agent(AGENT_ID)
+        CLIENT.delete_agent(self.agent_id)
 
     def test_decide_from_contexts_df_with_array(self):
         tree = CLIENT.get_agent_decision_tree(
-            AGENT_ID, COMPLEX_AGENT_DATA_2.last_valid_index().value // 10 ** 9
+            self.agent_id, COMPLEX_AGENT_DATA_2.last_valid_index().value // 10 ** 9
         )
 
         test_df = pd.DataFrame(
@@ -358,16 +366,17 @@ class TestPandasComplexAgent3WithData(unittest.TestCase):
 @unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
 class TestPandasMissingAgentWithData(unittest.TestCase):
     def setUp(self):
-        CLIENT.delete_agent(AGENT_ID)
-        CLIENT.create_agent(MISSING_AGENT_CONFIGURATION, AGENT_ID)
-        CLIENT.add_agent_operations(AGENT_ID, MISSING_AGENT_DATA)
+        self.agent_id = generate_entity_id(AGENT_ID_1_BASE + "MissingAgentWData")
+        CLIENT.delete_agent(self.agent_id)
+        CLIENT.create_agent(MISSING_AGENT_CONFIGURATION, self.agent_id)
+        CLIENT.add_agent_operations(self.agent_id, MISSING_AGENT_DATA)
 
     def tearDown(self):
-        CLIENT.delete_agent(AGENT_ID)
+        CLIENT.delete_agent(self.agent_id)
 
     def test_decide_from_missing_contexts_df(self):
         tree = CLIENT.get_agent_decision_tree(
-            AGENT_ID, MISSING_AGENT_DATA.last_valid_index().value // 10 ** 9, "2"
+            self.agent_id, MISSING_AGENT_DATA.last_valid_index().value // 10 ** 9, "2"
         )
 
         df = CLIENT.decide_from_contexts_df(tree, MISSING_AGENT_DATA_DECISION)
@@ -396,15 +405,16 @@ class TestPandasMissingAgentWithData(unittest.TestCase):
 @unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
 class TestPandasDatetimeAgentWithData(unittest.TestCase):
     def setUp(self):
-        CLIENT.delete_agent(AGENT_ID)
-        CLIENT.create_agent(DATETIME_AGENT_CONFIGURATION, AGENT_ID)
-        CLIENT.add_agent_operations(AGENT_ID, DATETIME_AGENT_DATA)
+        self.agent_id = generate_entity_id(AGENT_ID_1_BASE + "DatetimeAgentWData")
+        CLIENT.delete_agent(self.agent_id)
+        CLIENT.create_agent(DATETIME_AGENT_CONFIGURATION, self.agent_id)
+        CLIENT.add_agent_operations(self.agent_id, DATETIME_AGENT_DATA)
 
     def tearDown(self):
-        CLIENT.delete_agent(AGENT_ID)
+        CLIENT.delete_agent(self.agent_id)
 
     def test_datetime_states_df(self):
-        df = CLIENT.get_agent_states(AGENT_ID)
+        df = CLIENT.get_agent_states(self.agent_id)
 
         self.assertEqual(len(df), 10)
         self.assertEqual(len(df.dtypes), 4)
@@ -437,16 +447,17 @@ class TestPandasDatetimeAgentWithData(unittest.TestCase):
 @unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
 class TestPandasAgentWithInvalidIdentifier(unittest.TestCase):
     def setUp(self):
-        CLIENT.delete_agent(AGENT_ID)
-        CLIENT.create_agent(INVALID_PYTHON_IDENTIFIER_CONFIGURATION, AGENT_ID)
-        CLIENT.add_agent_operations(AGENT_ID, INVALID_PYTHON_IDENTIFIER_DATA)
+        self.agent_id = generate_entity_id(AGENT_ID_1_BASE + "InvalidIdentifier")
+        CLIENT.delete_agent(self.agent_id)
+        CLIENT.create_agent(INVALID_PYTHON_IDENTIFIER_CONFIGURATION, self.agent_id)
+        CLIENT.add_agent_operations(self.agent_id, INVALID_PYTHON_IDENTIFIER_DATA)
 
     def tearDown(self):
-        CLIENT.delete_agent(AGENT_ID)
+        CLIENT.delete_agent(self.agent_id)
 
     def test_decide_from_python_invalid_identifier(self):
         tree = CLIENT.get_agent_decision_tree(
-            AGENT_ID,
+            self.agent_id,
             INVALID_PYTHON_IDENTIFIER_DATA.last_valid_index().value // 10 ** 9,
             "2",
         )
@@ -460,31 +471,36 @@ class TestPandasAgentWithInvalidIdentifier(unittest.TestCase):
 @unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
 class TestPandasGeneratorWithOperation(unittest.TestCase):
     def setUp(self):
-        CLIENT.delete_agent(AGENT_ID)
-        CLIENT.delete_agent(AGENT_ID_2)
-        CLIENT.delete_generator(GENERATOR_ID)
-        CLIENT.create_agent(valid_data.VALID_CONFIGURATION, AGENT_ID)
-        CLIENT.create_agent(valid_data.VALID_CONFIGURATION, AGENT_ID_2)
-        CLIENT.add_agent_operations(AGENT_ID, valid_data.VALID_OPERATIONS_SET)
-        CLIENT.add_agent_operations(AGENT_ID_2, valid_data.VALID_OPERATIONS_SET)
+        self.agent_1_id = generate_entity_id(AGENT_ID_1_BASE + "GeneratorWithOp")
+        self.agent_2_id = generate_entity_id(AGENT_ID_2_BASE + "GeneratorWithOp")
+        self.generator_id = generate_entity_id(GENERATOR_ID_BASE + "GeneratorWithOp")
+
+        CLIENT.delete_agent(self.agent_1_id)
+        CLIENT.delete_agent(self.agent_2_id)
+        CLIENT.delete_generator(self.generator_id)
+        CLIENT.create_agent(valid_data.VALID_CONFIGURATION, self.agent_1_id)
+        CLIENT.create_agent(valid_data.VALID_CONFIGURATION, self.agent_2_id)
+        CLIENT.add_agent_operations(self.agent_1_id, valid_data.VALID_OPERATIONS_SET)
+        CLIENT.add_agent_operations(self.agent_2_id, valid_data.VALID_OPERATIONS_SET)
         generator_configuration = copy.deepcopy(
             valid_data.VALID_GENERATOR_CONFIGURATION
         )
-        generator_configuration["filter"] = [AGENT_ID, AGENT_ID_2]
-        CLIENT.create_generator(generator_configuration, GENERATOR_ID)
+        generator_configuration["filter"] = [self.agent_1_id, self.agent_2_id]
+        CLIENT.create_generator(generator_configuration, self.generator_id)
 
     def tearDown(self):
-        CLIENT.delete_agent(AGENT_ID)
-        CLIENT.delete_agent(AGENT_ID_2)
-        CLIENT.delete_generator(GENERATOR_ID)
+        CLIENT.delete_agent(self.agent_1_id)
+        CLIENT.delete_agent(self.agent_2_id)
+        CLIENT.delete_generator(self.generator_id)
 
     def test_get_generator_decision_tree_with_pdtimestamp(self):
         # test if we get the same decision tree
         decision_tree = CLIENT.get_generator_decision_tree(
-            GENERATOR_ID, pd.Timestamp(valid_data.VALID_TIMESTAMP, unit="s", tz="UTC")
+            self.generator_id,
+            pd.Timestamp(valid_data.VALID_TIMESTAMP, unit="s", tz="UTC"),
         )
         ground_truth_decision_tree = CLIENT.get_generator_decision_tree(
-            GENERATOR_ID, valid_data.VALID_TIMESTAMP
+            self.generator_id, valid_data.VALID_TIMESTAMP
         )
         self.assertIsInstance(decision_tree, dict)
         self.assertNotEqual(decision_tree.get("_version"), None)
