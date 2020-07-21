@@ -19,15 +19,14 @@ NEIGHBOURS_DIR = os.path.join(
     DATA_DIR, "tree_computations_expectations", "get_neighbours"
 )
 
-class TestTreeUtils(unittest.TestCase):
 
+class TestTreeUtils(unittest.TestCase):
     def test_extract_output_tree_invalid_tree_1(self):
         path = os.path.join(DATA_DIR, "decide", "trees", "v1", "emptyArray.json")
         tree = None
         with open(path) as f:
             tree = json.load(f)
         self.assertRaises(errors.CraftAiError, extract_output_tree, tree)
-
 
     def test_extract_output_tree_invalid_tree_2(self):
         path = os.path.join(DATA_DIR, "decide", "trees", "v1", "emptyObject.json")
@@ -36,22 +35,19 @@ class TestTreeUtils(unittest.TestCase):
             tree = json.load(f)
         self.assertRaises(errors.CraftAiError, extract_output_tree, tree)
 
-
     def test_extract_output_tree_default_v2(self):
         path = os.path.join(DATA_DIR, "decide", "trees", "v2", "boolean_operator.json")
         tree = None
         with open(path) as f:
             tree = json.load(f)
-        assert_is_instance(extract_output_tree(tree), dict)
-
+        self.assertIsInstance(extract_output_tree(tree), dict)
 
     def test_extract_output_tree_specific_output(self):
         path = os.path.join(DATA_DIR, "decide", "trees", "v2", "oneColor.json")
         tree = None
         with open(path) as f:
             tree = json.load(f)
-        assert_is_instance(extract_output_tree(tree, "value"), dict)
-
+        self.assertIsInstance(extract_output_tree(tree, "value"), dict)
 
     def test_extract_output_tree_bad_output(self):
         path = os.path.join(DATA_DIR, "decide", "trees", "v2", "oneColor.json")
@@ -59,7 +55,6 @@ class TestTreeUtils(unittest.TestCase):
         with open(path) as f:
             tree = json.load(f)
         self.assertRaises(errors.CraftAiError, extract_output_tree, tree, "foo")
-
 
     def test_extract_decision_paths_from_tree(self):
         """
@@ -81,7 +76,6 @@ class TestTreeUtils(unittest.TestCase):
                     expectation = json.load(f)
 
                 self.assertTrue(sorted(list(results)) == expectation)
-
 
     def test_extract_decision_path_neighbors(self):
         """

@@ -12,13 +12,12 @@ if CRAFTAI_PANDAS_ENABLED:
     from . import settings
 
 
-@unittest.skipIf(CRAFTAI_PANDAS_ENABLED==False, "pandas is not enabled")
+@unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
 class TestPandasType(unittest.TestCase):
-
     @classmethod
     def setUp(self):
         self.client = craft_ai.pandas.Client(settings.CRAFT_CFG)
-    
+
     def test_predict_month(self):
         tree_json = """{
             \"_version\": \"1.1.0\",

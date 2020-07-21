@@ -3,8 +3,8 @@ import unittest
 from math import sqrt
 from craft_ai.interpreter_v2 import InterpreterV2
 
-class TestDistribution(unittest.TestCase):
 
+class TestDistribution(unittest.TestCase):
     def test_regression_mean(self):
         means = [10, 20, 30]
         sizes = [1, 1, 1]
@@ -15,7 +15,6 @@ class TestDistribution(unittest.TestCase):
         sizes = [0, 0, 1000]
         res = list(InterpreterV2.compute_mean_values(means, sizes))
         self.assertEqual(res, [30.0, 1000])
-
 
     def test_regression_mean_std(self):
         means = [4, 5]
@@ -59,7 +58,6 @@ class TestDistribution(unittest.TestCase):
         self.assertEqual(mean, 1.0)
         self.assertEqual(size, 20.0)
         self.assertTrue(abs((std - 2.0)) < 0.001)
-
 
     def test_classification_probabilities(self):
         distributions = [[0.1, 0.2, 0.7], [0.1, 0.2, 0.7], [0.1, 0.2, 0.7]]

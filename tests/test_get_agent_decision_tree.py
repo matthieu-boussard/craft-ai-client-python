@@ -45,8 +45,8 @@ VALID_L_OPERATIONS = [
     for batch_offset in range(0, 60)
 ]
 
+
 class TestGetAgentDecisionTreeWithOperation(unittest.TestCase):
-    
     @classmethod
     def setUpClass(cls):
         cls.client = craft_ai.Client(settings.CRAFT_CFG)
@@ -54,7 +54,7 @@ class TestGetAgentDecisionTreeWithOperation(unittest.TestCase):
 
     def setUp(self):
         self.client.delete_agent(self.agent_id)
-        self.client.create_agent(valid_data.VALID_CONFIGURATION,  self.agent_id)
+        self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id)
         self.client.add_agent_operations(self.agent_id, valid_data.VALID_OPERATIONS_SET)
 
     def tearDown(self):
@@ -66,7 +66,9 @@ class TestGetAgentDecisionTreeWithOperation(unittest.TestCase):
         self.assertTrue("id" in resp.keys())
 
     def test_get_decision_tree_with_correct_input(self):
-        decision_tree = self.client.get_agent_decision_tree(self.agent_id, valid_data.VALID_TIMESTAMP)
+        decision_tree = self.client.get_agent_decision_tree(
+            self.agent_id, valid_data.VALID_TIMESTAMP
+        )
 
         self.assertIsInstance(decision_tree, dict)
         self.assertNotEqual(decision_tree.get("_version"), None)
@@ -100,13 +102,13 @@ class TestGetAgentDecisionTreeWithOperation(unittest.TestCase):
         self.assertEqual(tree_version["major"], version)
         self.assertNotEqual(decision_tree.get("configuration"), None)
         self.assertNotEqual(decision_tree.get("trees"), None)
-    
+
     def test_get_decision_tree_without_timestamp(self):
         # test if we get the latest decision tree
         decision_tree = self.client.get_agent_decision_tree(self.agent_id)
-        ground_truth_decision_tree = decision_tree = self.client.get_agent_decision_tree(
-            self.agent_id, 1458741230 + 505
-        )
+        ground_truth_decision_tree = (
+            decision_tree
+        ) = self.client.get_agent_decision_tree(self.agent_id, 1458741230 + 505)
         self.assertIsInstance(decision_tree, dict)
         self.assertNotEqual(decision_tree.get("_version"), None)
         self.assertNotEqual(decision_tree.get("configuration"), None)
@@ -141,6 +143,7 @@ class TestGetAgentDecisionTreeWithOperation(unittest.TestCase):
                 invalid_data.UNDEFINED_KEY[empty_id],
                 valid_data.VALID_TIMESTAMP,
             )
+
     def test_get_decision_tree_with_unknown_id(self):
         """get_agent_decision_tree should fail when given an unknown agent ID
 
@@ -162,7 +165,6 @@ class TestGetAgentDecisionTreeWithOperation(unittest.TestCase):
             invalid_data.INVALID_TIMESTAMPS["negative_ts"],
         )
 
-    
     def test_get_decision_tree_with_float_timestamp(self):
         self.assertRaises(
             craft_ai.errors.CraftAiBadRequestError,
@@ -174,12 +176,12 @@ class TestGetAgentDecisionTreeWithOperation(unittest.TestCase):
 
 # The following tests are quite long, they are disabled atm.
 
-    # def setup_agent_w_operations_l():
-    # CLIENT.delete_agent(AGENT_ID)
-    # CLIENT.create_agent(VALID_L_CFG, AGENT_ID)
-    # for batch in VALID_L_OPERATIONS:
-    #     CLIENT.add_agent_operations(AGENT_ID, batch)
-    
+# def setup_agent_w_operations_l():
+# CLIENT.delete_agent(AGENT_ID)
+# CLIENT.create_agent(VALID_L_CFG, AGENT_ID)
+# for batch in VALID_L_OPERATIONS:
+#     CLIENT.add_agent_operations(AGENT_ID, batch)
+
 # @with_setup(setup_agent_w_operations_l, teardown)
 # def test_get_decision_tree_from_operations():
 #   last_operation = VALID_L_OPERATIONS[-1][-1]

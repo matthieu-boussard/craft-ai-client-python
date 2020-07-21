@@ -11,8 +11,8 @@ HERE = os.path.abspath(os.path.dirname(__file__))
 # constructed
 EXPECTATIONS_DIR = os.path.join(HERE, "data", "interpreter", "reduce_decision_rules")
 
-class TestReducer(unittest.TestCase):
 
+class TestReducer(unittest.TestCase):
     def test_reduce_decision_rules_tests_generator(self):
         expectations_files = os.listdir(EXPECTATIONS_DIR)
         for expectations_file in expectations_files:
@@ -36,8 +36,10 @@ class TestReducer(unittest.TestCase):
 
                     for expectation in expectations:
                         with self.subTest():
-                            self.check_expectation(expectation["rules"], expectation["expectation"])
-                        
+                            self.check_expectation(
+                                expectation["rules"], expectation["expectation"]
+                            )
+
     def check_expectation(self, rules, expectation):
 
         if "error" in expectation:

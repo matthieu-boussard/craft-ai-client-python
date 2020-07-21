@@ -16,8 +16,8 @@ TREES_DIR = os.path.join(HERE, "data", "interpreter", "decide", "trees")
 
 CLIENT = Client(settings.CRAFT_CFG)
 
-class TestInterpreter(unittest.TestCase):
 
+class TestInterpreter(unittest.TestCase):
     def check_expectation(self, tree, expectation):
         exp_context = expectation["context"]
         timestamp = None
@@ -38,7 +38,9 @@ class TestInterpreter(unittest.TestCase):
             else:
                 expected_message = expectation["error"]["message"].encode("utf8")
             self.assertEqual(exception.message, expected_message)
-            self.assertEqual(exception.metadata, expectation["error"].get("metadata", None))
+            self.assertEqual(
+                exception.metadata, expectation["error"].get("metadata", None)
+            )
         else:
             expected_decision = expectation["output"]
             decision = CLIENT.decide(tree, exp_context, time)
