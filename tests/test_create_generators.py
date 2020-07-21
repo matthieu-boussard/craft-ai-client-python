@@ -61,6 +61,10 @@ class TestCreateGeneratorFailure(unittest.TestCase):
         self.client.delete_generator(self.generator_id)
         self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id)
 
+    def tearDown(self):
+        self.client.delete_generator(self.generator_id)
+        self.client.delete_agent(self.agent_id)
+
     def clean_up_generator(self, generator_id):
         # Makes sure that no generator with the standard ID remains
         self.client.delete_generator(generator_id)

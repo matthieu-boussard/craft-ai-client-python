@@ -396,8 +396,13 @@ class TestCreateAgentsBulkSomeFailure(unittest.TestCase):
 
         self.assertEqual(resp[0].get("id"), self.agent_id)
         self.assertEqual(resp[1].get("id"), self.agent_id)
-        self.assertTrue("configuration" in resp[0])
-        self.assertIsInstance(resp[1].get("error"), craft_err.CraftAiBadRequestError)
+        self.assertTrue("configuration" in resp[0] or "configuration" in resp[1])
+        if "configuration" in resp[0]:
+            self.assertIsInstance(resp[1].get("error"), craft_err.CraftAiBadRequestError)
+        elif  "configuration" in resp[1]:
+            self.assertIsInstance(resp[0].get("error"), craft_err.CraftAiBadRequestError)
+ 
+
 
         self.addCleanup(self.clean_up_agent, self.agent_id)
 
