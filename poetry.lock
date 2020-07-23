@@ -267,6 +267,17 @@ testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "requests", "xm
 
 [[package]]
 category = "main"
+description = "unittest subTest() support and subtests fixture"
+name = "pytest-subtests"
+optional = false
+python-versions = ">=3.5"
+version = "0.3.1"
+
+[package.dependencies]
+pytest = ">=4.4.0"
+
+[[package]]
+category = "main"
 description = "Extensions to the standard Python datetime module"
 name = "python-dateutil"
 optional = false
@@ -414,7 +425,7 @@ testing = ["jaraco.itertools", "func-timeout"]
 pandas = ["pandas"]
 
 [metadata]
-content-hash = "3cd782d5607659d733a18a8d9c1bb7d89a9467700a4d00c939f2ec4143d11a0a"
+content-hash = "81513ed476f990a37fd922a68a16e2a783d8bb664b9884b0cb5ce6a6d1f49122"
 python-versions = "^3.6.1"
 
 [metadata.files]
@@ -550,6 +561,10 @@ pyparsing = [
 pytest = [
     {file = "pytest-5.4.3-py3-none-any.whl", hash = "sha256:5c0db86b698e8f170ba4582a492248919255fcd4c79b1ee64ace34301fb589a1"},
     {file = "pytest-5.4.3.tar.gz", hash = "sha256:7979331bfcba207414f5e1263b5a0f8f521d0f457318836a7355531ed1a4c7d8"},
+]
+pytest-subtests = [
+    {file = "pytest-subtests-0.3.1.tar.gz", hash = "sha256:f673d8536eb8a153dd9c871b55c06aa3dea55cbdcf3bb3cdd4c4149a4e81606f"},
+    {file = "pytest_subtests-0.3.1-py3-none-any.whl", hash = "sha256:c3727c22bbbe29268e3552231da51704cc179e63e59d8e857077c19e77e85210"},
 ]
 python-dateutil = [
     {file = "python-dateutil-2.8.1.tar.gz", hash = "sha256:73ebfe9dbf22e832286dafa60473e4cd239f8592f699aa5adaf10050e6e1823c"},
