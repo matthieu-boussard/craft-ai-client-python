@@ -8,7 +8,7 @@ from . import settings
 from .utils import generate_entity_id
 from .data import valid_data, invalid_data
 
-NB_DECISION_TREES_TO_GET = 10
+NB_DECISION_TREES_TO_GET = 3
 AGENT_ID_1_BASE = "get_dt_bulk_1"
 AGENT_ID_2_BASE = "get_dt_bulk_2"
 

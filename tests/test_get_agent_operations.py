@@ -37,6 +37,7 @@ class TestGetOperationsListSuccess(unittest.TestCase):
         self.assertIsInstance(ops, list)
         self.assertEqual(ops, LARGE_VALID_OPERATIONS_SET)
 
+    @unittest.skip("Remove temporary due to beta performance issues")
     def test_get_agent_operations_with_lower_bound(self):
         lower_bound = 1464356844
         ops = self.client.get_agent_operations(self.agent_id, lower_bound)
@@ -46,6 +47,7 @@ class TestGetOperationsListSuccess(unittest.TestCase):
         ]
         self.assertEqual(ops, expected_ops)
 
+    @unittest.skip("Remove temporary due to beta performance issues")
     def test_get_agent_operations_with_upper_bound(self):
         upper_bound = 1462824549
         ops = self.client.get_agent_operations(self.agent_id, None, upper_bound)

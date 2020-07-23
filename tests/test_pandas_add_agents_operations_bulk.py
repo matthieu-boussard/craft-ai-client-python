@@ -120,6 +120,7 @@ if CRAFTAI_PANDAS_ENABLED:
 
             self.addCleanup(self.clean_up_agents, [self.agent_id1, self.agent_id2])
 
+        @unittest.skip("Remove temporary due to beta performance issues")
         def test_add_agents_operations_bulk_with_many_operations(self):
             """add_agents_operations_bulk should succeed when given a big df as input
             data, with correct `id`s and a correct df as `operations`.
