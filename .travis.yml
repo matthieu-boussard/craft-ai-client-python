@@ -22,7 +22,7 @@ install:
 cache: pip
 script:
   - poetry run task lint
-  - poetry run python -m unittest -v tests/*.py
+  - poetry run pytest --durations=10 tests/*.py
   - poetry build
 env:
   jobs:
