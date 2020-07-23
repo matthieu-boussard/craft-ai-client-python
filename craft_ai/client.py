@@ -445,13 +445,13 @@ class Client(object):
             "DELETE",
         )
 
-        # if invalid_indices == []:
-        #     return valid_generatorts
+        if invalid_indices == []:
+            return valid_generators
 
-        # # Put the valid and invalid generators in their original index
-        # return self._recreate_list_with_indices(
-        #     valid_indices, valid_generators, invalid_indices, invalid_generators
-        # )
+        # Put the valid and invalid generators in their original index
+        return self._recreate_list_with_indices(
+            valid_indices, valid_generators, invalid_indices, invalid_generators
+        )
 
     def _get_generator_decision_tree(
         self, generator_id, timestamp, version=DEFAULT_DECISION_TREE_VERSION
