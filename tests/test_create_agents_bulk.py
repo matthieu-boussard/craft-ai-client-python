@@ -212,7 +212,7 @@ class TestCreateAgentsBulkFailure(unittest.TestCase):
         # Add all the invalid context to check
         for i, invalid_context in enumerate(invalid_data.INVALID_CONTEXTS):
             new_agent_id = generate_entity_id(
-                "test_create_agents_bulk_with_invalid_context"
+                "test_create_agents_bulk_with_invalid_context" + str(i)
             )
             invalid_configuration = {
                 "context": invalid_data.INVALID_CONTEXTS[invalid_context],
@@ -249,7 +249,7 @@ class TestCreateAgentsBulkFailure(unittest.TestCase):
         # Add all the invalid context to check
         for i, empty_configuration in enumerate(invalid_data.UNDEFINED_KEY):
             new_agent_id = generate_entity_id(
-                "test_create_agents_bulk_undefined_config"
+                "test_create_agents_bulk_undef_conf_" + str(i)
             )
             self.client.delete_agent(new_agent_id)
             payload.append(
@@ -472,7 +472,9 @@ class TestCreateAgentsBulkSomeFailure(unittest.TestCase):
         agents_lst = [self.agent_id]
         # Add all the invalid configuration to check
         for i, empty_configuration in enumerate(invalid_data.UNDEFINED_KEY):
-            new_agent_id = generate_entity_id("test_create_some_agents_undef_config")
+            new_agent_id = generate_entity_id(
+                "test_create_some_agents_undef_config" + str(i)
+            )
             self.client.delete_agent(new_agent_id)
             payload.append(
                 {
