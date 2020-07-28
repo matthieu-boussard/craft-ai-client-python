@@ -173,45 +173,52 @@ class TestGetAgentDecisionTreeWithOperation(unittest.TestCase):
             invalid_data.INVALID_TIMESTAMPS["float_ts"],
         )
 
+@unittest.skip("The following tests are quite long, they are disabled atm. (even before timescale)")
+class TestGetAgentDecisionTreeWithOperationL(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.client = craft_ai.Client(settings.CRAFT_CFG)
+        cls.agent_id = generate_entity_id("test_get_decision_tree_with_op_l")
 
-# The following tests are quite long, they are disabled atm.
+    def setUp(self):
+        self.client.delete_agent(self.agent_id)
+        self.client.create_agent(VALID_L_CFG, self.agent_id)
+        for batch in VALID_L_OPERATIONS:
+            self.client.add_agent_operations(self.agent_id, batch)
 
-# def setup_agent_w_operations_l():
-# CLIENT.delete_agent(AGENT_ID)
-# CLIENT.create_agent(VALID_L_CFG, AGENT_ID)
-# for batch in VALID_L_OPERATIONS:
-#     CLIENT.add_agent_operations(AGENT_ID, batch)
+    def tearDown(self):
+        self.client.delete_agent(self.agent_id)
 
-# @with_setup(setup_agent_w_operations_l, teardown)
-# def test_get_decision_tree_from_operations():
-#   last_operation = VALID_L_OPERATIONS[-1][-1]
-#   decision_tree = CLIENT.get_agent_decision_tree(AGENT_ID, last_operation["timestamp"])
+    def test_get_decision_tree_from_operations(self):
+        last_operation = VALID_L_OPERATIONS[-1][-1]
+        decision_tree = self.client.get_agent_decision_tree(
+            self.agent_id,
+            last_operation["timestamp"],
+        )
 
-#   assert_is_instance(decision_tree, dict)
-#   assert_not_equal(decision_tree.get("_version"), None)
-#   assert_not_equal(decision_tree.get("configuration"), None)
-#   assert_not_equal(decision_tree.get("trees"), None)
+        self.assertIsInstance(decision_tree, dict)
+        self.assertNotEqual(decision_tree.get("_version"), None)
+        self.assertNotEqual(decision_tree.get("configuration"), None)
+        self.assertNotEqual(decision_tree.get("trees"), None)
 
-# @with_setup(setup_agent_w_operations_l, teardown)
-# def test_get_decision_tree_w_serverside_timeout():
-#   other_client_cfg = settings.CRAFT_CFG.copy()
-#   other_client_cfg["decisionTreeRetrievalTimeout"] = False
-#   other_client = craft_ai.Client(other_client_cfg)
-#   last_operation = VALID_L_OPERATIONS[-1][-1]
-#   assert_raises(
-#     craft_ai.errors.CraftAiLongRequestTimeOutError,
-#     other_client.get_agent_decision_tree,
-#     AGENT_ID,
-#     last_operation["timestamp"])
+    def test_get_decision_tree_w_serverside_timeout(self):
+        other_client_cfg = settings.CRAFT_CFG.copy()
+        other_client_cfg["decisionTreeRetrievalTimeout"] = False
+        other_client = craft_ai.Client(other_client_cfg)
+        last_operation = VALID_L_OPERATIONS[-1][-1]
+        self.assertRaises(
+            craft_ai.errors.CraftAiLongRequestTimeOutError,
+            other_client.get_agent_decision_tree,
+            self.agent_id,
+            last_operation["timestamp"])
 
-# @with_setup(setup_agent_w_operations_l, teardown)
-# def test_get_decision_tree_w_smallish_timeout():
-#   other_client_cfg = settings.CRAFT_CFG.copy()
-#   other_client_cfg["decisionTreeRetrievalTimeout"] = 500
-#   other_client = craft_ai.Client(other_client_cfg)
-#   last_operation = VALID_L_OPERATIONS[-1][-1]
-#   assert_raises(
-#     craft_ai.errors.CraftAiLongRequestTimeOutError,
-#     other_client.get_agent_decision_tree,
-#     AGENT_ID,
-#     last_operation["timestamp"])
+        def test_get_decision_tree_w_smallish_timeout(self):
+            other_client_cfg = settings.CRAFT_CFG.copy()
+            other_client_cfg["decisionTreeRetrievalTimeout"] = 500
+            other_client = craft_ai.Client(other_client_cfg)
+            last_operation = VALID_L_OPERATIONS[-1][-1]
+            self.assertRaises(
+                craft_ai.errors.CraftAiLongRequestTimeOutError,
+                other_client.get_agent_decision_tree,
+                self.agent_id,
+                last_operation["timestamp"])

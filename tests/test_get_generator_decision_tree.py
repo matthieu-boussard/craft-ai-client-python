@@ -129,10 +129,9 @@ class TestGeneratorDecisionTree(unittest.TestCase):
 
     def test_get_generator_decision_tree_with_unknown_id(self):
         """get_generator_decision_tree should fail when given an unknown generator ID
-
-    It should raise an error upon request for the retrieval of an generator
-    that doesn't exist.
-    """
+        It should raise an error upon request for the retrieval of an generator
+        that doesn't exist.
+        """
         self.assertRaises(
             craft_ai.errors.CraftAiNotFoundError,
             self.client.get_generator_decision_tree,

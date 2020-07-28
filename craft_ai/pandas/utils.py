@@ -179,7 +179,6 @@ def display_tree(
     display = None
     try:
         display = importlib.import_module(".core.display", "IPython")
-
     except ImportError as err:
         raise CraftAiError(
             """Diplay_tree could only be used with IPython installed: {}""".format(err)
