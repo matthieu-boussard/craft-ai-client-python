@@ -538,6 +538,85 @@ class Client(object):
                 # Do nothing and continue.
                 continue
 
+    def _get_generators_decision_trees_bulk(
+        self, payload, valid_indices, invalid_indices, invalid_dts
+    ):
+        """Tool for the function get_generators_decision_trees_bulk.
+
+        :param list payload: contains the informations necessary for getting
+        the trees. Its form is the same than for the function.
+        _get_generators_decision_trees_bulk.
+        :param list valid_indices: list of the indices of the valid generator id.
+        :param list invalid_indices: list of the indices of the valid generator id.
+        :param list invalid_dts: list of the invalid generator id.
+
+        :return: decision trees.
+        :rtype: list of dict.
+        """
+        valid_dts = self._create_and_send_json_bulk(
+            [payload[i] for i in valid_indices],
+            "{}/bulk/generators/tree".format(self._base_url),
+            "POST",
+        )
+
+        if invalid_indices == []:
+            return valid_dts
+
+        # Put the valid and invalid decision trees in their original index
+        return self._recreate_list_with_indices(
+            valid_indices, valid_dts, invalid_indices, invalid_dts
+        )
+
+    def get_generators_decision_trees_bulk(
+        self, payload, version=DEFAULT_DECISION_TREE_VERSION
+    ):
+        """Get a group of decision trees.
+
+        :param list payload: contains the informations necessary for getting
+        the trees. It's in the form [{"id": generator_id, "timestamp": timestamp}]
+        With id a str containing only characters in "a-zA-Z0-9_-" and must be
+        between 1 and 36 characters. It must reference an existing generator.
+        With timestamp an positive and not null integer.
+        :param version: version of the tree to get.
+        :type version: str or int.
+        :default version: default version of the tree.
+
+        :return: Decision trees.
+        :rtype: list of dict.
+
+        :raises CraftAiBadRequestError: if all of the ids are invalid or
+        referenced non existing generators or all of the timestamp are invalid.
+        :raises CraftAiLongRequestTimeOutError: if the API doesn't get
+        the tree in the time given by the configuration.
+        """
+        if isinstance(version, int):
+            version = str(version)
+        self._requests_session.headers["x-craft-ai-tree-version"] = version
+
+        # Check all ids, raise an error if all ids are invalid
+        valid_indices, invalid_indices, invalid_dts = self._check_entity_id_bulk(
+            payload
+        )
+
+        if self._config["decisionTreeRetrievalTimeout"] is False:
+            # Don't retry
+            return self._get_generators_decision_trees_bulk(
+                payload, valid_indices, invalid_indices, invalid_dts
+            )
+        start = current_time_ms()
+        while True:
+            now = current_time_ms()
+            if now - start > self._config["decisionTreeRetrievalTimeout"]:
+                # Client side timeout
+                raise CraftAiLongRequestTimeOutError()
+            try:
+                return self._get_generators_decision_trees_bulk(
+                    payload, valid_indices, invalid_indices, invalid_dts
+                )
+            except CraftAiLongRequestTimeOutError:
+                # Do nothing and continue.
+                continue
+
     def _get_generator_operations_pages(self, url, ops_list):
         if url is None:
             return ops_list
@@ -967,9 +1046,6 @@ class Client(object):
 
     @staticmethod
     def _decode_response(response):
-        print('decode_response_status_code:  ', response.status_code)
-        print('decode_response_body:  ', Client._parse_body(response))
-        print('\n')
         """Decode the response of a request.
 
         :param response: response of a request.
@@ -1181,8 +1257,6 @@ class Client(object):
             raise CraftAiBadRequestError(
                 "Request for the bulk API should be either a POST or DELETE" "request"
             )
-        print(resp)
         entities = self._decode_response(resp)
-        print(entities)
         entities = self._decode_response_bulk(entities)
         return entities

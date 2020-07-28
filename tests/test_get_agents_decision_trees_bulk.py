@@ -231,8 +231,8 @@ class TestGetGroupDecisionTreesBulkSuccess(unittest.TestCase):
 
 
 class TestGetDecisionTreesBulkFailure(unittest.TestCase):
-    """Checks that the client succeeds when getting
-    an/multiple decision tree(s) with OK input"""
+    """Checks that the client fails when when getting
+    an/multiple decision tree(s) with bad input"""
 
     @classmethod
     def setUpClass(cls):

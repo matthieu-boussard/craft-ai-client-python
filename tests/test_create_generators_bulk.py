@@ -14,10 +14,10 @@ class TestCreateGeneratorsBulkSuccess(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = Client(settings.CRAFT_CFG)
-        cls.agent_id1 = generate_entity_id("test_create_generators_bulk_agent")
-        cls.agent_id2 = generate_entity_id("test_create_generators_bulk_agent")
-        cls.generator_id1 = generate_entity_id("test_create_generators_bulk_generator")
-        cls.generator_id2 = generate_entity_id("test_create_generators_bulk_generator")
+        cls.agent_id1 = generate_entity_id("bulk_agent")
+        cls.agent_id2 = generate_entity_id("bulk_agent")
+        cls.generator_id1 = generate_entity_id("bulk_generator")
+        cls.generator_id2 = generate_entity_id("bulk_generator")
         cls.filter = [cls.agent_id1, cls.agent_id2]
 
     def setUp(self):
@@ -26,8 +26,8 @@ class TestCreateGeneratorsBulkSuccess(unittest.TestCase):
         self.client.delete_generator(self.generator_id1)
         self.client.delete_generator(self.generator_id2)
         payload = [
-            {"configuration": valid_data.VALID_CONFIGURATION},
-            {"configuration": valid_data.VALID_CONFIGURATION},
+            {"configuration": valid_data.VALID_CONFIGURATION, "id": self.agent_id1},
+            {"configuration": valid_data.VALID_CONFIGURATION, "id": self.agent_id2},
         ]
         self.client.create_agents_bulk(payload)
 

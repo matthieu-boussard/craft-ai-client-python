@@ -74,8 +74,8 @@ class TestDeleteGeneratorsBulkSuccess(unittest.TestCase):
         self.addCleanup(self.tearDown)
 
 class TestDeleteGeneratorsBulkFailure(unittest.TestCase):
-    """Checks that the client succeeds when creating
-        an/multiple generator(s) with OK input"""
+    """Checks that the client fails when deleting
+        an/multiple generator(s) with bad input"""
 
     @classmethod
     def setUpClass(cls):
