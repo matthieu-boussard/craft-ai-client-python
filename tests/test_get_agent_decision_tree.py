@@ -173,7 +173,10 @@ class TestGetAgentDecisionTreeWithOperation(unittest.TestCase):
             invalid_data.INVALID_TIMESTAMPS["float_ts"],
         )
 
-@unittest.skip("The following tests are quite long, they are disabled atm. (even before timescale)")
+
+@unittest.skip(
+    "The following tests are quite long, they are disabled atm. (even before timescale)"
+)
 class TestGetAgentDecisionTreeWithOperationL(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -192,8 +195,7 @@ class TestGetAgentDecisionTreeWithOperationL(unittest.TestCase):
     def test_get_decision_tree_from_operations(self):
         last_operation = VALID_L_OPERATIONS[-1][-1]
         decision_tree = self.client.get_agent_decision_tree(
-            self.agent_id,
-            last_operation["timestamp"],
+            self.agent_id, last_operation["timestamp"],
         )
 
         self.assertIsInstance(decision_tree, dict)
@@ -210,7 +212,8 @@ class TestGetAgentDecisionTreeWithOperationL(unittest.TestCase):
             craft_ai.errors.CraftAiLongRequestTimeOutError,
             other_client.get_agent_decision_tree,
             self.agent_id,
-            last_operation["timestamp"])
+            last_operation["timestamp"],
+        )
 
         def test_get_decision_tree_w_smallish_timeout(self):
             other_client_cfg = settings.CRAFT_CFG.copy()
@@ -221,4 +224,5 @@ class TestGetAgentDecisionTreeWithOperationL(unittest.TestCase):
                 craft_ai.errors.CraftAiLongRequestTimeOutError,
                 other_client.get_agent_decision_tree,
                 self.agent_id,
-                last_operation["timestamp"])
+                last_operation["timestamp"],
+            )
