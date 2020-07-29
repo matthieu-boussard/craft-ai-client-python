@@ -8,7 +8,9 @@ from .data import valid_data, invalid_data
 from .utils import generate_entity_id
 
 NB_OPERATIONS_TO_ADD = 1000
-NB_AGENTS_TO_ADD_OPERATIONS = 50
+NB_AGENTS_TO_ADD_OPERATIONS = 5
+
+AGENT_BASE = "test_add_agents_op_bulk"
 
 
 class TestAddOperationsBulkSuccess(unittest.TestCase):
@@ -18,10 +20,10 @@ class TestAddOperationsBulkSuccess(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = Client(settings.CRAFT_CFG)
-        cls.agent_id1 = generate_entity_id("test_add_agents_operations_bulk")
-        cls.agent_id2 = generate_entity_id("test_add_agents_operations_bulk")
 
     def setUp(self):
+        self.agent_id1 = generate_entity_id(AGENT_BASE + "BulkSucc")
+        self.agent_id2 = generate_entity_id(AGENT_BASE + "BulkSucc")
         self.client.delete_agent(self.agent_id1)
         self.client.delete_agent(self.agent_id2)
         self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id1)

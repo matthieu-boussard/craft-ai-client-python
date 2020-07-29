@@ -12,8 +12,9 @@ if CRAFTAI_PANDAS_ENABLED:
     from .utils import generate_entity_id
     from .data import valid_data, invalid_data, pandas_valid_data, pandas_invalid_data
 
-    NB_AGENTS_TO_ADD_OPERATIONS = 50
+    NB_AGENTS_TO_ADD_OPERATIONS = 3
 
+    AGENT_ID_BASE = "add_agents_op_bulk"
     SIMPLE_AGENT_CONFIGURATION = pandas_valid_data.SIMPLE_AGENT_CONFIGURATION
     SIMPLE_AGENT_DATA = pandas_valid_data.SIMPLE_AGENT_DATA
     SIMPLE_AGENT_MANY_DATA = pandas_valid_data.SIMPLE_AGENT_MANY_DATA
@@ -21,6 +22,7 @@ if CRAFTAI_PANDAS_ENABLED:
     INVALID_DF_INDEX = pandas_invalid_data.INVALID_DF_INDEX
     SIMPLE_AGENT_MANY_DATA = pandas_valid_data.SIMPLE_AGENT_MANY_DATA
 
+    @unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
     class TestAddOperationsBulkSuccess(unittest.TestCase):
         """Checks that the client succeeds when adding operations to
         multiple agent(s) with OK input"""
@@ -28,10 +30,10 @@ if CRAFTAI_PANDAS_ENABLED:
         @classmethod
         def setUpClass(cls):
             cls.client = craft_ai.pandas.Client(settings.CRAFT_CFG)
-            cls.agent_id1 = generate_entity_id("add_agents_operations_bulk")
-            cls.agent_id2 = generate_entity_id("add_agents_operations_bulk")
 
         def setUp(self):
+            self.agent_id1 = generate_entity_id(AGENT_ID_BASE + "BulkSuccess")
+            self.agent_id2 = generate_entity_id(AGENT_ID_BASE + "BulkSuccess")
             self.client.delete_agent(self.agent_id1)
             self.client.delete_agent(self.agent_id2)
             self.client.create_agent(SIMPLE_AGENT_CONFIGURATION, self.agent_id1)
@@ -118,6 +120,7 @@ if CRAFTAI_PANDAS_ENABLED:
 
             self.addCleanup(self.clean_up_agents, [self.agent_id1, self.agent_id2])
 
+        @unittest.skip("Remove temporary due to beta performance issues")
         def test_add_agents_operations_bulk_with_many_operations(self):
             """add_agents_operations_bulk should succeed when given a big df as input
             data, with correct `id`s and a correct df as `operations`.
@@ -181,6 +184,7 @@ if CRAFTAI_PANDAS_ENABLED:
 
             self.addCleanup(self.clean_up_agents, [self.agent_id1, self.agent_id2])
 
+    @unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
     class TestAddOperationsGroupAgentBulkSuccess(unittest.TestCase):
         """Checks that the client succeeds when adding operations to
         multiple agent(s) with OK input"""
@@ -188,12 +192,12 @@ if CRAFTAI_PANDAS_ENABLED:
         @classmethod
         def setUpClass(cls):
             cls.client = craft_ai.pandas.Client(settings.CRAFT_CFG)
-            cls.agents = [
-                generate_entity_id("add_agents_operations_bulk")
-                for i in range(NB_AGENTS_TO_ADD_OPERATIONS)
-            ]
 
         def setUp(self):
+            self.agents = [
+                generate_entity_id(AGENT_ID_BASE + "GroupBulkSuccess")
+                for i in range(NB_AGENTS_TO_ADD_OPERATIONS)
+            ]
             for agent_id in self.agents:
                 self.client.delete_agent(agent_id)
                 self.client.create_agent(SIMPLE_AGENT_CONFIGURATION, agent_id)
@@ -228,6 +232,7 @@ if CRAFTAI_PANDAS_ENABLED:
 
             self.addCleanup(self.clean_up_agents, self.agents)
 
+    @unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
     class TestAddOperationsBulkFailure(unittest.TestCase):
         """Checks that the client fail when adding operations to
         multiple agent(s) with incorrect input"""
@@ -413,6 +418,7 @@ if CRAFTAI_PANDAS_ENABLED:
 
             self.addCleanup(self.clean_up_agent, agent_id)
 
+    @unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
     class TestAddOperationsBulkSomeFailure(unittest.TestCase):
         """Checks that the client succeed when adding operations to
         an/multiple agent(s) with bad input and an/multiple agent(s)
@@ -421,11 +427,11 @@ if CRAFTAI_PANDAS_ENABLED:
         @classmethod
         def setUpClass(cls):
             cls.client = craft_ai.pandas.Client(settings.CRAFT_CFG)
-            cls.agent_id = generate_entity_id(
-                "test_add_agents_operations_bulk_some_failure"
-            )
 
         def setUp(self):
+            self.agent_id = generate_entity_id(
+                "test_add_agents_operations_bulk_some_failure"
+            )
             self.client.delete_agent(self.agent_id)
             self.client.create_agent(SIMPLE_AGENT_CONFIGURATION, self.agent_id)
 
@@ -515,6 +521,7 @@ if CRAFTAI_PANDAS_ENABLED:
 
                 self.addCleanup(self.clean_up_agent, agent_id)
 
+        @unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
         class TestAddOperationsBulkSomeFailure(unittest.TestCase):
             """Checks that the client succeed when adding operations to
             an/multiple agent(s) with bad input and an/multiple agent(s)
@@ -523,11 +530,11 @@ if CRAFTAI_PANDAS_ENABLED:
             @classmethod
             def setUpClass(cls):
                 cls.client = craft_ai.pandas.Client(settings.CRAFT_CFG)
-                cls.agent_id = generate_entity_id(
-                    "test_add_agents_operations_bulk_some_failure"
-                )
 
             def setUp(self):
+                self.agent_id = generate_entity_id(
+                    "test_add_agents_operations_bulk_some_failure"
+                )
                 self.client.delete_agent(self.agent_id)
                 self.client.create_agent(SIMPLE_AGENT_CONFIGURATION, self.agent_id)
 

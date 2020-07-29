@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Remove .pylintrc file
 - Fix the `add_agent_operations` message to display the number of added operations.
 
+### Changed
+
+- Remove the dependency on the `IPython` library from the pandas client.
+
 ## [2.0.0](https://github.com/craft-ai/craft-ai-client-python/compare/v1.16.0...v2.0.0) - 2020-03-18 ##
 
 > :warning: craft-ai-client-python v2.0.0 drop support for python v2.

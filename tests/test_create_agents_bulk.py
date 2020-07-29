@@ -6,7 +6,7 @@ from . import settings
 from .utils import generate_entity_id
 from .data import valid_data, invalid_data
 
-NB_AGENTS_TO_CREATE = 200
+NB_AGENTS_TO_CREATE = 5
 
 
 class TestCreateAgentsBulkSuccess(unittest.TestCase):
@@ -149,11 +149,11 @@ class TestCreateAgentsBulkFailure(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = Client(settings.CRAFT_CFG)
-        cls.agent_id1 = generate_entity_id("test_create_agents_bulk")
-        cls.agent_id2 = generate_entity_id("test_create_agents_bulk")
-        cls.agent_name = generate_entity_id("test_create_agents_bulk")
 
     def setUp(self):
+        self.agent_id1 = generate_entity_id("test_create_agents_bulk_failure")
+        self.agent_id2 = generate_entity_id("test_create_agents_bulk_failure")
+        self.agent_name = generate_entity_id("test_create_agents_bulk_failure")
         # Makes sure that no agent with the same ID already exists
         resp1 = self.client.delete_agent(self.agent_id1)
         resp2 = self.client.delete_agent(self.agent_id2)
@@ -212,7 +212,7 @@ class TestCreateAgentsBulkFailure(unittest.TestCase):
         # Add all the invalid context to check
         for i, invalid_context in enumerate(invalid_data.INVALID_CONTEXTS):
             new_agent_id = generate_entity_id(
-                "test_create_agents_bulk_with_invalid_context"
+                "test_create_agents_bulk_with_invalid_context" + str(i)
             )
             invalid_configuration = {
                 "context": invalid_data.INVALID_CONTEXTS[invalid_context],
@@ -249,7 +249,7 @@ class TestCreateAgentsBulkFailure(unittest.TestCase):
         # Add all the invalid context to check
         for i, empty_configuration in enumerate(invalid_data.UNDEFINED_KEY):
             new_agent_id = generate_entity_id(
-                "test_create_agents_bulk_undefined_config"
+                "test_create_agents_bulk_undef_conf_" + str(i)
             )
             self.client.delete_agent(new_agent_id)
             payload.append(
@@ -309,10 +309,10 @@ class TestCreateAgentsBulkSomeFailure(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = Client(settings.CRAFT_CFG)
-        cls.agent_id = generate_entity_id("test_create_agents_bulk")
-        cls.agent_name = generate_entity_id("test_create_agents_bulk")
 
     def setUp(self):
+        self.agent_id = generate_entity_id("test_create_agents_bulk_SomeFail")
+        self.agent_name = generate_entity_id("test_create_agents_bulk_SomeFail")
         # Makes sure that no agent with the same ID already exists
         resp = self.client.delete_agent(self.agent_id)
         self.assertIsInstance(resp, dict)
@@ -396,8 +396,15 @@ class TestCreateAgentsBulkSomeFailure(unittest.TestCase):
 
         self.assertEqual(resp[0].get("id"), self.agent_id)
         self.assertEqual(resp[1].get("id"), self.agent_id)
-        self.assertTrue("configuration" in resp[0])
-        self.assertIsInstance(resp[1].get("error"), craft_err.CraftAiBadRequestError)
+        self.assertTrue("configuration" in resp[0] or "configuration" in resp[1])
+        if "configuration" in resp[0]:
+            self.assertIsInstance(
+                resp[1].get("error"), craft_err.CraftAiBadRequestError
+            )
+        elif "configuration" in resp[1]:
+            self.assertIsInstance(
+                resp[0].get("error"), craft_err.CraftAiBadRequestError
+            )
 
         self.addCleanup(self.clean_up_agent, self.agent_id)
 
@@ -465,7 +472,9 @@ class TestCreateAgentsBulkSomeFailure(unittest.TestCase):
         agents_lst = [self.agent_id]
         # Add all the invalid configuration to check
         for i, empty_configuration in enumerate(invalid_data.UNDEFINED_KEY):
-            new_agent_id = generate_entity_id("test_create_some_agents_undef_config")
+            new_agent_id = generate_entity_id(
+                "test_create_some_agents_undef_config" + str(i)
+            )
             self.client.delete_agent(new_agent_id)
             payload.append(
                 {
