@@ -28,11 +28,19 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
         try:
             self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id1)
             self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id2)
-            self.client.add_agent_operations(self.agent_id1, valid_data.VALID_OPERATIONS_SET)
-            self.client.add_agent_operations(self.agent_id2, valid_data.VALID_OPERATIONS_SET)
+            self.client.add_agent_operations(
+                self.agent_id1, valid_data.VALID_OPERATIONS_SET
+            )
+            self.client.add_agent_operations(
+                self.agent_id2, valid_data.VALID_OPERATIONS_SET
+            )
 
-            self.client.create_generator(self.generator_configuration, self.generator_id1)
-            self.client.create_generator(self.generator_configuration, self.generator_id2)
+            self.client.create_generator(
+                self.generator_configuration, self.generator_id1
+            )
+            self.client.create_generator(
+                self.generator_configuration, self.generator_id2
+            )
 
         except craft_err.CraftAiBadRequestError as e:
             if "one already exists" not in e.message:
@@ -56,7 +64,9 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
         specify the version the field 'tree''_version' should be the one by default.
         """
 
-        payload = [{"id": self.generator_id1, "timestamp": valid_data.VALID_LAST_TIMESTAMP}]
+        payload = [
+            {"id": self.generator_id1, "timestamp": valid_data.VALID_LAST_TIMESTAMP}
+        ]
 
         decision_trees = self.client.get_generators_decision_trees_bulk(payload)
 
@@ -70,7 +80,6 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
         self.assertNotEqual(decision_trees[0].get("tree").get("trees"), None)
 
         self.addCleanup(self.clean_up_generators)
-
 
     def test_get_multiple_decision_trees_with_correct_input(self):
         """delete_generators_bulk should succeed when given a list of string ID in a set
@@ -87,6 +96,7 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
         self.assertIsInstance(decision_trees[1].get("tree"), dict)
 
         self.addCleanup(self.tearDown)
+
 
 class TestGetDecisionTreesBulkFailure(unittest.TestCase):
     """Checks that the client succeeds when getting
@@ -127,6 +137,7 @@ class TestGetDecisionTreesBulkFailure(unittest.TestCase):
             payload,
         )
 
+
 class TestGetDecisionTreesBulkSomeFailure(unittest.TestCase):
     """Checks that the client succeed when getting an/multiple generator(s)
     with bad input and an/multiple generator(s) with valid input"""
@@ -146,11 +157,19 @@ class TestGetDecisionTreesBulkSomeFailure(unittest.TestCase):
         try:
             self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id1)
             self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id2)
-            self.client.add_agent_operations(self.agent_id1, valid_data.VALID_OPERATIONS_SET)
-            self.client.add_agent_operations(self.agent_id2, valid_data.VALID_OPERATIONS_SET)
+            self.client.add_agent_operations(
+                self.agent_id1, valid_data.VALID_OPERATIONS_SET
+            )
+            self.client.add_agent_operations(
+                self.agent_id2, valid_data.VALID_OPERATIONS_SET
+            )
 
-            self.client.create_generator(self.generator_configuration, self.generator_id1)
-            self.client.create_generator(self.generator_configuration, self.generator_id2)
+            self.client.create_generator(
+                self.generator_configuration, self.generator_id1
+            )
+            self.client.create_generator(
+                self.generator_configuration, self.generator_id2
+            )
 
         except craft_err.CraftAiBadRequestError as e:
             if "one already exists" not in e.message:
@@ -175,7 +194,9 @@ class TestGetDecisionTreesBulkSomeFailure(unittest.TestCase):
         The ones having valid ids have the `id` field being string and 'tree' field being a dict.
         """
         # Add valid id and timestamp
-        payload = [{"id": self.generator_id1, "timestamp": valid_data.VALID_LAST_TIMESTAMP}]
+        payload = [
+            {"id": self.generator_id1, "timestamp": valid_data.VALID_LAST_TIMESTAMP}
+        ]
         # Add an unknown id and a dictionary without an id field
         payload.append(
             [
@@ -207,5 +228,3 @@ class TestGetDecisionTreesBulkSomeFailure(unittest.TestCase):
             self.assertTrue("error" in decision_trees[i])
 
         self.addCleanup(self.clean_up_generators)
-
-

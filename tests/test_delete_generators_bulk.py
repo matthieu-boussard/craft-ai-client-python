@@ -25,12 +25,16 @@ class TestDeleteGeneratorsBulkSuccess(unittest.TestCase):
     def setUp(self):
         try:
             payload = [
-                {"id":self.agent_id1, "configuration": valid_data.VALID_CONFIGURATION},
-                {"id":self.agent_id2, "configuration": valid_data.VALID_CONFIGURATION},
+                {"id": self.agent_id1, "configuration": valid_data.VALID_CONFIGURATION},
+                {"id": self.agent_id2, "configuration": valid_data.VALID_CONFIGURATION},
             ]
             self.client.create_agents_bulk(payload)
-            self.client.create_generator(self.generator_configuration, self.generator_id1)
-            self.client.create_generator(self.generator_configuration, self.generator_id2)
+            self.client.create_generator(
+                self.generator_configuration, self.generator_id1
+            )
+            self.client.create_generator(
+                self.generator_configuration, self.generator_id2
+            )
 
         except craft_err.CraftAiBadRequestError as e:
             if "one already exists" not in e.message:
@@ -52,11 +56,8 @@ class TestDeleteGeneratorsBulkSuccess(unittest.TestCase):
             with the `ids being the same as the one given as parameter."""
 
         payload = [{"id": self.generator_id1}]
-
         resp = self.client.delete_generators_bulk(payload)
-
         self.assertEqual(resp[0].get("id"), self.generator_id1)
-
         self.addCleanup(self.tearDown)
 
     def test_delete_multiple_generators(self):
@@ -65,13 +66,13 @@ class TestDeleteGeneratorsBulkSuccess(unittest.TestCase):
             with the `ids being the same as the one given as parameter."""
 
         payload = [{"id": self.generator_id1}, {"id": self.generator_id2}]
-
         resp = self.client.delete_generators_bulk(payload)
 
         self.assertEqual(resp[0].get("id"), self.generator_id1)
         self.assertEqual(resp[1].get("id"), self.generator_id2)
 
         self.addCleanup(self.tearDown)
+
 
 class TestDeleteGeneratorsBulkFailure(unittest.TestCase):
     """Checks that the client fails when deleting
@@ -94,7 +95,9 @@ class TestDeleteGeneratorsBulkFailure(unittest.TestCase):
         payload.append({})
 
         self.assertRaises(
-            craft_err.CraftAiBadRequestError, self.client.delete_generators_bulk, payload
+            craft_err.CraftAiBadRequestError,
+            self.client.delete_generators_bulk,
+            payload,
         )
 
 
@@ -114,17 +117,12 @@ class TestDeleteBulkGeneratorsBulkSomeFailure(unittest.TestCase):
         cls.generator_configuration["filter"] = cls.filter
 
     def setUp(self):
-        try:
-            payload = [
-                {"id":self.agent_id1, "configuration": valid_data.VALID_CONFIGURATION},
-                {"id":self.agent_id2, "configuration": valid_data.VALID_CONFIGURATION},
-            ]
-            self.client.create_agents_bulk(payload)
-            self.client.create_generator(self.generator_configuration, self.generator_id1)
-
-        except craft_err.CraftAiBadRequestError as e:
-            if "one already exists" not in e.message:
-                raise e
+        payload = [
+            {"id": self.agent_id1, "configuration": valid_data.VALID_CONFIGURATION},
+            {"id": self.agent_id2, "configuration": valid_data.VALID_CONFIGURATION},
+        ]
+        self.client.create_agents_bulk(payload)
+        self.client.create_generator(self.generator_configuration, self.generator_id1)
 
     def tearDown(self):
         self.client.delete_agent(self.agent_id1)
@@ -149,7 +147,8 @@ class TestDeleteBulkGeneratorsBulkSomeFailure(unittest.TestCase):
         self.assertEqual(resp[0].get("id"), self.generator_id1)
 
         for i in range(1, len(payload)):
-            self.assertEqual(craft_err.CraftAiBadRequestError, type(resp[i].get('error')))
+            self.assertEqual(
+                craft_err.CraftAiBadRequestError, type(resp[i].get("error"))
+            )
 
         self.addCleanup(self.tearDown)
-

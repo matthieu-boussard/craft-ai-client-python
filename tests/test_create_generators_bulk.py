@@ -64,7 +64,7 @@ class TestCreateGeneratorsBulkSuccess(unittest.TestCase):
         generator_configuration["filter"] = self.filter
         payload = [
             {"id": self.generator_id1, "configuration": generator_configuration},
-            {"id": self.generator_id2, "configuration": generator_configuration}
+            {"id": self.generator_id2, "configuration": generator_configuration},
         ]
 
         resp = self.client.create_generators_bulk(payload)
@@ -116,11 +116,13 @@ class TestCreateGeneratorsBulkFailure(unittest.TestCase):
         generator_configuration["filter"] = self.filter
         payload = [
             {"id": 123, "configuration": generator_configuration},
-            {"id": 345, "configuration": generator_configuration}
+            {"id": 345, "configuration": generator_configuration},
         ]
 
         self.assertRaises(
-            craft_err.CraftAiBadRequestError, self.client.create_generators_bulk, payload
+            craft_err.CraftAiBadRequestError,
+            self.client.create_generators_bulk,
+            payload,
         )
 
     def test_create_multiple_generators_with_undefined_configurations(self):
@@ -128,13 +130,12 @@ class TestCreateGeneratorsBulkFailure(unittest.TestCase):
             It should raise an error upon request for creation of all generators with
             undefined configurations."""
 
-        payload = [
-            {"id": self.generator_id1},
-            {"id": self.generator_id2}
-        ]
+        payload = [{"id": self.generator_id1}, {"id": self.generator_id2}]
 
         self.assertRaises(
-            craft_err.CraftAiBadRequestError, self.client.create_generators_bulk, payload
+            craft_err.CraftAiBadRequestError,
+            self.client.create_generators_bulk,
+            payload,
         )
 
     def test_create_multiple_generators_with_no_filter(self):
@@ -147,12 +148,15 @@ class TestCreateGeneratorsBulkFailure(unittest.TestCase):
 
         payload = [
             {"id": self.generator_id1, "configuration": generator_configuration},
-            {"id": self.generator_id2, "configuration": generator_configuration}
+            {"id": self.generator_id2, "configuration": generator_configuration},
         ]
 
         self.assertRaises(
-            craft_err.CraftAiBadRequestError, self.client.create_generators_bulk, payload
+            craft_err.CraftAiBadRequestError,
+            self.client.create_generators_bulk,
+            payload,
         )
+
 
 class TestCreateGeneratorsBulkSomeFailure(unittest.TestCase):
     """Checks that the client succeed when creating an/multiple generator(s)
@@ -160,12 +164,12 @@ class TestCreateGeneratorsBulkSomeFailure(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        add = '3'
+        add = "3"
         cls.client = Client(settings.CRAFT_CFG)
-        cls.agent_id1 = generate_entity_id("test_create_gen_bulk_ag"+add)
-        cls.agent_id2 = generate_entity_id("test_create_gen_bulk_ag"+add)
-        cls.generator_id1 = generate_entity_id("test_create_gen_bulk_gen"+add)
-        cls.generator_id2 = generate_entity_id("test_create_gen_bulk_gen"+add)
+        cls.agent_id1 = generate_entity_id("test_create_gen_bulk_ag" + add)
+        cls.agent_id2 = generate_entity_id("test_create_gen_bulk_ag" + add)
+        cls.generator_id1 = generate_entity_id("test_create_gen_bulk_gen" + add)
+        cls.generator_id2 = generate_entity_id("test_create_gen_bulk_gen" + add)
         cls.filter = [cls.agent_id1, cls.agent_id2]
 
     def setUp(self):
@@ -200,7 +204,7 @@ class TestCreateGeneratorsBulkSomeFailure(unittest.TestCase):
         generator_configuration["filter"] = self.filter
         payload = [
             {"id": self.generator_id1, "configuration": generator_configuration},
-            {"id": 123, "configuration": generator_configuration}
+            {"id": 123, "configuration": generator_configuration},
         ]
 
         resp = self.client.create_generators_bulk(payload)
@@ -226,7 +230,7 @@ class TestCreateGeneratorsBulkSomeFailure(unittest.TestCase):
         generator_configuration["filter"] = self.filter
         payload = [
             {"id": self.generator_id1, "configuration": generator_configuration},
-            {"id": self.generator_id1, "configuration": generator_configuration}
+            {"id": self.generator_id1, "configuration": generator_configuration},
         ]
 
         resp = self.client.create_generators_bulk(payload)
@@ -237,4 +241,3 @@ class TestCreateGeneratorsBulkSomeFailure(unittest.TestCase):
         self.assertIsInstance(resp[1].get("error"), craft_err.CraftAiBadRequestError)
 
         self.addCleanup(self.clean_up_generators)
-
