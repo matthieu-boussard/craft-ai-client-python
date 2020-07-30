@@ -340,7 +340,7 @@ class TestPandasComplexAgent3WithData(unittest.TestCase):
         CLIENT.create_agent(COMPLEX_AGENT_CONFIGURATION_2, self.agent_id)
         CLIENT.add_agent_operations(self.agent_id, COMPLEX_AGENT_DATA_2)
 
-    def test_decide_from_contexts_df_empty_tree():
+    def test_decide_from_contexts_df_empty_tree(self):
 
         test_df = pd.DataFrame(
             [[0, "Jean-Pierre", "+02:00"], [1, "Paul", "+02:00"]],
@@ -357,10 +357,10 @@ class TestPandasComplexAgent3WithData(unittest.TestCase):
             "based on any context operations."
         )
 
-        assert_equal(len(df), 2)
-        assert_equal(df.columns, ["error"])
-        assert_equal(df["error"][0], expected_error_message)
-        assert_equal(df["error"][1], expected_error_message)
+        self.assertEqual(len(df), 2)
+        self.assertEqual(df.columns, ["error"])
+        self.assertEqual(df["error"][0], expected_error_message)
+        self.assertEqual(df["error"][1], expected_error_message)
 
     def tearDown(self):
         CLIENT.delete_agent(self.agent_id)
