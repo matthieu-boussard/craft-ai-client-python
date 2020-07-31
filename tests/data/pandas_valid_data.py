@@ -218,5 +218,7 @@ EMPTY_TREE = {
         "time_quantum": 100,
         "min_samples_per_leaf": 1,
     },
-    "trees": {"b": {"prediction": {"confidence": 0, "nb_samples": 0}}},
+    "trees": {
+        "b": {"output_values": [], "prediction": {"confidence": 0, "nb_samples": 0}}
+    },
 }
