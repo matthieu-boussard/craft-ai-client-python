@@ -205,3 +205,20 @@ INVALID_PYTHON_IDENTIFIER_DECISION = pd.DataFrame(
     columns=["a", "1_b", "None", "_c", "tz"],
     index=pd.date_range("20130101", periods=3, freq="D").tz_localize("Europe/Paris"),
 )
+
+EMPTY_TREE = {
+    "_version": "2.0.0",
+    "configuration": {
+        "context": {
+            "a": {"type": "continuous"},
+            "b": {"type": "enum"},
+            "tz": {"type": "timezone"},
+        },
+        "output": ["b"],
+        "time_quantum": 100,
+        "min_samples_per_leaf": 1,
+    },
+    "trees": {
+        "b": {"output_values": [], "prediction": {"confidence": 0, "nb_samples": 0}}
+    },
+}

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased](https://github.com/craft-ai/craft-ai-client-python/compare/v2.0.0...HEAD) ##
 
+### Added
+
+- Add a test in the pandas client to check the error message when deciding based on a tree from no samples.
+
 ### Fixed
 
 - Boolean outputs are properly supported.
