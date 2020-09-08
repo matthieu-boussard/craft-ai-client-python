@@ -357,7 +357,7 @@ class Client(object):
         in "a-zA-Z0-9_-" and must be between 1 and 36 characters.
         With configuration having the form given in the craft_ai documentation.
 
-        :return: enerators created which are represented with dictionnaries.
+        :return: Generators created which are represented with dictionnaries.
         :rtype: List of dict.
 
         :raises CraftAiBadRequestError: If all of the ids or all of the
