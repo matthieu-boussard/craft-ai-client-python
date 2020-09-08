@@ -1,4 +1,5 @@
 import unittest
+import semver
 
 from craft_ai import Client, errors as craft_err
 
@@ -16,10 +17,10 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = Client(settings.CRAFT_CFG)
-        cls.agent_id1 = generate_entity_id("test_delete_g_bulk_a1")
-        cls.agent_id2 = generate_entity_id("test_delete_g_bulk_a2")
-        cls.generator_id1 = generate_entity_id("test_delete_g_bulk_g1")
-        cls.generator_id2 = generate_entity_id("test_delete_g_bulk_g2")
+        cls.agent_id1 = generate_entity_id("test_g_bulk_a1")
+        cls.agent_id2 = generate_entity_id("test_g_bulk_a2")
+        cls.generator_id1 = generate_entity_id("test_g_bulk_g1")
+        cls.generator_id2 = generate_entity_id("test_g_bulk_g2")
         cls.filter = [cls.agent_id1, cls.agent_id2]
         cls.generator_configuration = valid_data.VALID_GENERATOR_CONFIGURATION.copy()
         cls.generator_configuration["filter"] = cls.filter
@@ -86,14 +87,15 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
             It should give a proper JSON response with a list containing the dict
             with the `ids being the same as the one given as parameter."""
 
-        payload = [{"id": self.generator_id1}, {"id": self.generator_id2}]
-
-        resp = self.client.delete_generators_bulk(payload)
-
-        self.assertEqual(resp[0].get("id"), self.generator_id1)
-        self.assertIsInstance(decision_trees[1].get("tree"), dict)
-        self.assertEqual(resp[1].get("id"), self.generator_id2)
-        self.assertIsInstance(decision_trees[1].get("tree"), dict)
+        payload = [
+            {"id": self.generator_id1, "timestamp": valid_data.VALID_LAST_TIMESTAMP},
+            {"id": self.generator_id2, "timestamp": valid_data.VALID_LAST_TIMESTAMP},
+        ]
+        decision_trees = self.client.get_generators_decision_trees_bulk(payload)
+        self.assertEqual(decision_trees[0].get("id"), self.generator_id1)
+        self.assertEqual(decision_trees[1].get("id"), self.generator_id2)
+        self.assertIsInstance(decision_trees[0].get("tree").get("_version"), str)
+        self.assertIsInstance(decision_trees[1].get("tree").get("_version"), str)
 
         self.addCleanup(self.tearDown)
 

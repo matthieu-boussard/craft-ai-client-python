@@ -4,7 +4,7 @@ from craft_ai import Client, errors as craft_err
 
 from . import settings
 from .utils import generate_entity_id
-from .data import valid_data, invalid_data
+from .data import valid_data
 
 
 class TestCreateGeneratorsBulkSuccess(unittest.TestCase):
