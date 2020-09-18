@@ -17,7 +17,9 @@ class TestGetOperationsListSuccess(unittest.TestCase):
         self.client.delete_agent(self.agent_id)
         self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id)
 
-        self.client.add_agent_operations(self.agent_id, valid_data.VALID_OPERATIONS_SET_COMPLETE_1)
+        self.client.add_agent_operations(
+            self.agent_id, valid_data.VALID_OPERATIONS_SET_COMPLETE_1
+        )
 
     def tearDown(self):
         self.client.delete_agent(self.agent_id)
@@ -33,7 +35,9 @@ class TestGetOperationsListSuccess(unittest.TestCase):
         ops = self.client.get_agent_operations(self.agent_id, lower_bound)
         self.assertIsInstance(ops, list)
         expected_ops = [
-            op for op in valid_data.VALID_OPERATIONS_SET_COMPLETE_1 if op["timestamp"] >= lower_bound
+            op
+            for op in valid_data.VALID_OPERATIONS_SET_COMPLETE_1
+            if op["timestamp"] >= lower_bound
         ]
         self.assertEqual(ops, expected_ops)
 
@@ -43,7 +47,9 @@ class TestGetOperationsListSuccess(unittest.TestCase):
         ops = self.client.get_agent_operations(self.agent_id, None, upper_bound)
         self.assertIsInstance(ops, list)
         expected_ops = [
-            op for op in valid_data.VALID_OPERATIONS_SET_COMPLETE_1 if op["timestamp"] <= upper_bound
+            op
+            for op in valid_data.VALID_OPERATIONS_SET_COMPLETE_1
+            if op["timestamp"] <= upper_bound
         ]
         self.assertEqual(ops, expected_ops)
 

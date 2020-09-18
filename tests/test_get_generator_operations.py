@@ -46,12 +46,10 @@ class TestGetGeneratorOperationsListSuccess(unittest.TestCase):
         self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id_1)
         self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id_2)
         self.client.add_agent_operations(
-            self.agent_id_1,
-            valid_data.VALID_OPERATIONS_SET_COMPLETE_1,
+            self.agent_id_1, valid_data.VALID_OPERATIONS_SET_COMPLETE_1,
         )
         self.client.add_agent_operations(
-            self.agent_id_2,
-            valid_data.VALID_OPERATIONS_SET_COMPLETE_2,
+            self.agent_id_2, valid_data.VALID_OPERATIONS_SET_COMPLETE_2,
         )
 
         def add_agent_name_1_to_operation(operation):
@@ -62,7 +60,10 @@ class TestGetGeneratorOperationsListSuccess(unittest.TestCase):
             }
 
         expected_operations_1 = list(
-            map(add_agent_name_1_to_operation, valid_data.VALID_OPERATIONS_SET_COMPLETE_1)
+            map(
+                add_agent_name_1_to_operation,
+                valid_data.VALID_OPERATIONS_SET_COMPLETE_1,
+            )
         )
 
         def add_agent_name_2_to_operation(operation):
@@ -73,7 +74,10 @@ class TestGetGeneratorOperationsListSuccess(unittest.TestCase):
             }
 
         expected_operations_2 = list(
-            map(add_agent_name_2_to_operation, valid_data.VALID_OPERATIONS_SET_COMPLETE_2)
+            map(
+                add_agent_name_2_to_operation,
+                valid_data.VALID_OPERATIONS_SET_COMPLETE_2,
+            )
         )
         self.expected_operations = merge_sorted_operation_arrays_by_timestamp(
             expected_operations_1, expected_operations_2

@@ -87,8 +87,8 @@ VALID_OPERATIONS_SET_COMPLETE_1 = [
             "tz": "+02:00",
             "presence": "robert",
             "lightIntensity": 0.4,
-            "lightbulbColor": "green"
-        }
+            "lightbulbColor": "green",
+        },
     },
     {
         "timestamp": 1462464900,
@@ -96,8 +96,8 @@ VALID_OPERATIONS_SET_COMPLETE_1 = [
             "tz": "+02:00",
             "presence": "robert",
             "lightIntensity": 0.4,
-            "lightbulbColor": "pink"
-        }
+            "lightbulbColor": "pink",
+        },
     },
     {
         "timestamp": 1462465000,
@@ -105,8 +105,8 @@ VALID_OPERATIONS_SET_COMPLETE_1 = [
             "tz": "+02:00",
             "presence": "robert",
             "lightIntensity": 0.8,
-            "lightbulbColor": "pink"
-        }
+            "lightbulbColor": "pink",
+        },
     },
     {
         "timestamp": 1462465100,
@@ -114,8 +114,8 @@ VALID_OPERATIONS_SET_COMPLETE_1 = [
             "tz": "+02:00",
             "presence": "robert",
             "lightIntensity": 0.8,
-            "lightbulbColor": "pink"
-        }
+            "lightbulbColor": "pink",
+        },
     },
     {
         "timestamp": 1462465200,
@@ -123,8 +123,8 @@ VALID_OPERATIONS_SET_COMPLETE_1 = [
             "tz": "+02:00",
             "presence": "giselle",
             "lightIntensity": 0.8,
-            "lightbulbColor": "pink"
-        }
+            "lightbulbColor": "pink",
+        },
     },
     {
         "timestamp": 1462465300,
@@ -132,8 +132,8 @@ VALID_OPERATIONS_SET_COMPLETE_1 = [
             "tz": "+02:00",
             "presence": "giselle",
             "lightIntensity": 0.8,
-            "lightbulbColor": "pink"
-        }
+            "lightbulbColor": "pink",
+        },
     },
     {
         "timestamp": 1462465400,
@@ -141,8 +141,8 @@ VALID_OPERATIONS_SET_COMPLETE_1 = [
             "tz": "+02:00",
             "presence": "robert",
             "lightIntensity": 0.4,
-            "lightbulbColor": "green"
-        }
+            "lightbulbColor": "green",
+        },
     },
     {
         "timestamp": 1462465500,
@@ -150,8 +150,8 @@ VALID_OPERATIONS_SET_COMPLETE_1 = [
             "tz": "+02:00",
             "presence": "robert",
             "lightIntensity": 0.4,
-            "lightbulbColor": "green"
-        }
+            "lightbulbColor": "green",
+        },
     },
     {
         "timestamp": 1462465600,
@@ -159,8 +159,8 @@ VALID_OPERATIONS_SET_COMPLETE_1 = [
             "tz": "+02:00",
             "presence": "robert",
             "lightIntensity": 0.4,
-            "lightbulbColor": "pink"
-        }
+            "lightbulbColor": "pink",
+        },
     },
     {
         "timestamp": 1462465700,
@@ -168,8 +168,8 @@ VALID_OPERATIONS_SET_COMPLETE_1 = [
             "tz": "+02:00",
             "presence": "robert",
             "lightIntensity": 0.6,
-            "lightbulbColor": "green"
-        }
+            "lightbulbColor": "green",
+        },
     },
     {
         "timestamp": 1462465800,
@@ -177,9 +177,9 @@ VALID_OPERATIONS_SET_COMPLETE_1 = [
             "tz": "+02:00",
             "presence": "robert",
             "lightIntensity": 0.4,
-            "lightbulbColor": "green"
-        }
-    }
+            "lightbulbColor": "green",
+        },
+    },
 ]
 
 VALID_OPERATIONS_SET_COMPLETE_2 = [
@@ -189,8 +189,8 @@ VALID_OPERATIONS_SET_COMPLETE_2 = [
             "tz": "+02:00",
             "presence": "giselle",
             "lightIntensity": 1,
-            "lightbulbColor": "pink"
-        }
+            "lightbulbColor": "pink",
+        },
     },
     {
         "timestamp": 1462465620,
@@ -198,8 +198,8 @@ VALID_OPERATIONS_SET_COMPLETE_2 = [
             "tz": "+02:00",
             "presence": "giselle",
             "lightIntensity": 1,
-            "lightbulbColor": "pink"
-        }
+            "lightbulbColor": "pink",
+        },
     },
     {
         "timestamp": 1462465730,
@@ -207,8 +207,8 @@ VALID_OPERATIONS_SET_COMPLETE_2 = [
             "tz": "+02:00",
             "presence": "robert",
             "lightIntensity": 0.6,
-            "lightbulbColor": "pink"
-        }
+            "lightbulbColor": "pink",
+        },
     },
     {
         "timestamp": 1462465840,
@@ -216,8 +216,8 @@ VALID_OPERATIONS_SET_COMPLETE_2 = [
             "tz": "+02:00",
             "presence": "giselle",
             "lightIntensity": 0.8,
-            "lightbulbColor": "green"
-        }
+            "lightbulbColor": "green",
+        },
     },
     {
         "timestamp": 1462465950,
@@ -225,8 +225,8 @@ VALID_OPERATIONS_SET_COMPLETE_2 = [
             "tz": "+02:00",
             "presence": "robert",
             "lightIntensity": 0.4,
-            "lightbulbColor": "green"
-        }
+            "lightbulbColor": "green",
+        },
     },
     {
         "timestamp": 1462466060,
@@ -234,7 +234,7 @@ VALID_OPERATIONS_SET_COMPLETE_2 = [
             "tz": "+02:00",
             "presence": "giselle",
             "lightIntensity": 1,
-            "lightbulbColor": "green"
-        }
-    }
+            "lightbulbColor": "green",
+        },
+    },
 ]

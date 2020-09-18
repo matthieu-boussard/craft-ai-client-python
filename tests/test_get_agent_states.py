@@ -37,8 +37,63 @@ class TestGetAgentStatesSuccess(unittest.TestCase):
         states = self.client.get_agent_states(self.agent_id)
         self.assertIsInstance(states, list)
         self.assertEqual(
-            states, 
-            [{"sample": {"tz": "+02:00", "presence": "occupant", "lightIntensity": 1, "lightbulbColor": "#ffffff"}, "timestamp": 1458741230}, {"sample": {"tz": "+02:00", "presence": "occupant", "lightIntensity": 1, "lightbulbColor": "#ffffff"}, "timestamp": 1458741330}, {"sample": {"tz": "+02:00", "presence": "player", "lightIntensity": 0.5, "lightbulbColor": "#ffffff"}, "timestamp": 1458741430}, {"sample": {"tz": "+02:00", "presence": "none", "lightIntensity": 0, "lightbulbColor": "#ffffff"}, "timestamp": 1458741530}, {"sample": {"tz": "+02:00", "presence": "occupant+player", "lightIntensity": 0, "lightbulbColor": "#ffffff"}, "timestamp": 1458741630}, {"sample": {"tz": "+01:00", "presence": "occupant", "lightIntensity": 0.8, "lightbulbColor": "#f56fff"}, "timestamp": 1458741730}]
+            states,
+            [
+                {
+                    "sample": {
+                        "tz": "+02:00",
+                        "presence": "occupant",
+                        "lightIntensity": 1,
+                        "lightbulbColor": "#ffffff",
+                    },
+                    "timestamp": 1458741230,
+                },
+                {
+                    "sample": {
+                        "tz": "+02:00",
+                        "presence": "occupant",
+                        "lightIntensity": 1,
+                        "lightbulbColor": "#ffffff",
+                    },
+                    "timestamp": 1458741330,
+                },
+                {
+                    "sample": {
+                        "tz": "+02:00",
+                        "presence": "player",
+                        "lightIntensity": 0.5,
+                        "lightbulbColor": "#ffffff",
+                    },
+                    "timestamp": 1458741430,
+                },
+                {
+                    "sample": {
+                        "tz": "+02:00",
+                        "presence": "none",
+                        "lightIntensity": 0,
+                        "lightbulbColor": "#ffffff",
+                    },
+                    "timestamp": 1458741530,
+                },
+                {
+                    "sample": {
+                        "tz": "+02:00",
+                        "presence": "occupant+player",
+                        "lightIntensity": 0,
+                        "lightbulbColor": "#ffffff",
+                    },
+                    "timestamp": 1458741630,
+                },
+                {
+                    "sample": {
+                        "tz": "+01:00",
+                        "presence": "occupant",
+                        "lightIntensity": 0.8,
+                        "lightbulbColor": "#f56fff",
+                    },
+                    "timestamp": 1458741730,
+                },
+            ],
         )
 
     def test_get_agent_states_with_lower_bound(self):
@@ -47,7 +102,53 @@ class TestGetAgentStatesSuccess(unittest.TestCase):
         self.assertIsInstance(states, list)
         self.assertEqual(
             states,
-            [{"sample": {"tz": "+02:00", "presence": "occupant", "lightIntensity": 1, "lightbulbColor": "#ffffff"}, "timestamp": 1458741330}, {"sample": {"tz": "+02:00", "presence": "player", "lightIntensity": 0.5, "lightbulbColor": "#ffffff"}, "timestamp": 1458741430}, {"sample": {"tz": "+02:00", "presence": "none", "lightIntensity": 0, "lightbulbColor": "#ffffff"}, "timestamp": 1458741530}, {"sample": {"tz": "+02:00", "presence": "occupant+player", "lightIntensity": 0, "lightbulbColor": "#ffffff"}, "timestamp": 1458741630}, {"sample": {"tz": "+01:00", "presence": "occupant", "lightIntensity": 0.8, "lightbulbColor": "#f56fff"}, "timestamp": 1458741730}]
+            [
+                {
+                    "sample": {
+                        "tz": "+02:00",
+                        "presence": "occupant",
+                        "lightIntensity": 1,
+                        "lightbulbColor": "#ffffff",
+                    },
+                    "timestamp": 1458741330,
+                },
+                {
+                    "sample": {
+                        "tz": "+02:00",
+                        "presence": "player",
+                        "lightIntensity": 0.5,
+                        "lightbulbColor": "#ffffff",
+                    },
+                    "timestamp": 1458741430,
+                },
+                {
+                    "sample": {
+                        "tz": "+02:00",
+                        "presence": "none",
+                        "lightIntensity": 0,
+                        "lightbulbColor": "#ffffff",
+                    },
+                    "timestamp": 1458741530,
+                },
+                {
+                    "sample": {
+                        "tz": "+02:00",
+                        "presence": "occupant+player",
+                        "lightIntensity": 0,
+                        "lightbulbColor": "#ffffff",
+                    },
+                    "timestamp": 1458741630,
+                },
+                {
+                    "sample": {
+                        "tz": "+01:00",
+                        "presence": "occupant",
+                        "lightIntensity": 0.8,
+                        "lightbulbColor": "#f56fff",
+                    },
+                    "timestamp": 1458741730,
+                },
+            ],
         )
 
     def test_get_agent_states_with_upper_bound(self):
@@ -56,7 +157,53 @@ class TestGetAgentStatesSuccess(unittest.TestCase):
         self.assertIsInstance(states, list)
         self.assertEqual(
             states,
-            [{"sample": {"tz": "+02:00", "presence": "occupant", "lightIntensity": 1, "lightbulbColor": "#ffffff"}, "timestamp": 1458741230}, {"sample": {"tz": "+02:00", "presence": "occupant", "lightIntensity": 1, "lightbulbColor": "#ffffff"}, "timestamp": 1458741330}, {"sample": {"tz": "+02:00", "presence": "player", "lightIntensity": 0.5, "lightbulbColor": "#ffffff"}, "timestamp": 1458741430}, {"sample": {"tz": "+02:00", "presence": "none", "lightIntensity": 0, "lightbulbColor": "#ffffff"}, "timestamp": 1458741530}, {"sample": {"tz": "+02:00", "presence": "occupant+player", "lightIntensity": 0, "lightbulbColor": "#ffffff"}, "timestamp": 1458741630}]
+            [
+                {
+                    "sample": {
+                        "tz": "+02:00",
+                        "presence": "occupant",
+                        "lightIntensity": 1,
+                        "lightbulbColor": "#ffffff",
+                    },
+                    "timestamp": 1458741230,
+                },
+                {
+                    "sample": {
+                        "tz": "+02:00",
+                        "presence": "occupant",
+                        "lightIntensity": 1,
+                        "lightbulbColor": "#ffffff",
+                    },
+                    "timestamp": 1458741330,
+                },
+                {
+                    "sample": {
+                        "tz": "+02:00",
+                        "presence": "player",
+                        "lightIntensity": 0.5,
+                        "lightbulbColor": "#ffffff",
+                    },
+                    "timestamp": 1458741430,
+                },
+                {
+                    "sample": {
+                        "tz": "+02:00",
+                        "presence": "none",
+                        "lightIntensity": 0,
+                        "lightbulbColor": "#ffffff",
+                    },
+                    "timestamp": 1458741530,
+                },
+                {
+                    "sample": {
+                        "tz": "+02:00",
+                        "presence": "occupant+player",
+                        "lightIntensity": 0,
+                        "lightbulbColor": "#ffffff",
+                    },
+                    "timestamp": 1458741630,
+                },
+            ],
         )
 
     def test_get_agent_states_with_both_bounds(self):
@@ -66,7 +213,44 @@ class TestGetAgentStatesSuccess(unittest.TestCase):
         self.assertIsInstance(states, list)
         self.assertEqual(
             states,
-            [ {"sample": {"tz": "+02:00", "presence": "occupant", "lightIntensity": 1, "lightbulbColor": "#ffffff"}, "timestamp": 1458741330}, {"sample": {"tz": "+02:00", "presence": "player", "lightIntensity": 0.5, "lightbulbColor": "#ffffff"}, "timestamp": 1458741430}, {"sample": {"tz": "+02:00", "presence": "none", "lightIntensity": 0, "lightbulbColor": "#ffffff"}, "timestamp": 1458741530}, {"sample": {"tz": "+02:00", "presence": "occupant+player", "lightIntensity": 0, "lightbulbColor": "#ffffff"}, "timestamp": 1458741630}]
+            [
+                {
+                    "sample": {
+                        "tz": "+02:00",
+                        "presence": "occupant",
+                        "lightIntensity": 1,
+                        "lightbulbColor": "#ffffff",
+                    },
+                    "timestamp": 1458741330,
+                },
+                {
+                    "sample": {
+                        "tz": "+02:00",
+                        "presence": "player",
+                        "lightIntensity": 0.5,
+                        "lightbulbColor": "#ffffff",
+                    },
+                    "timestamp": 1458741430,
+                },
+                {
+                    "sample": {
+                        "tz": "+02:00",
+                        "presence": "none",
+                        "lightIntensity": 0,
+                        "lightbulbColor": "#ffffff",
+                    },
+                    "timestamp": 1458741530,
+                },
+                {
+                    "sample": {
+                        "tz": "+02:00",
+                        "presence": "occupant+player",
+                        "lightIntensity": 0,
+                        "lightbulbColor": "#ffffff",
+                    },
+                    "timestamp": 1458741630,
+                },
+            ],
         )
 
 
