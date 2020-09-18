@@ -245,11 +245,6 @@ class TestPandasComplexAgentWithData(unittest.TestCase):
     def test_get_agent_operations_df_complex_agent(self):
         df = CLIENT.get_agent_operations(self.agent_id)
 
-        self.assertEqual(
-            df["b"].notnull().tolist(),
-            [True, True, False, False, True, False, False, False, False, False],
-        )
-
         self.assertEqual(len(df), 10)
         self.assertEqual(len(df.dtypes), 3)
         self.assertEqual(

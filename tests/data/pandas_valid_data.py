@@ -56,6 +56,9 @@ COMPLEX_AGENT_CONFIGURATION = {
     "output": ["b"],
     "time_quantum": 100,
     "min_samples_per_leaf": 1,
+    "operations_as_events": True,
+    "learning_period": 3600 * 24 * 365,
+    "tree_max_operations": 50000
 }
 
 COMPLEX_AGENT_CONFIGURATION_2 = {
@@ -67,6 +70,9 @@ COMPLEX_AGENT_CONFIGURATION_2 = {
     "output": ["a"],
     "time_quantum": 100,
     "min_samples_per_leaf": 1,
+    "operations_as_events": True,
+    "learning_period": 3600 * 24 * 365,
+    "tree_max_operations": 50000
 }
 
 COMPLEX_AGENT_DATA = pd.DataFrame(

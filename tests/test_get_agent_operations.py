@@ -1,20 +1,10 @@
 import unittest
-import json
-import os
 
 import craft_ai
 
 from . import settings
 from .utils import generate_entity_id
 from .data import valid_data, invalid_data
-
-HERE = os.path.abspath(os.path.dirname(__file__))
-
-LARGE_VALID_OPERATIONS_SET = []
-with open(
-    os.path.join(HERE, "./data/large_operation_list.json")
-) as large_operation_list_file:
-    LARGE_VALID_OPERATIONS_SET = json.load(large_operation_list_file)
 
 
 class TestGetOperationsListSuccess(unittest.TestCase):
@@ -27,7 +17,7 @@ class TestGetOperationsListSuccess(unittest.TestCase):
         self.client.delete_agent(self.agent_id)
         self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id)
 
-        self.client.add_agent_operations(self.agent_id, LARGE_VALID_OPERATIONS_SET)
+        self.client.add_agent_operations(self.agent_id, valid_data.VALID_OPERATIONS_SET_COMPLETE_1)
 
     def tearDown(self):
         self.client.delete_agent(self.agent_id)
@@ -35,7 +25,7 @@ class TestGetOperationsListSuccess(unittest.TestCase):
     def test_get_agent_operations_with_correct_data(self):
         ops = self.client.get_agent_operations(self.agent_id)
         self.assertIsInstance(ops, list)
-        self.assertEqual(ops, LARGE_VALID_OPERATIONS_SET)
+        self.assertEqual(ops, valid_data.VALID_OPERATIONS_SET_COMPLETE_1)
 
     @unittest.skip("Remove temporary due to beta performance issues")
     def test_get_agent_operations_with_lower_bound(self):
@@ -43,7 +33,7 @@ class TestGetOperationsListSuccess(unittest.TestCase):
         ops = self.client.get_agent_operations(self.agent_id, lower_bound)
         self.assertIsInstance(ops, list)
         expected_ops = [
-            op for op in LARGE_VALID_OPERATIONS_SET if op["timestamp"] >= lower_bound
+            op for op in valid_data.VALID_OPERATIONS_SET_COMPLETE_1 if op["timestamp"] >= lower_bound
         ]
         self.assertEqual(ops, expected_ops)
 
@@ -53,18 +43,18 @@ class TestGetOperationsListSuccess(unittest.TestCase):
         ops = self.client.get_agent_operations(self.agent_id, None, upper_bound)
         self.assertIsInstance(ops, list)
         expected_ops = [
-            op for op in LARGE_VALID_OPERATIONS_SET if op["timestamp"] <= upper_bound
+            op for op in valid_data.VALID_OPERATIONS_SET_COMPLETE_1 if op["timestamp"] <= upper_bound
         ]
         self.assertEqual(ops, expected_ops)
 
     def test_get_agent_operations_with_both_bounds(self):
-        lower_bound = 1462824549
-        upper_bound = 1464356844
+        lower_bound = 1462465000
+        upper_bound = 1462465700
         ops = self.client.get_agent_operations(self.agent_id, lower_bound, upper_bound)
         self.assertIsInstance(ops, list)
         expected_ops = [
             op
-            for op in LARGE_VALID_OPERATIONS_SET
+            for op in valid_data.VALID_OPERATIONS_SET_COMPLETE_1
             if (op["timestamp"] >= lower_bound and op["timestamp"] <= upper_bound)
         ]
         self.assertEqual(ops, expected_ops)
