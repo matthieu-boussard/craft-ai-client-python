@@ -77,7 +77,7 @@ class TestPandasSimpleAgent(unittest.TestCase):
         df = pd.DataFrame(
             randn(300, 6),
             columns=["a", "b", "c", "d", "e", "f"],
-            index=pd.date_range("20130101", periods=300, freq="T").tz_localize(
+            index=pd.date_range("20200101", periods=300, freq="T").tz_localize(
                 "Europe/Paris"
             ),
         )
@@ -167,11 +167,11 @@ class TestPandasSimpleAgentWithData(unittest.TestCase):
         self.assertEqual(len(df.dtypes), 5)
         self.assertEqual(
             df.first_valid_index(),
-            pd.Timestamp("2013-01-01 00:00:00", tz="Europe/Paris"),
+            pd.Timestamp("2020-01-01 00:00:00", tz="Europe/Paris"),
         )
         self.assertEqual(
             df.last_valid_index(),
-            pd.Timestamp("2013-01-01 04:59:00", tz="Europe/Paris"),
+            pd.Timestamp("2020-01-01 04:59:00", tz="Europe/Paris"),
         )
 
     def test_get_agent_states_df(self):
@@ -181,11 +181,11 @@ class TestPandasSimpleAgentWithData(unittest.TestCase):
         self.assertEqual(len(df.dtypes), 5)
         self.assertEqual(
             df.first_valid_index(),
-            pd.Timestamp("2013-01-01 00:00:00", tz="Europe/Paris"),
+            pd.Timestamp("2020-01-01 00:00:00", tz="Europe/Paris"),
         )
         self.assertEqual(
             df.last_valid_index(),
-            pd.Timestamp("2013-01-01 04:58:20", tz="Europe/Paris"),
+            pd.Timestamp("2020-01-01 04:58:20", tz="Europe/Paris"),
         )
 
     def test_tree_visualization(self):
@@ -249,11 +249,11 @@ class TestPandasComplexAgentWithData(unittest.TestCase):
         self.assertEqual(len(df.dtypes), 3)
         self.assertEqual(
             df.first_valid_index(),
-            pd.Timestamp("2013-01-01 00:00:00", tz="Europe/Paris"),
+            pd.Timestamp("2020-01-01 00:00:00", tz="Europe/Paris"),
         )
         self.assertEqual(
             df.last_valid_index(),
-            pd.Timestamp("2013-01-10 00:00:00", tz="Europe/Paris"),
+            pd.Timestamp("2020-01-10 00:00:00", tz="Europe/Paris"),
         )
 
     def test_decide_from_contexts_df(self):
@@ -269,11 +269,11 @@ class TestPandasComplexAgentWithData(unittest.TestCase):
         self.assertTrue(test_df.equals(test_df_copy))
         self.assertEqual(
             df.first_valid_index(),
-            pd.Timestamp("2013-01-01 00:00:00", tz="Europe/Paris"),
+            pd.Timestamp("2020-01-01 00:00:00", tz="Europe/Paris"),
         )
         self.assertEqual(
             df.last_valid_index(),
-            pd.Timestamp("2013-01-10 00:00:00", tz="Europe/Paris"),
+            pd.Timestamp("2020-01-10 00:00:00", tz="Europe/Paris"),
         )
 
         # Also works as before, with a plain context
@@ -313,7 +313,7 @@ class TestPandasComplexAgent2WithData(unittest.TestCase):
         test_df = pd.DataFrame(
             [["Jean-Pierre", "+02:00"], ["Paul"]],
             columns=["b", "tz"],
-            index=pd.date_range("20130201", periods=2, freq="D").tz_localize(
+            index=pd.date_range("20200201", periods=2, freq="D").tz_localize(
                 "Europe/Paris"
             ),
         )
@@ -340,7 +340,7 @@ class TestPandasComplexAgent3WithData(unittest.TestCase):
         test_df = pd.DataFrame(
             [[0, "Jean-Pierre", "+02:00"], [1, "Paul", "+02:00"]],
             columns=["a", "b", "tz"],
-            index=pd.date_range("20130201", periods=2, freq="D").tz_localize(
+            index=pd.date_range("20200201", periods=2, freq="D").tz_localize(
                 "Europe/Paris"
             ),
         )
@@ -368,7 +368,7 @@ class TestPandasComplexAgent3WithData(unittest.TestCase):
         test_df = pd.DataFrame(
             [["Jean-Pierre", "+02:00"], ["Paul"]],
             columns=["b", "tz"],
-            index=pd.date_range("20130201", periods=2, freq="D").tz_localize(
+            index=pd.date_range("20200201", periods=2, freq="D").tz_localize(
                 "Europe/Paris"
             ),
         )
@@ -402,11 +402,11 @@ class TestPandasMissingAgentWithData(unittest.TestCase):
         self.assertEqual(len(df), 2)
         self.assertEqual(
             df.first_valid_index(),
-            pd.Timestamp("2013-01-01 00:00:00", tz="Europe/Paris"),
+            pd.Timestamp("2020-01-01 00:00:00", tz="Europe/Paris"),
         )
         self.assertEqual(
             df.last_valid_index(),
-            pd.Timestamp("2013-01-02 00:00:00", tz="Europe/Paris"),
+            pd.Timestamp("2020-01-02 00:00:00", tz="Europe/Paris"),
         )
 
         # Also works as before, with a context containing an optional value
@@ -450,7 +450,7 @@ class TestPandasDatetimeAgentWithData(unittest.TestCase):
     #       [7]
     #     ],
     #     columns=["a"],
-    #     index=pd.date_range("20130101 00:00:00",
+    #     index=pd.date_range("20200101 00:00:00",
     #                         periods=3,
     #                         freq="H").tz_localize("Asia/Shanghai"))
     #   test_df_copy = test_df.copy(deep=True)

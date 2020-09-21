@@ -26,8 +26,11 @@ def random_continuous_value():
 
 VALID_L_OPERATIONS = [
     [
+        # add 1600680210 (21 septembre 2020) to generate more representative timestamp
         {
-            "timestamp": batch_offset * VALID_L_BATCH_DURATION + operation_offset,
+            "timestamp": batch_offset * VALID_L_BATCH_DURATION
+            + operation_offset
+            + 1600680210,
             "context": {
                 "e1": random_enum_value(),
                 "e2": random_enum_value(),
@@ -42,7 +45,7 @@ VALID_L_OPERATIONS = [
         }
         for operation_offset in range(0, VALID_L_BATCH_DURATION, 1000)
     ]
-    for batch_offset in range(0, 60)
+    for batch_offset in range(0, 6)
 ]
 
 
@@ -197,7 +200,6 @@ class TestGetAgentDecisionTreeWithOperationL(unittest.TestCase):
         decision_tree = self.client.get_agent_decision_tree(
             self.agent_id, last_operation["timestamp"],
         )
-
         self.assertIsInstance(decision_tree, dict)
         self.assertNotEqual(decision_tree.get("_version"), None)
         self.assertNotEqual(decision_tree.get("configuration"), None)
