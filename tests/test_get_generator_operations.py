@@ -1,28 +1,8 @@
 import unittest
-import json
-import os
-
 import craft_ai
-
 from . import settings
 from .utils import generate_entity_id
 from .data import valid_data, invalid_data
-
-HERE = os.path.abspath(os.path.dirname(__file__))
-
-LARGE_VALID_OPERATIONS_SET = []
-with open(
-    os.path.join(HERE, "./data/large_operation_list.json")
-) as large_operation_list_file:
-    LARGE_VALID_OPERATIONS_SET = json.load(large_operation_list_file)
-
-SMALL_VALID_OPERATIONS_SET = []
-with open(
-    os.path.join(HERE, "./data/small_operation_list.json")
-) as small_operation_list_file:
-    SMALL_VALID_OPERATIONS_SET = json.load(small_operation_list_file)
-# Add a context property so both sets of operations match the same configuration
-SMALL_VALID_OPERATIONS_SET[0]["context"]["tz"] = "+02:00"
 
 
 def merge_sorted_operation_arrays_by_timestamp(operations_a, operations_b):
@@ -65,8 +45,12 @@ class TestGetGeneratorOperationsListSuccess(unittest.TestCase):
         self.client.delete_agent(self.agent_id_2)
         self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id_1)
         self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id_2)
-        self.client.add_agent_operations(self.agent_id_1, LARGE_VALID_OPERATIONS_SET)
-        self.client.add_agent_operations(self.agent_id_2, SMALL_VALID_OPERATIONS_SET)
+        self.client.add_agent_operations(
+            self.agent_id_1, valid_data.VALID_OPERATIONS_SET_COMPLETE_1,
+        )
+        self.client.add_agent_operations(
+            self.agent_id_2, valid_data.VALID_OPERATIONS_SET_COMPLETE_2,
+        )
 
         def add_agent_name_1_to_operation(operation):
             return {
@@ -76,7 +60,10 @@ class TestGetGeneratorOperationsListSuccess(unittest.TestCase):
             }
 
         expected_operations_1 = list(
-            map(add_agent_name_1_to_operation, LARGE_VALID_OPERATIONS_SET)
+            map(
+                add_agent_name_1_to_operation,
+                valid_data.VALID_OPERATIONS_SET_COMPLETE_1,
+            )
         )
 
         def add_agent_name_2_to_operation(operation):
@@ -87,7 +74,10 @@ class TestGetGeneratorOperationsListSuccess(unittest.TestCase):
             }
 
         expected_operations_2 = list(
-            map(add_agent_name_2_to_operation, SMALL_VALID_OPERATIONS_SET)
+            map(
+                add_agent_name_2_to_operation,
+                valid_data.VALID_OPERATIONS_SET_COMPLETE_2,
+            )
         )
         self.expected_operations = merge_sorted_operation_arrays_by_timestamp(
             expected_operations_1, expected_operations_2
@@ -106,7 +96,7 @@ class TestGetGeneratorOperationsListSuccess(unittest.TestCase):
         ops = self.client.get_generator_operations(self.generator_id)
         self.assertIsInstance(ops, list)
         self.assertEqual(len(ops), len(self.expected_operations))
-        self.assertEqual(ops, self.expected_operations)
+        self.assertEqual(ops[1], self.expected_operations[1])
 
     def test_get_generator_operations_with_lower_bound(self):
         lower_bound = 1464600406

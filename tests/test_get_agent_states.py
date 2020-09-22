@@ -1,20 +1,9 @@
 import unittest
-import json
-import os
-
 import craft_ai
 
 from . import settings
 from .utils import generate_entity_id
 from .data import valid_data, invalid_data
-
-HERE = os.path.abspath(os.path.dirname(__file__))
-
-SMALL_VALID_OPERATIONS_SET = []
-with open(
-    os.path.join(HERE, "./data/small_operation_list.json")
-) as small_operation_list_file:
-    SMALL_VALID_OPERATIONS_SET = json.load(small_operation_list_file)
 
 
 class TestGetAgentStatesSuccess(unittest.TestCase):
@@ -28,6 +17,7 @@ class TestGetAgentStatesSuccess(unittest.TestCase):
         self.client.create_agent(
             {
                 "context": {
+                    "tz": {"type": "timezone"},
                     "presence": {"type": "enum"},
                     "lightIntensity": {"type": "continuous"},
                     "lightbulbColor": {"type": "enum"},
@@ -38,7 +28,7 @@ class TestGetAgentStatesSuccess(unittest.TestCase):
             self.agent_id,
         )
 
-        self.client.add_agent_operations(self.agent_id, SMALL_VALID_OPERATIONS_SET)
+        self.client.add_agent_operations(self.agent_id, valid_data.VALID_OPERATIONS_SET)
 
     def tearDown(self):
         self.client.delete_agent(self.agent_id)
@@ -51,137 +41,63 @@ class TestGetAgentStatesSuccess(unittest.TestCase):
             [
                 {
                     "sample": {
-                        "presence": "robert",
-                        "lightIntensity": 0.4,
-                        "lightbulbColor": "green",
+                        "tz": "+02:00",
+                        "presence": "occupant",
+                        "lightIntensity": 1,
+                        "lightbulbColor": "#ffffff",
                     },
-                    "timestamp": 1464600000,
+                    "timestamp": 1458741230,
                 },
                 {
                     "sample": {
-                        "presence": "robert",
-                        "lightIntensity": 0.4,
-                        "lightbulbColor": "green",
+                        "tz": "+02:00",
+                        "presence": "occupant",
+                        "lightIntensity": 1,
+                        "lightbulbColor": "#ffffff",
                     },
-                    "timestamp": 1464600100,
+                    "timestamp": 1458741330,
                 },
                 {
                     "sample": {
-                        "presence": "robert",
-                        "lightIntensity": 0.4,
-                        "lightbulbColor": "green",
+                        "tz": "+02:00",
+                        "presence": "player",
+                        "lightIntensity": 0.5,
+                        "lightbulbColor": "#ffffff",
                     },
-                    "timestamp": 1464600200,
+                    "timestamp": 1458741430,
                 },
                 {
                     "sample": {
-                        "presence": "robert",
-                        "lightIntensity": 0.4,
-                        "lightbulbColor": "green",
-                    },
-                    "timestamp": 1464600300,
-                },
-                {
-                    "sample": {
-                        "presence": "robert",
-                        "lightIntensity": 0.4,
-                        "lightbulbColor": "green",
-                    },
-                    "timestamp": 1464600400,
-                },
-                {
-                    "sample": {
+                        "tz": "+02:00",
                         "presence": "none",
                         "lightIntensity": 0,
-                        "lightbulbColor": "black",
+                        "lightbulbColor": "#ffffff",
                     },
-                    "timestamp": 1464600500,
+                    "timestamp": 1458741530,
                 },
                 {
                     "sample": {
-                        "presence": "none",
+                        "tz": "+02:00",
+                        "presence": "occupant+player",
                         "lightIntensity": 0,
-                        "lightbulbColor": "black",
+                        "lightbulbColor": "#ffffff",
                     },
-                    "timestamp": 1464600600,
+                    "timestamp": 1458741630,
                 },
                 {
                     "sample": {
-                        "presence": "none",
-                        "lightIntensity": 0,
-                        "lightbulbColor": "black",
+                        "tz": "+01:00",
+                        "presence": "occupant",
+                        "lightIntensity": 0.8,
+                        "lightbulbColor": "#f56fff",
                     },
-                    "timestamp": 1464600700,
-                },
-                {
-                    "sample": {
-                        "presence": "none",
-                        "lightIntensity": 0,
-                        "lightbulbColor": "black",
-                    },
-                    "timestamp": 1464600800,
-                },
-                {
-                    "sample": {
-                        "presence": "none",
-                        "lightIntensity": 0,
-                        "lightbulbColor": "black",
-                    },
-                    "timestamp": 1464600900,
-                },
-                {
-                    "sample": {
-                        "presence": "gisele",
-                        "lightIntensity": 0.4,
-                        "lightbulbColor": "blue",
-                    },
-                    "timestamp": 1464601000,
-                },
-                {
-                    "sample": {
-                        "presence": "gisele",
-                        "lightIntensity": 0.4,
-                        "lightbulbColor": "blue",
-                    },
-                    "timestamp": 1464601100,
-                },
-                {
-                    "sample": {
-                        "presence": "gisele",
-                        "lightIntensity": 0.4,
-                        "lightbulbColor": "blue",
-                    },
-                    "timestamp": 1464601200,
-                },
-                {
-                    "sample": {
-                        "presence": "gisele",
-                        "lightIntensity": 0.4,
-                        "lightbulbColor": "blue",
-                    },
-                    "timestamp": 1464601300,
-                },
-                {
-                    "sample": {
-                        "presence": "gisele",
-                        "lightIntensity": 0.4,
-                        "lightbulbColor": "blue",
-                    },
-                    "timestamp": 1464601400,
-                },
-                {
-                    "sample": {
-                        "presence": "robert",
-                        "lightIntensity": 0.6,
-                        "lightbulbColor": "green",
-                    },
-                    "timestamp": 1464601500,
+                    "timestamp": 1458741730,
                 },
             ],
         )
 
     def test_get_agent_states_with_lower_bound(self):
-        lower_bound = 1464600867
+        lower_bound = valid_data.VALID_TIMESTAMP + valid_data.VALID_TQ
         states = self.client.get_agent_states(self.agent_id, lower_bound)
         self.assertIsInstance(states, list)
         self.assertEqual(
@@ -189,65 +105,54 @@ class TestGetAgentStatesSuccess(unittest.TestCase):
             [
                 {
                     "sample": {
+                        "tz": "+02:00",
+                        "presence": "occupant",
+                        "lightIntensity": 1,
+                        "lightbulbColor": "#ffffff",
+                    },
+                    "timestamp": 1458741330,
+                },
+                {
+                    "sample": {
+                        "tz": "+02:00",
+                        "presence": "player",
+                        "lightIntensity": 0.5,
+                        "lightbulbColor": "#ffffff",
+                    },
+                    "timestamp": 1458741430,
+                },
+                {
+                    "sample": {
+                        "tz": "+02:00",
                         "presence": "none",
                         "lightIntensity": 0,
-                        "lightbulbColor": "black",
+                        "lightbulbColor": "#ffffff",
                     },
-                    "timestamp": 1464600900,
+                    "timestamp": 1458741530,
                 },
                 {
                     "sample": {
-                        "presence": "gisele",
-                        "lightIntensity": 0.4,
-                        "lightbulbColor": "blue",
+                        "tz": "+02:00",
+                        "presence": "occupant+player",
+                        "lightIntensity": 0,
+                        "lightbulbColor": "#ffffff",
                     },
-                    "timestamp": 1464601000,
+                    "timestamp": 1458741630,
                 },
                 {
                     "sample": {
-                        "presence": "gisele",
-                        "lightIntensity": 0.4,
-                        "lightbulbColor": "blue",
+                        "tz": "+01:00",
+                        "presence": "occupant",
+                        "lightIntensity": 0.8,
+                        "lightbulbColor": "#f56fff",
                     },
-                    "timestamp": 1464601100,
-                },
-                {
-                    "sample": {
-                        "presence": "gisele",
-                        "lightIntensity": 0.4,
-                        "lightbulbColor": "blue",
-                    },
-                    "timestamp": 1464601200,
-                },
-                {
-                    "sample": {
-                        "presence": "gisele",
-                        "lightIntensity": 0.4,
-                        "lightbulbColor": "blue",
-                    },
-                    "timestamp": 1464601300,
-                },
-                {
-                    "sample": {
-                        "presence": "gisele",
-                        "lightIntensity": 0.4,
-                        "lightbulbColor": "blue",
-                    },
-                    "timestamp": 1464601400,
-                },
-                {
-                    "sample": {
-                        "presence": "robert",
-                        "lightIntensity": 0.6,
-                        "lightbulbColor": "green",
-                    },
-                    "timestamp": 1464601500,
+                    "timestamp": 1458741730,
                 },
             ],
         )
 
     def test_get_agent_states_with_upper_bound(self):
-        upper_bound = 1464601439
+        upper_bound = valid_data.VALID_LAST_TIMESTAMP - valid_data.VALID_TQ
         states = self.client.get_agent_states(self.agent_id, None, upper_bound)
         self.assertIsInstance(states, list)
         self.assertEqual(
@@ -255,130 +160,55 @@ class TestGetAgentStatesSuccess(unittest.TestCase):
             [
                 {
                     "sample": {
-                        "presence": "robert",
-                        "lightIntensity": 0.4,
-                        "lightbulbColor": "green",
+                        "tz": "+02:00",
+                        "presence": "occupant",
+                        "lightIntensity": 1,
+                        "lightbulbColor": "#ffffff",
                     },
-                    "timestamp": 1464600000,
+                    "timestamp": 1458741230,
                 },
                 {
                     "sample": {
-                        "presence": "robert",
-                        "lightIntensity": 0.4,
-                        "lightbulbColor": "green",
+                        "tz": "+02:00",
+                        "presence": "occupant",
+                        "lightIntensity": 1,
+                        "lightbulbColor": "#ffffff",
                     },
-                    "timestamp": 1464600100,
+                    "timestamp": 1458741330,
                 },
                 {
                     "sample": {
-                        "presence": "robert",
-                        "lightIntensity": 0.4,
-                        "lightbulbColor": "green",
+                        "tz": "+02:00",
+                        "presence": "player",
+                        "lightIntensity": 0.5,
+                        "lightbulbColor": "#ffffff",
                     },
-                    "timestamp": 1464600200,
+                    "timestamp": 1458741430,
                 },
                 {
                     "sample": {
-                        "presence": "robert",
-                        "lightIntensity": 0.4,
-                        "lightbulbColor": "green",
-                    },
-                    "timestamp": 1464600300,
-                },
-                {
-                    "sample": {
-                        "presence": "robert",
-                        "lightIntensity": 0.4,
-                        "lightbulbColor": "green",
-                    },
-                    "timestamp": 1464600400,
-                },
-                {
-                    "sample": {
+                        "tz": "+02:00",
                         "presence": "none",
                         "lightIntensity": 0,
-                        "lightbulbColor": "black",
+                        "lightbulbColor": "#ffffff",
                     },
-                    "timestamp": 1464600500,
+                    "timestamp": 1458741530,
                 },
                 {
                     "sample": {
-                        "presence": "none",
+                        "tz": "+02:00",
+                        "presence": "occupant+player",
                         "lightIntensity": 0,
-                        "lightbulbColor": "black",
+                        "lightbulbColor": "#ffffff",
                     },
-                    "timestamp": 1464600600,
-                },
-                {
-                    "sample": {
-                        "presence": "none",
-                        "lightIntensity": 0,
-                        "lightbulbColor": "black",
-                    },
-                    "timestamp": 1464600700,
-                },
-                {
-                    "sample": {
-                        "presence": "none",
-                        "lightIntensity": 0,
-                        "lightbulbColor": "black",
-                    },
-                    "timestamp": 1464600800,
-                },
-                {
-                    "sample": {
-                        "presence": "none",
-                        "lightIntensity": 0,
-                        "lightbulbColor": "black",
-                    },
-                    "timestamp": 1464600900,
-                },
-                {
-                    "sample": {
-                        "presence": "gisele",
-                        "lightIntensity": 0.4,
-                        "lightbulbColor": "blue",
-                    },
-                    "timestamp": 1464601000,
-                },
-                {
-                    "sample": {
-                        "presence": "gisele",
-                        "lightIntensity": 0.4,
-                        "lightbulbColor": "blue",
-                    },
-                    "timestamp": 1464601100,
-                },
-                {
-                    "sample": {
-                        "presence": "gisele",
-                        "lightIntensity": 0.4,
-                        "lightbulbColor": "blue",
-                    },
-                    "timestamp": 1464601200,
-                },
-                {
-                    "sample": {
-                        "presence": "gisele",
-                        "lightIntensity": 0.4,
-                        "lightbulbColor": "blue",
-                    },
-                    "timestamp": 1464601300,
-                },
-                {
-                    "sample": {
-                        "presence": "gisele",
-                        "lightIntensity": 0.4,
-                        "lightbulbColor": "blue",
-                    },
-                    "timestamp": 1464601400,
+                    "timestamp": 1458741630,
                 },
             ],
         )
 
     def test_get_agent_states_with_both_bounds(self):
-        lower_bound = 1464600449
-        upper_bound = 1464601124
+        lower_bound = valid_data.VALID_TIMESTAMP + valid_data.VALID_TQ
+        upper_bound = valid_data.VALID_LAST_TIMESTAMP - valid_data.VALID_TQ
         states = self.client.get_agent_states(self.agent_id, lower_bound, upper_bound)
         self.assertIsInstance(states, list)
         self.assertEqual(
@@ -386,59 +216,39 @@ class TestGetAgentStatesSuccess(unittest.TestCase):
             [
                 {
                     "sample": {
+                        "tz": "+02:00",
+                        "presence": "occupant",
+                        "lightIntensity": 1,
+                        "lightbulbColor": "#ffffff",
+                    },
+                    "timestamp": 1458741330,
+                },
+                {
+                    "sample": {
+                        "tz": "+02:00",
+                        "presence": "player",
+                        "lightIntensity": 0.5,
+                        "lightbulbColor": "#ffffff",
+                    },
+                    "timestamp": 1458741430,
+                },
+                {
+                    "sample": {
+                        "tz": "+02:00",
                         "presence": "none",
                         "lightIntensity": 0,
-                        "lightbulbColor": "black",
+                        "lightbulbColor": "#ffffff",
                     },
-                    "timestamp": 1464600500,
+                    "timestamp": 1458741530,
                 },
                 {
                     "sample": {
-                        "presence": "none",
+                        "tz": "+02:00",
+                        "presence": "occupant+player",
                         "lightIntensity": 0,
-                        "lightbulbColor": "black",
+                        "lightbulbColor": "#ffffff",
                     },
-                    "timestamp": 1464600600,
-                },
-                {
-                    "sample": {
-                        "presence": "none",
-                        "lightIntensity": 0,
-                        "lightbulbColor": "black",
-                    },
-                    "timestamp": 1464600700,
-                },
-                {
-                    "sample": {
-                        "presence": "none",
-                        "lightIntensity": 0,
-                        "lightbulbColor": "black",
-                    },
-                    "timestamp": 1464600800,
-                },
-                {
-                    "sample": {
-                        "presence": "none",
-                        "lightIntensity": 0,
-                        "lightbulbColor": "black",
-                    },
-                    "timestamp": 1464600900,
-                },
-                {
-                    "sample": {
-                        "presence": "gisele",
-                        "lightIntensity": 0.4,
-                        "lightbulbColor": "blue",
-                    },
-                    "timestamp": 1464601000,
-                },
-                {
-                    "sample": {
-                        "presence": "gisele",
-                        "lightIntensity": 0.4,
-                        "lightbulbColor": "blue",
-                    },
-                    "timestamp": 1464601100,
+                    "timestamp": 1458741630,
                 },
             ],
         )

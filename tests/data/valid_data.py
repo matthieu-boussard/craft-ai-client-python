@@ -79,3 +79,162 @@ VALID_OPERATIONS_SET = [
         },
     },
 ]
+
+VALID_OPERATIONS_SET_COMPLETE_1 = [
+    {
+        "timestamp": 1462464800,
+        "context": {
+            "tz": "+02:00",
+            "presence": "robert",
+            "lightIntensity": 0.4,
+            "lightbulbColor": "green",
+        },
+    },
+    {
+        "timestamp": 1462464900,
+        "context": {
+            "tz": "+02:00",
+            "presence": "robert",
+            "lightIntensity": 0.4,
+            "lightbulbColor": "pink",
+        },
+    },
+    {
+        "timestamp": 1462465000,
+        "context": {
+            "tz": "+02:00",
+            "presence": "robert",
+            "lightIntensity": 0.8,
+            "lightbulbColor": "pink",
+        },
+    },
+    {
+        "timestamp": 1462465100,
+        "context": {
+            "tz": "+02:00",
+            "presence": "robert",
+            "lightIntensity": 0.8,
+            "lightbulbColor": "pink",
+        },
+    },
+    {
+        "timestamp": 1462465200,
+        "context": {
+            "tz": "+02:00",
+            "presence": "giselle",
+            "lightIntensity": 0.8,
+            "lightbulbColor": "pink",
+        },
+    },
+    {
+        "timestamp": 1462465300,
+        "context": {
+            "tz": "+02:00",
+            "presence": "giselle",
+            "lightIntensity": 0.8,
+            "lightbulbColor": "pink",
+        },
+    },
+    {
+        "timestamp": 1462465400,
+        "context": {
+            "tz": "+02:00",
+            "presence": "robert",
+            "lightIntensity": 0.4,
+            "lightbulbColor": "green",
+        },
+    },
+    {
+        "timestamp": 1462465500,
+        "context": {
+            "tz": "+02:00",
+            "presence": "robert",
+            "lightIntensity": 0.4,
+            "lightbulbColor": "green",
+        },
+    },
+    {
+        "timestamp": 1462465600,
+        "context": {
+            "tz": "+02:00",
+            "presence": "robert",
+            "lightIntensity": 0.4,
+            "lightbulbColor": "pink",
+        },
+    },
+    {
+        "timestamp": 1462465700,
+        "context": {
+            "tz": "+02:00",
+            "presence": "robert",
+            "lightIntensity": 0.6,
+            "lightbulbColor": "green",
+        },
+    },
+    {
+        "timestamp": 1462465800,
+        "context": {
+            "tz": "+02:00",
+            "presence": "robert",
+            "lightIntensity": 0.4,
+            "lightbulbColor": "green",
+        },
+    },
+]
+
+VALID_OPERATIONS_SET_COMPLETE_2 = [
+    {
+        "timestamp": 1462465510,
+        "context": {
+            "tz": "+02:00",
+            "presence": "giselle",
+            "lightIntensity": 1,
+            "lightbulbColor": "pink",
+        },
+    },
+    {
+        "timestamp": 1462465620,
+        "context": {
+            "tz": "+02:00",
+            "presence": "giselle",
+            "lightIntensity": 1,
+            "lightbulbColor": "pink",
+        },
+    },
+    {
+        "timestamp": 1462465730,
+        "context": {
+            "tz": "+02:00",
+            "presence": "robert",
+            "lightIntensity": 0.6,
+            "lightbulbColor": "pink",
+        },
+    },
+    {
+        "timestamp": 1462465840,
+        "context": {
+            "tz": "+02:00",
+            "presence": "giselle",
+            "lightIntensity": 0.8,
+            "lightbulbColor": "green",
+        },
+    },
+    {
+        "timestamp": 1462465950,
+        "context": {
+            "tz": "+02:00",
+            "presence": "robert",
+            "lightIntensity": 0.4,
+            "lightbulbColor": "green",
+        },
+    },
+    {
+        "timestamp": 1462466060,
+        "context": {
+            "tz": "+02:00",
+            "presence": "giselle",
+            "lightIntensity": 1,
+            "lightbulbColor": "green",
+        },
+    },
+]
