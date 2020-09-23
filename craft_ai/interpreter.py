@@ -44,7 +44,9 @@ class Interpreter(object):
 
         if tree_version >= VersionInfo(1, 0, 0) and tree_version < VersionInfo(2, 0, 0):
             return InterpreterV1
-        elif tree_version >= VersionInfo(2, 0, 0) and tree_version < VersionInfo(3, 0, 0):
+        elif tree_version >= VersionInfo(2, 0, 0) and tree_version < VersionInfo(
+            3, 0, 0
+        ):
             return InterpreterV2
         else:
             raise CraftAiDecisionError(
@@ -163,7 +165,9 @@ class Interpreter(object):
                     tree_version
                 )
             )
-        elif tree_version >= VersionInfo(1, 0, 0) and tree_version < VersionInfo(3, 0, 0):
+        elif tree_version >= VersionInfo(1, 0, 0) and tree_version < VersionInfo(
+            3, 0, 0
+        ):
             if tree_object.get("configuration") is None:
                 raise CraftAiDecisionError(
                     """Invalid decision tree format, no configuration found"""

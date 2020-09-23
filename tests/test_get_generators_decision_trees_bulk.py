@@ -58,7 +58,7 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
         self.client.delete_generator(self.generator_id2)
 
     def test_get_one_decision_tree_with_correct_input(self):
-        """get_generarots_decision_trees_bulk should succeed when given a correct input.
+        """get_generators_decision_trees_bulk should succeed when given a correct input.
 
         It should give a proper JSON response with a list containing a dict
         with `id` field being string and 'tree' field being a dict. As we don't
@@ -75,7 +75,9 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
         self.assertIsInstance(decision_trees[0], dict)
         self.assertIsInstance(decision_trees[0].get("tree"), dict)
         self.assertNotEqual(decision_trees[0].get("tree").get("_version"), None)
-        tree_version = semver.VersionInfo.parse(decision_trees[0].get("tree").get("_version")).to_dict()
+        tree_version = semver.VersionInfo.parse(
+            decision_trees[0].get("tree").get("_version")
+        ).to_dict()
         self.assertEqual(tree_version["major"], int(DEFAULT_DECISION_TREE_VERSION))
         self.assertNotEqual(decision_trees[0].get("tree").get("configuration"), None)
         self.assertNotEqual(decision_trees[0].get("tree").get("trees"), None)
