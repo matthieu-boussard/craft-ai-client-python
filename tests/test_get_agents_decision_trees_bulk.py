@@ -61,7 +61,7 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
         self.assertIsInstance(decision_trees[0], dict)
         self.assertIsInstance(decision_trees[0].get("tree"), dict)
         self.assertNotEqual(decision_trees[0].get("tree").get("_version"), None)
-        tree_version = semver.parse(decision_trees[0].get("tree").get("_version"))
+        tree_version = semver.VersionInfo.parse(decision_trees[0].get("tree").get("_version")).to_dict()
         self.assertEqual(tree_version["major"], int(DEFAULT_DECISION_TREE_VERSION))
         self.assertNotEqual(decision_trees[0].get("tree").get("configuration"), None)
         self.assertNotEqual(decision_trees[0].get("tree").get("trees"), None)
@@ -88,7 +88,7 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
         self.assertEqual(decision_trees[0].get("id"), self.agent_id1)
         self.assertIsInstance(decision_trees[0].get("tree"), dict)
         self.assertNotEqual(decision_trees[0].get("tree").get("_version"), None)
-        tree_version = semver.parse(decision_trees[0].get("tree").get("_version"))
+        tree_version = semver.VersionInfo.parse(decision_trees[0].get("tree").get("_version")).to_dict()
         self.assertEqual(tree_version["major"], int(DEFAULT_DECISION_TREE_VERSION))
         self.assertNotEqual(decision_trees[0].get("tree").get("configuration"), None)
         self.assertNotEqual(decision_trees[0].get("tree").get("trees"), None)
@@ -97,7 +97,7 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
         self.assertEqual(decision_trees[1].get("id"), self.agent_id2)
         self.assertIsInstance(decision_trees[1].get("tree"), dict)
         self.assertNotEqual(decision_trees[1].get("tree").get("_version"), None)
-        tree_version = semver.parse(decision_trees[1].get("tree").get("_version"))
+        tree_version = semver.VersionInfo.parse(decision_trees[1].get("tree").get("_version")).to_dict()
         self.assertEqual(tree_version["major"], int(DEFAULT_DECISION_TREE_VERSION))
         self.assertNotEqual(decision_trees[1].get("tree").get("configuration"), None)
         self.assertNotEqual(decision_trees[1].get("tree").get("trees"), None)
@@ -120,10 +120,10 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
         decision_trees = self.client.get_agents_decision_trees_bulk(payload, version)
 
         self.assertNotEqual(decision_trees[0].get("tree").get("_version"), None)
-        tree_version = semver.parse(decision_trees[0].get("tree").get("_version"))
+        tree_version = semver.VersionInfo.parse(decision_trees[0].get("tree").get("_version")).to_dict()
         self.assertEqual(tree_version["major"], version)
         self.assertNotEqual(decision_trees[1].get("tree").get("_version"), None)
-        tree_version = semver.parse(decision_trees[1].get("tree").get("_version"))
+        tree_version = semver.VersionInfo.parse(decision_trees[1].get("tree").get("_version")).to_dict()
         self.assertEqual(tree_version["major"], version)
 
         self.addCleanup(self.clean_up_agents, [self.agent_id1, self.agent_id2])
@@ -144,11 +144,11 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
         decision_trees = self.client.get_agents_decision_trees_bulk(payload, version)
 
         self.assertNotEqual(decision_trees[0].get("tree").get("_version"), None)
-        tree_version = semver.parse(decision_trees[0].get("tree").get("_version"))
+        tree_version = semver.VersionInfo.parse(decision_trees[0].get("tree").get("_version")).to_dict()
         self.assertEqual(tree_version["major"], version)
 
         self.assertNotEqual(decision_trees[1].get("tree").get("_version"), None)
-        tree_version = semver.parse(decision_trees[1].get("tree").get("_version"))
+        tree_version = semver.VersionInfo.parse(decision_trees[1].get("tree").get("_version")).to_dict()
         self.assertEqual(tree_version["major"], version)
 
         self.addCleanup(self.clean_up_agents, [self.agent_id1, self.agent_id2])

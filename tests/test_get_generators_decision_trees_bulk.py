@@ -75,7 +75,7 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
         self.assertIsInstance(decision_trees[0], dict)
         self.assertIsInstance(decision_trees[0].get("tree"), dict)
         self.assertNotEqual(decision_trees[0].get("tree").get("_version"), None)
-        tree_version = semver.parse(decision_trees[0].get("tree").get("_version"))
+        tree_version = semver.VersionInfo.parse(decision_trees[0].get("tree").get("_version")).to_dict()
         self.assertEqual(tree_version["major"], int(DEFAULT_DECISION_TREE_VERSION))
         self.assertNotEqual(decision_trees[0].get("tree").get("configuration"), None)
         self.assertNotEqual(decision_trees[0].get("tree").get("trees"), None)

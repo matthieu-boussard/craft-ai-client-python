@@ -57,7 +57,7 @@ class TestGeneratorDecisionTree(unittest.TestCase):
         self.assertNotEqual(decision_tree.get("_version"), None)
         self.assertNotEqual(decision_tree.get("configuration"), None)
         self.assertNotEqual(decision_tree.get("trees"), None)
-        tree_version = semver.parse(decision_tree.get("_version"))
+        tree_version = semver.VersionInfo.parse(decision_tree.get("_version")).to_dict()
         self.assertEqual(tree_version["major"], int(DEFAULT_DECISION_TREE_VERSION))
 
     def test_get_generator_decision_tree_with_specific_version(self):
@@ -68,7 +68,7 @@ class TestGeneratorDecisionTree(unittest.TestCase):
 
         self.assertIsInstance(decision_tree, dict)
         self.assertNotEqual(decision_tree.get("_version"), None)
-        tree_version = semver.parse(decision_tree.get("_version"))
+        tree_version = semver.VersionInfo.parse(decision_tree.get("_version")).to_dict()
         self.assertEqual(tree_version["major"], version)
         self.assertNotEqual(decision_tree.get("configuration"), None)
         self.assertNotEqual(decision_tree.get("trees"), None)
@@ -81,7 +81,7 @@ class TestGeneratorDecisionTree(unittest.TestCase):
 
         self.assertIsInstance(decision_tree, dict)
         self.assertNotEqual(decision_tree.get("_version"), None)
-        tree_version = semver.parse(decision_tree.get("_version"))
+        tree_version = semver.VersionInfo.parse(decision_tree.get("_version")).to_dict()
         self.assertEqual(tree_version["major"], version)
         self.assertNotEqual(decision_tree.get("configuration"), None)
         self.assertNotEqual(decision_tree.get("trees"), None)

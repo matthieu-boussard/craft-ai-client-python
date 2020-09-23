@@ -1,5 +1,5 @@
 import re
-import semver
+from semver import VersionInfo
 
 from craft_ai.errors import CraftAiDecisionError
 from craft_ai.time import Time
@@ -41,13 +41,10 @@ class Interpreter(object):
 
     @staticmethod
     def _get_interpreter(tree_version):
-        if semver.match(tree_version, ">=1.0.0") and semver.match(
-            tree_version, "<2.0.0"
-        ):
+
+        if tree_version >= VersionInfo(1, 0, 0) and tree_version < VersionInfo(2, 0, 0):
             return InterpreterV1
-        elif semver.match(tree_version, ">=2.0.0") and semver.match(
-            tree_version, "<3.0.0"
-        ):
+        elif tree_version >= VersionInfo(2, 0, 0) and tree_version < VersionInfo(3, 0, 0):
             return InterpreterV2
         else:
             raise CraftAiDecisionError(
@@ -166,9 +163,7 @@ class Interpreter(object):
                     tree_version
                 )
             )
-        elif semver.match(tree_version, ">=1.0.0") and semver.match(
-            tree_version, "<3.0.0"
-        ):
+        elif tree_version >= VersionInfo(1, 0, 0) and tree_version < VersionInfo(3, 0, 0):
             if tree_object.get("configuration") is None:
                 raise CraftAiDecisionError(
                     """Invalid decision tree format, no configuration found"""
