@@ -20,6 +20,11 @@ class TestCreateAgentsBulkSuccess(unittest.TestCase):
         cls.agent_id2 = generate_entity_id("test_create_agents_bulk")
         cls.agent_name = generate_entity_id("test_create_agents_bulk")
 
+    @classmethod
+    def tearDownClass(cls):
+        for agent_id in cls.client.list_agents():
+            cls.delete_agent(agent_id)
+
     def setUp(self):
         # Makes sure that no agent with the same ID already exists
         resp1 = self.client.delete_agent(self.agent_id1)
@@ -160,6 +165,12 @@ class TestCreateAgentsBulkFailure(unittest.TestCase):
 
         self.assertIsInstance(resp1, dict)
         self.assertIsInstance(resp2, dict)
+
+    def tearDown(self):
+        # This ensures that agents are properly deleted every time
+        self.client.delete_agent(self.agent_id1)
+        self.client.delete_agent(self.agent_id2)
+        self.client.delete_agent(self.agent_name)
 
     def clean_up_agent(self, aid):
         # Makes sure that no agent with the standard ID remains
@@ -309,6 +320,11 @@ class TestCreateAgentsBulkSomeFailure(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = Client(settings.CRAFT_CFG)
+
+    @classmethod
+    def tearDownClass(cls):
+        for agent_id in cls.client.list_agents():
+            cls.delete_agent(agent_id)
 
     def setUp(self):
         self.agent_id = generate_entity_id("test_create_agents_bulk_SomeFail")

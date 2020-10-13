@@ -19,6 +19,11 @@ class TestDeleteAgentsBulkSuccess(unittest.TestCase):
         cls.agent_id1 = generate_entity_id("test_delete_agents_bulk")
         cls.agent_id2 = generate_entity_id("test_delete_agents_bulk")
 
+    @classmethod
+    def tearDownClass(cls):
+        cls.client.delete_agent(cls.agent_id1)
+        cls.client.delete_agent(cls.agent_id2)
+
     def setUp(self):
         try:
             self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id1)
@@ -51,6 +56,11 @@ class TestDeleteGroupAgentsBulkSuccess(unittest.TestCase):
             generate_entity_id("test_delete_agents_bulk")
             for i in range(NB_AGENTS_TO_DELETE)
         ]
+
+    @classmethod
+    def tearDownClass(cls):
+        for agent_id in cls.agents:
+            cls.client.delete_agent(agent_id)
 
     def setUp(self):
         for agent in self.agents:
@@ -107,6 +117,10 @@ class TestDeleteBulkAgentsBulkSomeFailure(unittest.TestCase):
     def setUpClass(cls):
         cls.client = Client(settings.CRAFT_CFG)
         cls.agent_id = generate_entity_id("test_delete_agents_bulk")
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.client.delete_agent(cls.agent_id)
 
     def setUp(self):
         try:

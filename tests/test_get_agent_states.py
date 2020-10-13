@@ -260,20 +260,20 @@ class TestGetOperationsListFailure(unittest.TestCase):
         cls.client = craft_ai.Client(settings.CRAFT_CFG)
         cls.agent_id = generate_entity_id("get_operations")
 
-        def setUp(self):
-            self.client.delete_agent(self.agent_id)
-            self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id)
-            self.client.add_agent_operations(
-                self.agent_id, valid_data.VALID_OPERATIONS_SET
+    def setUp(self):
+        self.client.delete_agent(self.agent_id)
+        self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id)
+        self.client.add_agent_operations(
+            self.agent_id, valid_data.VALID_OPERATIONS_SET
+        )
+
+    def tearDown(self):
+        self.client.delete_agent(self.agent_id)
+
+    def test_get_agent_states_with_invalid_id(self):
+        for empty_id in invalid_data.UNDEFINED_KEY:
+            self.assertRaises(
+                craft_ai.errors.CraftAiBadRequestError,
+                self.client.get_agent_states,
+                invalid_data.UNDEFINED_KEY[empty_id],
             )
-
-        def tearDown(self):
-            self.client.delete_agent(self.agent_id)
-
-        def test_get_agent_states_with_invalid_id(self):
-            for empty_id in invalid_data.UNDEFINED_KEY:
-                self.assertRaises(
-                    craft_ai.errors.CraftAiBadRequestError,
-                    self.client.get_agent_states,
-                    invalid_data.UNDEFINED_KEY[empty_id],
-                )

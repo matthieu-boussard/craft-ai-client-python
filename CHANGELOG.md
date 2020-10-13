@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fix the `add_agent_operations` message to display the number of added operations.
 - Delete `is_optional` because it is now deployed everywhere.
 - Fix the `semver` deprecated syntax.
+- Fix tests that could let dangling agent in test projects.
 
 ### Changed
 

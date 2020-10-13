@@ -29,6 +29,11 @@ class TestAddOperationsBulkSuccess(unittest.TestCase):
         self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id1)
         self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id2)
 
+    def tearDown(self):
+        # This ensures that agents are properly deleted every time
+        self.client.delete_agent(self.agent_id1)
+        self.client.delete_agent(self.agent_id2)
+
     def clean_up_agent(self, aid):
         # Makes sure that no agent with the standard ID remains
         self.client.delete_agent(aid)
@@ -115,6 +120,11 @@ class TestAddOperationsGroupAgentsBulkSuccess(unittest.TestCase):
         for agent_id in self.agents:
             self.client.delete_agent(agent_id)
             self.client.create_agent(valid_data.VALID_CONFIGURATION, agent_id)
+
+    def tearDown(self):
+        # This ensures that agents are properly deleted every time
+        for agent_id in self.agents:
+             self.client.delete_agent(agent_id)
 
     def clean_up_agent(self, aid):
         # Makes sure that no agent with the standard ID remains
