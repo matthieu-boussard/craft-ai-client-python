@@ -263,9 +263,7 @@ class TestGetOperationsListFailure(unittest.TestCase):
     def setUp(self):
         self.client.delete_agent(self.agent_id)
         self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id)
-        self.client.add_agent_operations(
-            self.agent_id, valid_data.VALID_OPERATIONS_SET
-        )
+        self.client.add_agent_operations(self.agent_id, valid_data.VALID_OPERATIONS_SET)
 
     def tearDown(self):
         self.client.delete_agent(self.agent_id)

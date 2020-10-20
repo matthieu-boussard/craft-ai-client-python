@@ -124,7 +124,7 @@ class TestAddOperationsGroupAgentsBulkSuccess(unittest.TestCase):
     def tearDown(self):
         # This ensures that agents are properly deleted every time
         for agent_id in self.agents:
-             self.client.delete_agent(agent_id)
+            self.client.delete_agent(agent_id)
 
     def clean_up_agent(self, aid):
         # Makes sure that no agent with the standard ID remains

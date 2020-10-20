@@ -16,12 +16,12 @@ class TestGetAgentSuccess(unittest.TestCase):
         cls.agent_id = generate_entity_id("test_get_agent")
 
     def setUp(self):
-        # self.client.delete_agent(self.agent_id)
+        self.client.delete_agent(self.agent_id)
         self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id)
 
-    # def tearDown(self):
-    #     # Makes sure that no agent with the standard ID remains
-    #     self.client.delete_agent(self.agent_id)
+    def tearDown(self):
+        # Makes sure that no agent with the standard ID remains
+        self.client.delete_agent(self.agent_id)
 
     def test_get_agent_with_correct_id(self):
         """get_agent should succeed when given a correct agent ID
@@ -43,14 +43,14 @@ class TestGetAgentFailure(unittest.TestCase):
         cls.client = craft_ai.Client(settings.CRAFT_CFG)
         cls.agent_id = generate_entity_id("test_get_agent")
 
-    # def setUp(self):
+    def setUp(self):
         # Makes sure that no agent exists with the test id
         # (especially for test_get_agent_with_unknown_id)
-        # self.client.delete_agent(self.agent_id)
+        self.client.delete_agent(self.agent_id)
 
-    # def tearDown(self):
+    def tearDown(self):
         # Makes sure that no agent with the standard ID remains
-        # self.client.delete_agent(self.agent_id)
+        self.client.delete_agent(self.agent_id)
 
     def test_get_agent_with_invalid_id(self):
         """get_agent should fail when given a non-string/empty string ID

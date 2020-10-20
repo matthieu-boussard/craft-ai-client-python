@@ -23,7 +23,7 @@ class TestCreateAgentsBulkSuccess(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         for agent_id in cls.client.list_agents():
-            cls.delete_agent(agent_id)
+            cls.client.delete_agent(agent_id)
 
     def setUp(self):
         # Makes sure that no agent with the same ID already exists
@@ -324,7 +324,7 @@ class TestCreateAgentsBulkSomeFailure(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         for agent_id in cls.client.list_agents():
-            cls.delete_agent(agent_id)
+            cls.client.delete_agent(agent_id)
 
     def setUp(self):
         self.agent_id = generate_entity_id("test_create_agents_bulk_SomeFail")

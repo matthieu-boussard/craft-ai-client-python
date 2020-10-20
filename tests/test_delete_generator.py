@@ -20,9 +20,9 @@ class TestDeleteGeneratorWithValidID(unittest.TestCase):
         cls.client.delete_generator(cls.generator_id)
 
     def setUp(self):
-        # Creating a generator may raise an error if one with the same ID
-        # already exists. Although it shouldn't matter for the deletion test,
-        # it is necessary to catch this kind of errors.
+        """Creating a generator may raise an error if one with the same ID
+        already exists. Although it shouldn't matter for the deletion test,
+        it is necessary to catch this kind of errors."""
         try:
             self.client.create_generator(
                 valid_data.VALID_GENERATOR_CONFIGURATION, self.generator_id
@@ -49,7 +49,6 @@ class TestDeleteGeneratorWithUnknownID(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.client.delete_generator(cls.generator_id)
-
 
     def test_delete_generator_with_unknown_id(self):
         """delete_generator should succeed when given a non-string/empty string ID
