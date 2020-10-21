@@ -351,12 +351,10 @@ class InterpreterV2(object):
             return True
         property_def = configuration["context"][property_name]
         property_type = property_def["type"]
-        is_optional = property_def.get("is_optional")
         if property_type in _VALUE_VALIDATORS:
             property_value = context[property_name]
             return (
                 _VALUE_VALIDATORS[property_type](property_value)
                 or property_value is None
-                or (is_optional and property_value == {})
             )
         return True

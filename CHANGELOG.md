@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Print the error when one of the linter failed.
 - Remove .pylintrc file
 - Fix the `add_agent_operations` message to display the number of added operations.
+- Delete `is_optional` because it is now deployed everywhere.
 
 ### Changed
 

@@ -140,8 +140,8 @@ DATETIME_AGENT_DATA = pd.DataFrame(
 
 MISSING_AGENT_CONFIGURATION = {
     "context": {
-        "a": {"type": "continuous", "is_optional": True},
-        "b": {"type": "enum", "is_optional": True},
+        "a": {"type": "continuous"},
+        "b": {"type": "enum"},
         "tz": {"type": "timezone"},
     },
     "output": ["a"],
