@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 - Add a test in the pandas client to check the error message when deciding based on a tree from no samples.
+- Add support for generators bulk in the `client`: `create_generators_bulk`, `delete_generators_bulk`, `get_generators_decision_trees_bulk`.
 
 ### Fixed
 
@@ -20,6 +21,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Remove .pylintrc file
 - Fix the `add_agent_operations` message to display the number of added operations.
 - Delete `is_optional` because it is now deployed everywhere.
+- Fix the `semver` deprecated syntax.
 
 ### Changed
 
