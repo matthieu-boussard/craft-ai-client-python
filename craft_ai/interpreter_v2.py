@@ -356,5 +356,6 @@ class InterpreterV2(object):
             return (
                 _VALUE_VALIDATORS[property_type](property_value)
                 or property_value is None
+                or property_value == {}
             )
         return True
