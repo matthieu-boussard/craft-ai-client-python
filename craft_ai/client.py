@@ -37,6 +37,7 @@ ERROR_ID_MESSAGE = (
     "and must be between 1 and 36 characters."
 )
 
+ERROR_EMPTY_PAYLOAD = "Invalid payload given, it should contains a least one agent"
 
 def current_time_ms():
     return int(round(time.time() * 1000))
@@ -1185,9 +1186,12 @@ class Client(object):
                     else:
                         valid_entity_indices.append(index)
                 else:
-                    valid_entity_indices.append(index)
+                    valid_agent_indices.append(index)
 
-        if len(invalid_entity_indices) == len(payload):
+        if (len(payload) == 0):
+            raise CraftAiBadRequestError(ERROR_EMPTY_PAYLOAD)
+
+        if (len(invalid_agent_indices) == len(payload)):
             raise CraftAiBadRequestError(ERROR_ID_MESSAGE)
 
         return valid_entity_indices, invalid_entity_indices, invalid_payload

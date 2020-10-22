@@ -212,6 +212,17 @@ class TestCreateAgentsBulkFailure(unittest.TestCase):
             craft_err.CraftAiBadRequestError, self.client.create_agents_bulk, payload
         )
 
+    def test_create_agents_with_an_empty_payload(self):
+        """create_agents_bulk should fail when given payload is empty.
+
+        It should raise an error of invalid given payload.
+        """
+        payload = []
+
+        self.assertRaises(
+            craft_err.CraftAiBadRequestError, self.client.create_agents_bulk, payload
+        )
+
     def test_create_agents_bulk_with_invalid_context(self):
         """create_agents_bulk should fail when all agent contexts are invalid or the `context`
         field doesn't exist.
