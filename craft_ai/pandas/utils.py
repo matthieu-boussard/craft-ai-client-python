@@ -5,7 +5,7 @@ import string
 import importlib
 
 import pandas as pd
-import semver
+from semver import VersionInfo
 from .constants import (
     MISSING_VALUE,
     OPTIONAL_VALUE,
@@ -112,7 +112,7 @@ def create_tree_html(tree_object, selected_node, edge_type, folded_nodes, height
                 tree_version
             )
         )
-    elif semver.match(tree_version, ">=1.0.0") and semver.match(tree_version, "<3.0.0"):
+    elif tree_version >= VersionInfo(1, 0, 0) and tree_version < VersionInfo(3, 0, 0):
         if tree_object.get("configuration") is None:
             raise CraftAiError(
                 """Invalid decision tree format, no configuration found"""

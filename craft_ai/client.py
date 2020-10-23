@@ -348,6 +348,39 @@ class Client(object):
 
         return generator
 
+    def create_generators_bulk(self, payload):
+        """Create a group of generators.
+
+        :param list payload: Contains the informations to create the generators.
+        It's in the form [{"id": generator_id, "configuration": configuration}]
+        With an id key that is an str containing only characters
+        in "a-zA-Z0-9_-" and must be between 1 and 36 characters.
+        With configuration having the form given in the craft_ai documentation.
+
+        :return: Generators created which are represented with dictionnaries.
+        :rtype: List of dict.
+
+        :raises CraftAiBadRequestError: If all of the ids or all of the
+        configurations are invalid.
+        """
+        # Check all ids, raise an error if all ids are invalid
+        valid_indices, invalid_indices, invalid_generators = self._check_entity_id_bulk(
+            payload
+        )
+        # Create the json file with the generators with valid id and send it
+        valid_generators = self._create_and_send_json_bulk(
+            [payload[i] for i in valid_indices],
+            "{}/bulk/generators".format(self._base_url),
+            "POST",
+        )
+
+        if invalid_indices == []:
+            return valid_generators
+        # Put the valid and invalid generators in their original index
+        return self._recreate_list_with_indices(
+            valid_indices, valid_generators, invalid_indices, invalid_generators
+        )
+
     def get_generator(self, generator_id):
         # Raises an error when generator_id is invalid
         self._check_entity_id(generator_id)
@@ -385,6 +418,40 @@ class Client(object):
         decoded_resp = self._decode_response(resp)
 
         return decoded_resp
+
+    def delete_generators_bulk(self, payload):
+        """Delete a group of generators
+
+        :param list payload: Contains the informations to delete the generators.
+        It's in the form [{"id": generator_id}].
+        With id an str containing only characters in "a-zA-Z0-9_-" and must
+        be between 1 and 36 characters.
+
+        :return: the list of generators deleted which are represented with
+        dictionnaries.
+        :rtype: list of dict.
+
+        :raises CraftAiBadRequestError: If all of the ids are invalid.
+        """
+        # Check all ids, raise an error if all ids are invalid
+        valid_indices, invalid_indices, invalid_generators = self._check_entity_id_bulk(
+            payload
+        )
+
+        # Create the json file with the generators with valid id and send it
+        valid_generators = self._create_and_send_json_bulk(
+            [payload[i] for i in valid_indices],
+            "{}/bulk/generators".format(self._base_url),
+            "DELETE",
+        )
+
+        if invalid_indices == []:
+            return valid_generators
+
+        # Put the valid and invalid generators in their original index
+        return self._recreate_list_with_indices(
+            valid_indices, valid_generators, invalid_indices, invalid_generators
+        )
 
     def _get_generator_decision_tree(
         self, generator_id, timestamp, version=DEFAULT_DECISION_TREE_VERSION
@@ -466,6 +533,85 @@ class Client(object):
             try:
                 return self._get_generator_decision_tree(
                     generator_id, timestamp, version
+                )
+            except CraftAiLongRequestTimeOutError:
+                # Do nothing and continue.
+                continue
+
+    def _get_generators_decision_trees_bulk(
+        self, payload, valid_indices, invalid_indices, invalid_dts
+    ):
+        """Tool for the function get_generators_decision_trees_bulk.
+
+        :param list payload: contains the informations necessary for getting
+        the trees. Its form is the same than for the function.
+        _get_generators_decision_trees_bulk.
+        :param list valid_indices: list of the indices of the valid generator id.
+        :param list invalid_indices: list of the indices of the valid generator id.
+        :param list invalid_dts: list of the invalid generator id.
+
+        :return: decision trees.
+        :rtype: list of dict.
+        """
+        valid_dts = self._create_and_send_json_bulk(
+            [payload[i] for i in valid_indices],
+            "{}/bulk/generators/tree".format(self._base_url),
+            "POST",
+        )
+
+        if invalid_indices == []:
+            return valid_dts
+
+        # Put the valid and invalid decision trees in their original index
+        return self._recreate_list_with_indices(
+            valid_indices, valid_dts, invalid_indices, invalid_dts
+        )
+
+    def get_generators_decision_trees_bulk(
+        self, payload, version=DEFAULT_DECISION_TREE_VERSION
+    ):
+        """Get a group of decision trees.
+
+        :param list payload: contains the informations necessary for getting
+        the trees. It's in the form [{"id": generator_id, "timestamp": timestamp}]
+        With id a str containing only characters in "a-zA-Z0-9_-" and must be
+        between 1 and 36 characters. It must reference an existing generator.
+        With timestamp an positive and not null integer.
+        :param version: version of the tree to get.
+        :type version: str or int.
+        :default version: default version of the tree.
+
+        :return: Decision trees.
+        :rtype: list of dict.
+
+        :raises CraftAiBadRequestError: if all of the ids are invalid or
+        referenced non existing generators or all of the timestamp are invalid.
+        :raises CraftAiLongRequestTimeOutError: if the API doesn't get
+        the tree in the time given by the configuration.
+        """
+        if isinstance(version, int):
+            version = str(version)
+        self._requests_session.headers["x-craft-ai-tree-version"] = version
+
+        # Check all ids, raise an error if all ids are invalid
+        valid_indices, invalid_indices, invalid_dts = self._check_entity_id_bulk(
+            payload
+        )
+
+        if self._config["decisionTreeRetrievalTimeout"] is False:
+            # Don't retry
+            return self._get_generators_decision_trees_bulk(
+                payload, valid_indices, invalid_indices, invalid_dts
+            )
+        start = current_time_ms()
+        while True:
+            now = current_time_ms()
+            if now - start > self._config["decisionTreeRetrievalTimeout"]:
+                # Client side timeout
+                raise CraftAiLongRequestTimeOutError()
+            try:
+                return self._get_generators_decision_trees_bulk(
+                    payload, valid_indices, invalid_indices, invalid_dts
                 )
             except CraftAiLongRequestTimeOutError:
                 # Do nothing and continue.
@@ -1001,50 +1147,50 @@ class Client(object):
             raise CraftAiBadRequestError(ERROR_ID_MESSAGE)
 
     def _check_entity_id_bulk(self, payload, check_serializable=True):
-        """Checks that all the given agent ids are valid non-empty strings
-        and if the agents are serializable.
+        """Checks that all the given entity ids are valid non-empty strings
+        and if the entities are serializable.
 
-        :param list payload: list of dictionnary which represents an agent.
+        :param list payload: list of dictionnary which represents an entity.
 
-        :return: list of the agents with valid ids, list of the agents with
+        :return: list of the entities with valid ids, list of the entities with
         invalid ids, list of the dictionnaries with valid ids.
         :rtype: list, list, list of dict.
 
-        :raise CraftAiBadRequestError: If all the agents are invalid.
+        :raise CraftAiBadRequestError: If all the entities are invalid.
         """
-        invalid_agent_indices = []
-        valid_agent_indices = []
+        invalid_entity_indices = []
+        valid_entity_indices = []
         invalid_payload = []
-        for index, agent in enumerate(payload):
-            # Check if the agent ID is valid
+        for index, entity in enumerate(payload):
+            # Check if the entity ID is valid
             try:
-                if "id" in agent:
-                    self._check_entity_id(agent["id"])
+                if "id" in entity:
+                    self._check_entity_id(entity["id"])
             except CraftAiBadRequestError:
-                invalid_agent_indices.append(index)
+                invalid_entity_indices.append(index)
                 invalid_payload.append(
                     {
-                        "id": agent["id"],
+                        "id": entity["id"],
                         "error": CraftAiBadRequestError(ERROR_ID_MESSAGE),
                     }
                 )
             else:
                 if check_serializable:
-                    # Check if the agent is serializable
+                    # Check if the entity is serializable
                     try:
-                        json.dumps([agent])
+                        json.dumps([entity])
                     except TypeError as err:
-                        invalid_agent_indices.append(index)
-                        invalid_payload.append({"id": agent["id"], "error": err})
+                        invalid_entity_indices.append(index)
+                        invalid_payload.append({"id": entity["id"], "error": err})
                     else:
-                        valid_agent_indices.append(index)
+                        valid_entity_indices.append(index)
                 else:
-                    valid_agent_indices.append(index)
+                    valid_entity_indices.append(index)
 
-        if len(invalid_agent_indices) == len(payload):
+        if len(invalid_entity_indices) == len(payload):
             raise CraftAiBadRequestError(ERROR_ID_MESSAGE)
 
-        return valid_agent_indices, invalid_agent_indices, invalid_payload
+        return valid_entity_indices, invalid_entity_indices, invalid_payload
 
     @staticmethod
     def _recreate_list_with_indices(indices1, values1, indices2, values2):
@@ -1101,7 +1247,6 @@ class Client(object):
                     err.__str__()
                 )
             )
-
         if request_type == "POST":
             resp = self._requests_session.post(req_url, headers=ct_header, data=json_pl)
         elif request_type == "DELETE":
@@ -1112,8 +1257,6 @@ class Client(object):
             raise CraftAiBadRequestError(
                 "Request for the bulk API should be either a POST or DELETE" "request"
             )
-
-        agents = self._decode_response(resp)
-        agents = self._decode_response_bulk(agents)
-
-        return agents
+        entities = self._decode_response(resp)
+        entities = self._decode_response_bulk(entities)
+        return entities
