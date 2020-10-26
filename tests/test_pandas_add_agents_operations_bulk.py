@@ -39,6 +39,10 @@ if CRAFTAI_PANDAS_ENABLED:
             self.client.create_agent(SIMPLE_AGENT_CONFIGURATION, self.agent_id1)
             self.client.create_agent(SIMPLE_AGENT_CONFIGURATION, self.agent_id2)
 
+        def tearDown(self):
+            self.client.delete_agent(self.agent_id1)
+            self.client.delete_agent(self.agent_id2)
+
         def clean_up_agent(self, aid):
             # Makes sure that no agent with the standard ID remains
             self.client.delete_agent(aid)
@@ -201,6 +205,10 @@ if CRAFTAI_PANDAS_ENABLED:
             for agent_id in self.agents:
                 self.client.delete_agent(agent_id)
                 self.client.create_agent(SIMPLE_AGENT_CONFIGURATION, agent_id)
+
+        def tearDown(self):
+            for agent_id in self.agents:
+                self.client.delete_agent(agent_id)
 
         def clean_up_agent(self, aid):
             # Makes sure that no agent with the standard ID remains
@@ -435,6 +443,9 @@ if CRAFTAI_PANDAS_ENABLED:
             self.client.delete_agent(self.agent_id)
             self.client.create_agent(SIMPLE_AGENT_CONFIGURATION, self.agent_id)
 
+        def tearDown(self):
+            self.client.delete_agent(self.agent_id)
+
         def clean_up_agent(self, aid):
             # Makes sure that no agent with the standard ID remains
             self.client.delete_agent(aid)
@@ -537,6 +548,9 @@ if CRAFTAI_PANDAS_ENABLED:
                 )
                 self.client.delete_agent(self.agent_id)
                 self.client.create_agent(SIMPLE_AGENT_CONFIGURATION, self.agent_id)
+
+            def tearDown(self):
+                self.client.delete_agent(self.agent_id)
 
             def clean_up_agent(self, aid):
                 # Makes sure that no agent with the standard ID remains

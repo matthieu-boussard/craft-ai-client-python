@@ -16,6 +16,10 @@ class TestCreateAgentSuccess(unittest.TestCase):
         cls.client = Client(settings.CRAFT_CFG)
         cls.agent_id = generate_entity_id("test_create_agent")
 
+    def tearDown(self):
+        # This ensures that agents are properly deleted every time
+        self.client.delete_agent(self.agent_id)
+
     def setUp(self):
         # Makes sure that no agent with the same ID already exists
         resp = self.client.delete_agent(self.agent_id)
@@ -56,6 +60,10 @@ class TestCreateAgentFailure(unittest.TestCase):
     def setUpClass(cls):
         cls.client = Client(settings.CRAFT_CFG)
         cls.agent_id = generate_entity_id("test_create_agent")
+
+    def tearDown(self):
+        # This ensures that agents are properly deleted every time
+        self.client.delete_agent(self.agent_id)
 
     def setUp(self):
         # Makes sure that no agent with the same ID already exists

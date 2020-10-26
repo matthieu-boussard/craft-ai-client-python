@@ -24,6 +24,8 @@ script:
   - poetry run task lint
   - poetry run pytest --durations=10 tests/*.py
   - poetry build
+after_script:
+  - poetry run python scripts/clean_up.py
 env:
   jobs:
     - PANDAS=1

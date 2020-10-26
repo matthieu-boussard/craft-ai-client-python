@@ -20,11 +20,15 @@ class TestGetDecisionTreesBulkSuccess(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = Client(settings.CRAFT_CFG)
+        cls.agent_id1 = generate_entity_id(AGENT_ID_1_BASE + "Success")
+        cls.agent_id2 = generate_entity_id(AGENT_ID_2_BASE + "Success")
+
+    @classmethod
+    def tearDown(cls):
+        cls.client.delete_agent(cls.agent_id1)
+        cls.client.delete_agent(cls.agent_id2)
 
     def setUp(self):
-        self.agent_id1 = generate_entity_id(AGENT_ID_1_BASE + "Success")
-        self.agent_id2 = generate_entity_id(AGENT_ID_2_BASE + "Success")
-
         self.client.delete_agent(self.agent_id1)
         self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id1)
         self.client.add_agent_operations(
@@ -202,6 +206,11 @@ class TestGetGroupDecisionTreesBulkSuccess(unittest.TestCase):
         cls.client = Client(settings.CRAFT_CFG)
         cls.agents = []
 
+    @classmethod
+    def tearDownClass(cls):
+        for agent_id in cls.agents:
+            cls.client.delete_agent(agent_id)
+
     def setUp(self):
         for i in range(NB_DECISION_TREES_TO_GET):
             self.agents.append(generate_entity_id(AGENT_ID_1_BASE + "GroupSucc"))
@@ -339,9 +348,13 @@ class TestGetDecisionTreesBulkSomeFailure(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = Client(settings.CRAFT_CFG)
+        cls.agent_id = generate_entity_id(AGENT_ID_1_BASE + "SomeFailure")
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.client.delete_agent(cls.agent_id)
 
     def setUp(self):
-        self.agent_id = generate_entity_id(AGENT_ID_1_BASE + "SomeFailure")
         # Makes sure that no agent with the same ID already exists
         self.client.delete_agent(self.agent_id)
         self.client.create_agent(valid_data.VALID_CONFIGURATION, self.agent_id)

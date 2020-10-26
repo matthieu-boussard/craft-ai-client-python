@@ -15,6 +15,10 @@ class TestDeleteAgentWithValidID(unittest.TestCase):
         cls.client = craft_ai.Client(settings.CRAFT_CFG)
         cls.agent_id = generate_entity_id("test_delete_agent_with_valid_id")
 
+    @classmethod
+    def tearDownClass(cls):
+        cls.client.delete_agent(cls.agent_id)
+
     def setUp(self):
         # Creating an agent may raise an error if one with the same ID
         # already exists. Although it shouldn' matter for the deletion test,
