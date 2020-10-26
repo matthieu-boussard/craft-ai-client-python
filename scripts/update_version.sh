@@ -107,7 +107,7 @@ eval "sed -i.bak 's/$current_major.$current_minor.$current_patch/$next_major.$ne
 eval "sed -i.bak 's/.*\[Unreleased\].*/## [Unreleased](https:\/\/github.com\/$GH_ORG\/$GH_REPO\/compare\/v$next_major.$next_minor.$next_patch...HEAD) ##$NL$NL## [$next_major.$next_minor.$next_patch](https:\/\/github.com\/$GH_ORG\/$GH_REPO\/compare\/v$current_major.$current_minor.$current_patch...v$next_major.$next_minor.$next_patch) - $TODAY ##/g' $CHANGELOG_MD_FILE"
 
 if [ $do_git == 1 ]; then
-  eval "git add $INIT_PY_FILE $CHANGELOG_MD_FILE"
+  eval "git add $INIT_PY_FILE $CHANGELOG_MD_FILE $PROJECT_TOML_FILE" 
   eval "git commit --quiet -m 'Bumping from v$current_major.$current_minor.$current_patch to v$next_major.$next_minor.$next_patch'"
   eval "git tag -a v$next_major.$next_minor.$next_patch -m v$next_major.$next_minor.$next_patch"
 fi
