@@ -48,7 +48,7 @@ client = craft_ai.Client({
 
 **craft ai** is based on the concept of **agents**. In most use cases, one agent is created per user or per device.
 
-An agent is an independent module that stores the history of the **context** of its user or device's context, and learns which **decision** to take based on the evolution of this context in the form of a **decision tree**.
+An agent is an independent module that stores the history of the **context** of its user or device's context, and learns which **decision** to make based on the evolution of this context in the form of a **decision tree**.
 
 In this example, we will create an agent that learns the **decision model** of a light bulb based on the time of the day and the number of people in the room. This dataset is treated as continuous context updates. If your data is more like events, please refer to the [Advanced Configuration section](#advanced-configuration) to know how to configure your agent. Here, the agent's context has 4 properties:
 
@@ -101,9 +101,7 @@ _For further information, check the ['create agent' reference documentation](#cr
 
 ### 4 - Add context operations
 
-We have now created our first agent but it is not able to do much, yet. To learn a decision model it needs to be provided with data, in **craft ai** these are called context operations.
-
-Please note that only value changes are sent, thus if an operation doesn't contain a value, the previous known value is used.
+We have now created our first agent but it is not able to do much, yet. To learn a model it needs to be provided with data, in **craft ai** these are called context operations.
 
 In the following we add 8 operations:
 
@@ -138,6 +136,7 @@ context_list = [
   {
     "timestamp": 1469415720,
     "context": {
+      "timezone": "+02:00",
       "peopleCount": 1,
       "lightbulbState": "ON"
     }
@@ -145,38 +144,49 @@ context_list = [
   {
     "timestamp": 1469416500,
     "context": {
-      "peopleCount": 2
+      "timezone": "+02:00",
+      "peopleCount": 2,
+      "lightbulbState": "ON"
     }
   },
   {
     "timestamp": 1469417460,
     "context": {
+      "timezone": "+02:00",
+      "peopleCount": 2,
       "lightbulbState": "OFF"
     }
   },
   {
     "timestamp": 1469419920,
     "context": {
-      "peopleCount": 0
+      "timezone": "+02:00",
+      "peopleCount": 0,
+      "lightbulbState": "OFF"
     }
   },
   {
     "timestamp": 1469460180,
     "context": {
-      "peopleCount": 2
+      "timezone": "+02:00",
+      "peopleCount": 2,
+      "lightbulbState": "OFF"
     }
   },
   {
     "timestamp": 1469471700,
     "context": {
+      "timezone": "+02:00",
+      "peopleCount": 2,
       "lightbulbState": "ON"
     }
   },
   {
     "timestamp": 1469473560,
     "context": {
+      "timezone": "+02:00",
       "peopleCount": 0,
-      "lightbulbState": "OFF"
+      "lightbulbState": "ON"
     }
   }
 ]
@@ -184,7 +194,7 @@ client.add_agent_operations(agent_id, context_list)
 print("Successfully added initial operations to agent", agent_id, "!")
 ```
 
-In real-world applications, you'll probably do the same kind of things when the agent is created and then, regularly throughout the lifetime of the agent with newer data.
+In real-world applications you will probably do the same kind of thing when the agent is created, and then regularly throughout the lifetime of the agent with newer data.
 
 _For further information, check the ['add context operations' reference documentation](#add-operations)._
 
@@ -211,7 +221,8 @@ print("Successfully added initial operations to agent", agent_id, "!")
 dt_timestamp = 1469476800
 decision_tree = client.get_agent_decision_tree(agent_id, dt_timestamp)
 print("The full decision tree at timestamp", dt_timestamp, "is the following:")
-print(decision_tree)
+import json
+print(json.dumps(decision_tree,indent=2))
 """ Outputted tree is the following
   {
     "_version":"2.0.0",
@@ -356,9 +367,9 @@ Try to retrieve the tree at different timestamps to see how it gradually learns 
 
 _For further information, check the ['compute decision tree' reference documentation](#compute)._
 
-### 6 - Take a decision
+### 6 - Make a decision
 
-Once the decision tree is computed it can be used to take a decision. In our case it is basically answering this type of question: "What is the anticipated **state of the lightbulb** at 7:15 if there are 2 persons in the room ?".
+Once the decision tree is computed it can be used to make a decision. In our case it is basically answering this type of question: "What is the anticipated **state of the lightbulb** at 7:15 if there are 2 persons in the room ?".
 
 ```python
 agent_id = "my_first_agent"
@@ -388,7 +399,7 @@ resp = client.decide(decision_tree, context)
 print("The anticipated lightbulb state is:", resp["output"]["lightbulbState"]["predicted_value"])
 ```
 
-_For further information, check the ['take decision' reference documentation](#take-decision)._
+_For further information, check the ['make decision' reference documentation](#make-decision)._
 
 ### Python starter kit ###
 
@@ -407,7 +418,7 @@ If you prefer to get started from an existing code base, the official Python sta
 Each agent has a configuration defining:
 
 - the context schema, i.e. the list of property keys and their type (as defined in the following section),
-- the output properties, i.e. the list of property keys on which the agent takes decisions,
+- the output properties, i.e. the list of property keys on which the agent makes decisions,
 
 > :warning: In the current version, only one output property can be provided.
 
@@ -432,10 +443,6 @@ Each agent has a configuration defining:
 
 > :warning: the absolute value of a `continuous` property must be less than 10<sup>20</sup>.
 
-A base type property can be defined as *optional* if its value is likely to be unknown at some point in time and that it is to be considered as a normal behavior, and not as a missing property. You can achieve that by adding `is_optional: true` to the property definition in your configuration.
-
-> :warning: An optional property cannot be set as being an output of the agent.
-
 Here is a simple example of configuration :
 ```json
 {
@@ -444,8 +451,7 @@ Here is a simple example of configuration :
       "type": "enum"
     },
     "temperature": {
-      "type": "continuous",
-      "is_optional": true
+      "type": "continuous"
     },
     "lightbulbState": {
       "type": "enum"
@@ -526,7 +532,7 @@ Here is a simple example of configuration :
 
 ##### Examples
 
-Let's take a look at the following configuration. It is designed to model the **color** of a lightbulb (the `lightbulbColor` property, defined as an output) depending on the **outside light intensity** (the `lightIntensity` property), the **TV status** (the `TVactivated` property) the **time of the day** (the `time` property) and the **day of the week** (the `day` property). Since `TVactivated` doesn't make any sense if the TV isn't here, we also specify this property as `is_optional: true`.
+Let's take a look at the following configuration. It is designed to model the **color** of a lightbulb (the `lightbulbColor` property, defined as an output) depending on the **outside light intensity** (the `lightIntensity` property), the **TV status** (the `TVactivated` property) the **time of the day** (the `time` property) and the **day of the week** (the `day` property).
 
 `day` and `time` values will be generated automatically, hence the need for
 `timezone`, the current Time Zone, to compute their value from given
@@ -548,8 +554,7 @@ the decision model.
       "type": "continuous"
     },
     "TVactivated": {
-      "type": "boolean",
-      "is_optional": true
+      "type": "boolean"
     },
     "time": {
       "type": "time_of_day"
@@ -599,7 +604,7 @@ provided continuously.
 
 ### Timestamp
 
-**craft ai** API heavily relies on `timestamps`. A `timestamp` is an instant represented as a [Unix time](https://en.wikipedia.org/wiki/Unix_time), that is to say the amount of seconds elapsed since Thursday, 1 January 1970 at midnight UTC. In most programming languages this representation is easy to retrieve, you can refer to [**this page**](https://github.com/techgaun/unix-time/blob/master/README.md) to find out how.
+**craft ai** API heavily relies on `timestamps`. A `timestamp` is an instant represented as a [Unix time](https://en.wikipedia.org/wiki/Unix_time), that is to say the amount of seconds elapsed since Thursday, 1 January 1970 at midnight UTC. Note that some programming languages use timestamps in milliseconds, but here we only refer to timestamps **in seconds**. In most programming languages this representation is easy to retrieve, you can refer to [**this page**](https://github.com/techgaun/unix-time/blob/master/README.md) to find out how.
 
 #### `craft_ai.Time` #####
 
@@ -654,6 +659,7 @@ The following **advanced** configuration parameters can be set in specific cases
 - **`operations_as_events`** is a boolean, either `true` or `false`. The default value is `false`. If it is set to true, all context operations are treated as events, as opposed to context updates. This is appropriate if the data for an agent is made of events that have no duration, and if many events are more significant than a few. If `operations_as_events` is `true`, `learning_period` and the advanced parameter `tree_max_operations` must be set as well. In that case, `time_quantum` is ignored because events have no duration, as opposed to the evolution of an agent's context over time.
 - **`tree_max_operations`** is a positive integer. It **can and must** be set only if `operations_as_events` is `true`. It defines the maximum number of events on which a single decision tree can be based. It is complementary to `learning_period`, which limits the maximum age of events on which a decision tree is based.
 - **`tree_max_depth`** is a positive integer. It defines the maximum depth of decision trees, which is the maximum distance between the root node and a leaf (terminal) node. A depth of 0 means that the tree is made of a single root node. By default, `tree_max_depth` is set to 6 if the output is categorical (e.g. `enum`), or to 4 if the output is numerical (e.g. `continuous`).
+- **`min_samples_per_leaf`** is a positive integer. It defines the minimum number of samples that must be in a leaf to allow a split that creates this leaf. It is complementary to `tree_max_depth` in preventing the tree from overgrowing, hence limiting overfitting. By default, `min_samples_per_leaf` is set to 4.
 
 These advanced configuration parameters are optional, and will appear in the agent information returned by **craft ai** only if you set them to something other than their default value. If you intend to use them in a production environment, please get in touch with us.
 
@@ -765,22 +771,22 @@ GENERATOR_NAME = 'smarthome_gen'
 GENERATOR_FILTER = ['smarthome']
 GENERATOR_CONFIGURATION = {
   "context": {
-      "light": {
-          "type": "enum"
-      },
-      "tz": {
-          "type": "timezone"
-      },
-      "movement": {
-          "type": "continuous"
-      },
-      "time": {
-          "type": "time_of_day",
-          "is_generated": True
-      }
+    "light": {
+      "type": "enum"
+    },
+    "tz": {
+      "type": "timezone"
+    },
+    "movement": {
+      "type": "continuous"
+    },
+    "time": {
+      "type": "time_of_day",
+      "is_generated": True
+    }
   },
   "output": [
-      "light"
+    "light"
   ],
   "learning_period": 1500000,
   "tree_max_operations": 15000,
@@ -812,41 +818,43 @@ client.get_generator(
 )
 
 ### Ouputted info is the following
-"""{
-    "_version": "2.0.0"
-    "id": "smarthome_gen",
-    "configuration": {
-        "operations_as_events": True,
-        "learning_period": 1500000,
-        "tree_max_operations": 15000,
-        "context": {
-            "light": {
-                "type": "enum"
-            },
-            "tz": {
-                "type": "timezone"
-            },
-            "movement": {
-                "type": "continuous"
-            },
-            "time": {
-                "type": "time_of_day",
-                "is_generated": True
-            }
-        },
-        "output": [
-            "light"
-        ],
-        "filter": [
-            "smarthome"
-        ]
+"""
+{
+  "_version": "2.0.0"
+  "id": "smarthome_gen",
+  "configuration": {
+    "operations_as_events": True,
+    "learning_period": 1500000,
+    "tree_max_operations": 15000,
+    "context": {
+      "light": {
+        "type": "enum"
+      },
+      "tz": {
+        "type": "timezone"
+      },
+      "movement": {
+        "type": "continuous"
+      },
+      "time": {
+        "type": "time_of_day",
+        "is_generated": True
+      }
     },
-    "firstTimestamp": 1254836352,
-    "lastTimestamp": 1272721522,
-    "agents": [
-        "smarthome"
+    "output": [
+      "light"
     ],
-  }"""
+    "filter": [
+      "smarthome"
+    ]
+  },
+  "firstTimestamp": 1254836352,
+  "lastTimestamp": 1272721522,
+  "agents": [
+    "smarthome"
+  ],
+}
+"""
 ###
 
 ```
@@ -892,142 +900,142 @@ client.get_generator_decision_tree(
   "_version": "2.0.0",
   "trees": {
     "light": {
-        "children": [
+      "children": [
+        {
+          "predicted_value": "OFF",
+          "confidence": 0.9966583847999572,
+          "decision_rule": {
+            "operand": [
+              7.25,
+              22.65
+            ],
+            "operator": "[in[",
+            "property": "time"
+          }
+        },
+        {
+          "children": [
             {
-                "predicted_value": "OFF",
-                "confidence": 0.9966583847999572,
-                "decision_rule": {
-                    "operand": [
-                        7.25,
-                        22.65
-                    ],
-                    "operator": "[in[",
-                    "property": "time"
-                }
+              "predicted_value": "ON",
+              "confidence": 0.9618390202522278,
+              "decision_rule": {
+                "operand": [
+                  22.65,
+                  0.06666667
+                ],
+                "operator": "[in[",
+                "property": "time"
+              }
             },
             {
-                "children": [
-                    {
-                        "predicted_value": "ON",
-                        "confidence": 0.9618390202522278,
-                        "decision_rule": {
-                            "operand": [
-                                22.65,
-                                0.06666667
-                            ],
-                            "operator": "[in[",
-                            "property": "time"
-                        }
-                    },
-                    {
-                        "children": [
-                            {
-                                "predicted_value": "OFF",
-                                "confidence": 0.9797198176383972,
-                                "decision_rule": {
-                                    "operand": [
-                                        0.06666667,
-                                        0.6
-                                    ],
-                                    "operator": "[in[",
-                                    "property": "time"
-                                }
-                            },
-                            {
-                                "children": [
-                                    {
-                                        "predicted_value": "ON",
-                                        "confidence": 0.9585137963294984,
-                                        "decision_rule": {
-                                            "operand": [
-                                                0.6,
-                                                2.25
-                                            ],
-                                            "operator": "[in[",
-                                            "property": "time"
-                                        }
-                                    },
-                                    {
-                                        "children": [
-                                            {
-                                                "predicted_value": "OFF",
-                                                "confidence": 0.8077218532562256,
-                                                "decision_rule": {
-                                                    "operand": [
-                                                        2.25,
-                                                        2.4666667
-                                                    ],
-                                                    "operator": "[in[",
-                                                    "property": "time"
-                                                }
-                                            },
-                                        ],
-                                        "decision_rule": {
-                                            "operand": [
-                                                2.25,
-                                                7.25
-                                            ],
-                                            "operator": "[in[",
-                                            "property": "time"
-                                        }
-                                    }
-                                ],
-                                "decision_rule": {
-                                    "operand": [
-                                        0.6,
-                                        7.25
-                                    ],
-                                    "operator": "[in[",
-                                    "property": "time"
-                                }
-                            }
-                        ],
-                        "decision_rule": {
-                            "operand": [
-                                0.06666667,
-                                7.25
-                            ],
-                            "operator": "[in[",
-                            "property": "time"
-                        }
-                    }
-                ],
-                "decision_rule": {
+              "children": [
+                {
+                  "predicted_value": "OFF",
+                  "confidence": 0.9797198176383972,
+                  "decision_rule": {
                     "operand": [
-                        22.65,
-                        7.25
+                      0.06666667,
+                      0.6
                     ],
                     "operator": "[in[",
                     "property": "time"
+                  }
+                },
+                {
+                  "children": [
+                    {
+                      "predicted_value": "ON",
+                      "confidence": 0.9585137963294984,
+                      "decision_rule": {
+                        "operand": [
+                          0.6,
+                          2.25
+                        ],
+                        "operator": "[in[",
+                        "property": "time"
+                      }
+                    },
+                    {
+                      "children": [
+                        {
+                          "predicted_value": "OFF",
+                          "confidence": 0.8077218532562256,
+                          "decision_rule": {
+                            "operand": [
+                              2.25,
+                              2.4666667
+                            ],
+                            "operator": "[in[",
+                            "property": "time"
+                          }
+                        }
+                      ],
+                      "decision_rule": {
+                        "operand": [
+                          2.25,
+                          7.25
+                        ],
+                        "operator": "[in[",
+                        "property": "time"
+                      }
+                    }
+                  ],
+                  "decision_rule": {
+                    "operand": [
+                      0.6,
+                      7.25
+                    ],
+                    "operator": "[in[",
+                    "property": "time"
+                  }
                 }
+              ],
+              "decision_rule": {
+                "operand": [
+                  0.06666667,
+                  7.25
+                ],
+                "operator": "[in[",
+                "property": "time"
+              }
             }
-        ]
+          ],
+          "decision_rule": {
+            "operand": [
+              22.65,
+              7.25
+            ],
+            "operator": "[in[",
+            "property": "time"
+          }
+        }
+      ]
     }
-},
-"configuration": {
+  },
+  "configuration": {
     "operations_as_events": True,
     "learning_period": 1500000,
     "tree_max_operations": 15000,
     "context": {
-        "light": {
-            "type": "enum"
-        },
-        "tz": {
-            "type": "timezone"
-        },
-        "movement": {
-            "type": "continuous"
-        },
-        "time": {
-            "type": "time_of_day",
-            "is_generated": True
-        }
+      "light": {
+        "type": "enum"
+      },
+      "tz": {
+        "type": "timezone"
+      },
+      "movement": {
+        "type": "continuous"
+      },
+      "time": {
+        "type": "time_of_day",
+        "is_generated": True
+      }
     },
     "output": [
-        "light"
+      "light"
     ],
     "filter": [
-        "smarthome"
+      "smarthome"
     ]
   }
 }
@@ -1054,57 +1062,58 @@ client.computeGeneratorDecision(
 {
   "_version": "2.0.0",
   "context": {
-      "tz": "+02:00",
-      "movement": 2,
-      "time": 7.5
+    "tz": "+02:00",
+    "movement": 2,
+    "time": 7.5
   },
   "output": {
     "light": {
-        "predicted_value": "OFF",
-        "confidence": 0.8386044502258301,
-        "decision_rules": [
-            {
-                "operand": [
-                    2.1166666,
-                    10.333333
-                ],
-                "operator": "[in[",
-                "property": "time"
-            },
-            {
-                "operand": [
-                    2.1166666,
-                    9.3
-                ],
-                "operator": "[in[",
-                "property": "time"
-            },
-            {
-                "operand": [
-                    2.1166666,
-                    8.883333
-                ],
-                "operator": "[in[",
-                "property": "time"
-            },
-            {
-                "operand": [
-                    3.5333333,
-                    8.883333
-                ],
-                "operator": "[in[",
-                "property": "time"
-            }
-        ],
-        "nb_samples": 442,
-        "decision_path": "0-0-0-0-1",
-        "distribution": [
-            0.85067874,
-            0.14932127
-        ]
+      "predicted_value": "OFF",
+      "confidence": 0.8386044502258301,
+      "decision_rules": [
+        {
+          "operand": [
+            2.1166666,
+            10.333333
+          ],
+          "operator": "[in[",
+          "property": "time"
+        },
+        {
+          "operand": [
+            2.1166666,
+            9.3
+          ],
+          "operator": "[in[",
+          "property": "time"
+        },
+        {
+          "operand": [
+            2.1166666,
+            8.883333
+          ],
+          "operator": "[in[",
+          "property": "time"
+        },
+        {
+          "operand": [
+            3.5333333,
+            8.883333
+          ],
+          "operator": "[in[",
+          "property": "time"
+        }
+      ],
+      "nb_samples": 442,
+      "decision_path": "0-0-0-0-1",
+      "distribution": [
+        0.85067874,
+        0.14932127
+      ]
     }
   }
-}"""
+}
+"""
 ```
 
 ### Context
@@ -1126,6 +1135,7 @@ client.add_agent_operations(
     {
       "timestamp": 1469415720,
       "context": {
+        "timezone": "+02:00",
         "peopleCount": 1,
         "lightbulbState": "ON"
       }
@@ -1133,38 +1143,49 @@ client.add_agent_operations(
     {
       "timestamp": 1469416500,
       "context": {
-        "peopleCount": 2
+        "timezone": "+02:00",
+        "peopleCount": 2,
+        "lightbulbState": "ON"
       }
     },
     {
       "timestamp": 1469417460,
       "context": {
+        "timezone": "+02:00",
+        "peopleCount": 2,
         "lightbulbState": "OFF"
       }
     },
     {
       "timestamp": 1469419920,
       "context": {
-        "peopleCount": 0
+        "timezone": "+02:00",
+        "peopleCount": 0,
+        "lightbulbState": "OFF"
       }
     },
     {
       "timestamp": 1469460180,
       "context": {
-        "peopleCount": 2
+        "timezone": "+02:00",
+        "peopleCount": 2,
+        "lightbulbState": "OFF"
       }
     },
     {
       "timestamp": 1469471700,
       "context": {
+        "timezone": "+02:00",
+        "peopleCount": 2,
         "lightbulbState": "ON"
       }
     },
     {
       "timestamp": 1469473560,
       "context": {
+        "timezone": "+02:00",
         "peopleCount": 0,
-        "lightbulbState": "OFF"
+        "lightbulbState": "ON"
       }
     }
   ]
@@ -1268,9 +1289,9 @@ client.get_agent_decision_tree(
 )
 ```
 
-#### Take decision
+#### Make decision
 
-> :information_source: To take a decision, first compute the decision tree then use the **offline interpreter**.
+> :information_source: To make a decision, first compute the decision tree then use the **offline interpreter**.
 
 ### Bulk
 
@@ -1280,9 +1301,10 @@ The craft ai API includes a bulk route which provides a programmatic option to p
 
 
 
-#### Bulk - Create
+#### Bulk - Create agents
 
 To create several agents at once, use the method `create_agents_bulk` as the following:
+
 ```python
 agent_id_1 = 'my_first_agent'
 agent_id_2 = 'my_second_agent'
@@ -1314,7 +1336,9 @@ creation_bulk_payload = [
 created_agents = client.create_agents_bulk(creation_bulk_payload)
 print(created_agents)
 ```
+
 The variable `created_agents` is an **array of responses**. If an agent has been successfully created, the corresponding response is an object similar to the classic `create_agent()` response. When there are **mixed results**, `created_agents` should looks like:
+
 ```python
 [
   {'_version': '2.0.0',                                 # creation succeeded
@@ -1333,9 +1357,10 @@ The variable `created_agents` is an **array of responses**. If an agent has been
 ]
 ```
 
-#### Bulk - Delete
+#### Bulk - Delete agents
 
 To delete several agents at once, use the method `delete_agents_bulk` as the following:
+
 ```python
 agent_id_1 = 'my_first_agent'
 agent_id_2 = 'my_second_agent'
@@ -1348,6 +1373,7 @@ deletion_bulk_payload = [
 deleted_agents = client.delete_agents_bulk(creation_bulk_payload)
 print(agents_deleted)
 ```
+
 The variable `deleted_agents` is an **array of responses**. If an agent has been successfully deleted, the corresponding response is an object similar to the classic `delete_agent()` response. When there are **mixed results**, `deleted_agents` should looks like:
 
 ```python
@@ -1376,6 +1402,7 @@ The variable `deleted_agents` is an **array of responses**. If an agent has been
 #### Bulk - Add context Operations
 
 To add operations to several agents at once, use the method `add_agents_operations_bulk` as the following:
+
 ```python
 agent_id_1 = 'my_first_agent'
 agent_id_2 = 'my_second_agent'
@@ -1392,19 +1419,24 @@ operations_agent_1 = [
   {
     'timestamp': 1469410200,
     'context': {
+      'timezone': '+02:00',
       'peopleCount': 1,
       'lightbulbState': 'ON'
     }
   },
-    {
+  {
     'timestamp': 1469410200,
     'context': {
-      'peopleCount': 2
+      'timezone': '+02:00',
+      'peopleCount': 2,
+      'lightbulbState': 'ON'
     }
   },
-    {
+  {
     'timestamp': 1469410200,
     'context': {
+      'timezone': '+02:00',
+      'peopleCount': 2,
       'lightbulbState': 'OFF'
     }
   }
@@ -1435,7 +1467,7 @@ The variable `agents` is an **array of responses**. If an agent has successfully
 ]
 ```
 
-#### Bulk - Compute decision trees
+#### Bulk - Compute agents' decision trees
 
 To get the tree of several agents at once, use the method `get_agents_decision_trees_bulk` as the following:
 
@@ -1471,8 +1503,19 @@ The variable `trees` is an **array of responses**. If an agent’s model has suc
    'id': 'my_unknown_agent'
    }
 ]
+```
 
-  ```
+#### Bulk - Create generators
+
+
+
+#### Bulk - Delete generators
+
+
+
+#### Bulk - Compute generators' decision trees
+
+
 
 ### Advanced client configuration ###
 
@@ -1529,7 +1572,7 @@ client._requests_session.verify = False
 
 The decision tree interpreter can be used offline from decisions tree computed through the API.
 
-### Take decision ###
+### Make decision ###
 
 Note that the python interpreter takes an array of contexts.
 
@@ -1539,7 +1582,7 @@ tree = { ... } # Decision tree as retrieved through the craft ai REST API
 # Compute the decision on a fully described context
 decision = craft_ai.Interpreter.decide(
   tree,
-  [{ # The context on which the decision is taken
+  [{ # The context on which the decision is made
     "timezone": "+02:00",
     "timeOfDay": 7.5,
     "peopleCount": 3
@@ -1564,7 +1607,7 @@ A computed `decision` on an `enum` output type would look like:
 
 ```python
 {
-  "context": { # In which context the decision was taken
+  "context": { # In which context the decision was made
     "timezone": "+02:00",
     "timeOfDay": 7.5,
     "peopleCount": 3
@@ -1681,7 +1724,7 @@ The **craft ai** python client has its specific exception types, all of them inh
 
 All methods which have to send an http request (all of them except `decide`) may raise either of these exceptions: `CraftAINotFoundError`, `CraftAIBadRequestError`, `CraftAICredentialsError` or `CraftAIUnknownError`.
 
-The `decide` method only raises `CrafAIDecisionError` of `CraftAiNullDecisionError` type of exceptions. The latter is raised when no the given context is valid but no decision can be taken.
+The `decide` method only raises `CrafAIDecisionError` of `CraftAiNullDecisionError` type of exceptions. The latter is raised when no the given context is valid but no decision can be made.
 
 ## Pandas support ##
 
@@ -1802,7 +1845,7 @@ df = client.get_agent_states("my_new_agent")
 
 #### `craft_ai.pandas.Client.decide_from_contexts_df` #####
 
-Take multiple decisions on a given `DataFrame` following the same format as above.
+Make multiple decisions on a given `DataFrame` following the same format as above.
 
 ```python
 decisions_df = client.decide_from_contexts_df(tree, pd.DataFrame(
