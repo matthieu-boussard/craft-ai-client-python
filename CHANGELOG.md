@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Delete `is_optional` because it is now deployed everywhere.
 - Fix the `semver` deprecated syntax.
 - Fix tests that could let dangling agents in test projects.
-- Fix deployement script.
+- Fix deployment script.
 
 ### Changed
 
