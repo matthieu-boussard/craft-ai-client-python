@@ -721,7 +721,6 @@ class Client(object):
 
         responses = []
         for chunk in chunked_data:
-            print("On a un bon chunk", chunk)
             if len(chunk) > 1:
                 try:
                     json_pl = json.dumps(chunk)

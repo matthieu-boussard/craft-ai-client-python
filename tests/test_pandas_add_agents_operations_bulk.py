@@ -1,7 +1,5 @@
-# from craft_ai.pandas import CRAFTAI_PANDAS_ENABLED
+from craft_ai.pandas import CRAFTAI_PANDAS_ENABLED
 
-
-CRAFTAI_PANDAS_ENABLED = True
 if CRAFTAI_PANDAS_ENABLED:
     import unittest
     import pandas as pd
@@ -43,6 +41,7 @@ if CRAFTAI_PANDAS_ENABLED:
             self.client.create_agent(SIMPLE_AGENT_CONFIGURATION, self.agent_id1)
             self.client.create_agent(SIMPLE_AGENT_CONFIGURATION, self.agent_id2)
 
+<<<<<<< HEAD
         def tearDown(self):
             self.client.delete_agent(self.agent_id1)
             self.client.delete_agent(self.agent_id2)
@@ -51,10 +50,12 @@ if CRAFTAI_PANDAS_ENABLED:
             # Makes sure that no agent with the standard ID remains
             self.client.delete_agent(aid)
 
+=======
+>>>>>>> Adding according to Matthieu suggestion
         def clean_up_agents(self, aids):
             # Makes sure that no agent with the standard ID remains
             for aid in aids:
-                self.clean_up_agent(aid)
+                self.client.deletec(aid)
 
         def test_add_agents_operations_bulk_with_df_operations(self):
             """add_agents_operations_bulk should succeed when given dataframe as input
@@ -214,14 +215,10 @@ if CRAFTAI_PANDAS_ENABLED:
             for agent_id in self.agents:
                 self.client.delete_agent(agent_id)
 
-        def clean_up_agent(self, aid):
-            # Makes sure that no agent with the standard ID remains
-            self.client.delete_agent(aid)
-
         def clean_up_agents(self, aids):
             # Makes sure that no agent with the standard ID remains
             for aid in aids:
-                self.clean_up_agent(aid)
+                self.client.delete_agent(aid)
 
         def test_add_agents_operations_bulk_group_agents(self):
             """add_agents_operations_bulk should succeed when given many agents to add
