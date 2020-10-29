@@ -1,5 +1,7 @@
-from craft_ai.pandas import CRAFTAI_PANDAS_ENABLED
+# from craft_ai.pandas import CRAFTAI_PANDAS_ENABLED
 
+
+CRAFTAI_PANDAS_ENABLED = True
 if CRAFTAI_PANDAS_ENABLED:
     import unittest
     import pandas as pd
@@ -19,6 +21,8 @@ if CRAFTAI_PANDAS_ENABLED:
     SIMPLE_AGENT_DATA = pandas_valid_data.SIMPLE_AGENT_DATA
     SIMPLE_AGENT_MANY_DATA = pandas_valid_data.SIMPLE_AGENT_MANY_DATA
     SIMPLE_AGENT_DATA_DICT = pandas_valid_data.SIMPLE_AGENT_DATA_DICT
+    MISSING_AGENT_DATA = pandas_valid_data.MISSING_AGENT_DATA
+    MISSING_AGENT_CONFIGURATION = pandas_valid_data.MISSING_AGENT_CONFIGURATION
     INVALID_DF_INDEX = pandas_invalid_data.INVALID_DF_INDEX
     SIMPLE_AGENT_MANY_DATA = pandas_valid_data.SIMPLE_AGENT_MANY_DATA
 
@@ -239,6 +243,55 @@ if CRAFTAI_PANDAS_ENABLED:
                 self.assertEqual(resp["added_operations_count"], len(SIMPLE_AGENT_DATA))
 
             self.addCleanup(self.clean_up_agents, self.agents)
+
+    @unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
+    class TestAddOperationsBulkWithMissingSuccess(unittest.TestCase):
+        """Checks that the client succeeds when adding operations to
+        multiple agent(s) with OK input"""
+
+        @classmethod
+        def setUpClass(cls):
+            cls.client = craft_ai.pandas.Client(settings.CRAFT_CFG)
+
+        def setUp(self):
+            self.agent_id1 = generate_entity_id(AGENT_ID_BASE + "BulkSuccess")
+            self.agent_id2 = generate_entity_id(AGENT_ID_BASE + "BulkSuccess")
+            self.client.delete_agent(self.agent_id1)
+            self.client.delete_agent(self.agent_id2)
+            self.client.create_agent(MISSING_AGENT_CONFIGURATION, self.agent_id1)
+            self.client.create_agent(MISSING_AGENT_CONFIGURATION, self.agent_id2)
+
+        def clean_up_agent(self, aid):
+            # Makes sure that no agent with the standard ID remains
+            self.client.delete_agent(aid)
+
+        def clean_up_agents(self, aids):
+            # Makes sure that no agent with the standard ID remains
+            for aid in aids:
+                self.clean_up_agent(aid)
+
+        def test_add_agents_operations_bulk_with_df_operations_missing_values(self):
+            """add_agents_operations_bulk should succeed when given dataframe as input
+            data, with correct `id`s and a correct df as `operations`.
+
+            It should give a proper JSON response with a list containing dicts with
+            'id' fields being the same as the one in parameters, 'message' fields
+            being a string, 'status' fields being 201 and no 'error' field.
+            """
+            payload = [
+                {"id": self.agent_id1, "operations": MISSING_AGENT_DATA},
+                {"id": self.agent_id2, "operations": MISSING_AGENT_DATA},
+            ]
+            resp = self.client.add_agents_operations_bulk(payload)
+            self.assertIsInstance(resp, list)
+            self.assertEqual(resp[0].get("id"), self.agent_id1)
+            self.assertEqual(resp[1].get("id"), self.agent_id2)
+            self.assertEqual(resp[0].get("status"), 201)
+            self.assertEqual(resp[1].get("status"), 201)
+            self.assertTrue("message" in resp[0].keys())
+            self.assertTrue("message" in resp[1].keys())
+
+            self.addCleanup(self.clean_up_agents, [self.agent_id1, self.agent_id2])
 
     @unittest.skipIf(CRAFTAI_PANDAS_ENABLED is False, "pandas is not enabled")
     class TestAddOperationsBulkFailure(unittest.TestCase):

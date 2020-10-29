@@ -721,6 +721,7 @@ class Client(object):
 
         responses = []
         for chunk in chunked_data:
+            print("On a un bon chunk", chunk)
             if len(chunk) > 1:
                 try:
                     json_pl = json.dumps(chunk)
@@ -731,8 +732,11 @@ class Client(object):
                             err.__str__()
                         )
                     )
+                print(json_pl)
                 resp = self._requests_session.post(url, headers=ct_header, data=json_pl)
+                print(resp)
                 decoded_response = self._decode_response(resp)
+                print(decoded_response)
                 responses += [
                     {
                         **r,

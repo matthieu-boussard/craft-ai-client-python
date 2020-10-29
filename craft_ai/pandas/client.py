@@ -97,6 +97,7 @@ class Client(VanillaClient):
         new_payload = []
         for agent in valid_payload:
             operations = agent["operations"]
+            agent_id = agent["id"]
             if isinstance(operations, pd.DataFrame):
                 if not isinstance(operations.index, pd.DatetimeIndex):
                     raise CraftAiBadRequestError(
@@ -109,19 +110,29 @@ class Client(VanillaClient):
                         "agent {}, it must be tz-aware.".format(agent["id"])
                     )
 
+                agent = super(Client, self).get_agent(agent["id"])
+                tz_col = [
+                    key
+                    for key, value in agent["configuration"]["context"].items()
+                    if value["type"] == "timezone"
+                ]
+                if tz_col:
+                    tz_col = tz_col[0]
+                    operations[tz_col] = create_timezone_df(operations, tz_col).iloc[:, 0]
+
                 new_operations = [
                     {
                         "timestamp": row.name.value
                         // 10 ** 9,  # Timestamp.value returns nanoseconds
                         "context": {
-                            col: row[col]
+                            col: format_input(row[col])
                             for col in operations.columns
                             if is_valid_property_value(col, row[col])
                         },
                     }
                     for _, row in operations.iterrows()
                 ]
-                new_payload.append({"id": agent["id"], "operations": new_operations})
+                new_payload.append({"id": agent_id, "operations": new_operations})
             elif isinstance(operations, list):
                 # Check if the operations are serializable
                 json.dumps([agent])

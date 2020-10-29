@@ -9,7 +9,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+<<<<<<< HEAD
 - Empty payload now throw a proper error.
+=======
+- Fix bug on timezone when operations are added with bulk API
+- Fix bug on missing values when operations are added with bulk API
+>>>>>>> Fix bug on timezone and on missing vlalues on add operations bulk
 
 ## [2.1.0](https://github.com/craft-ai/craft-ai-client-python/compare/v2.0.0...v2.1.0) - 2020-10-26 ##
 

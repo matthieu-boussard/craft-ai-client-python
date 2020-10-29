@@ -2,6 +2,8 @@ import unittest
 
 from craft_ai.pandas import CRAFTAI_PANDAS_ENABLED
 
+CRAFTAI_PANDAS_ENABLED = True
+
 if CRAFTAI_PANDAS_ENABLED:
     import copy
     import pandas as pd
