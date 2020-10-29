@@ -1186,12 +1186,12 @@ class Client(object):
                     else:
                         valid_entity_indices.append(index)
                 else:
-                    valid_agent_indices.append(index)
+                    valid_entity_indices.append(index)
 
         if (len(payload) == 0):
             raise CraftAiBadRequestError(ERROR_EMPTY_PAYLOAD)
 
-        if len(invalid_agent_indices) == len(payload):
+        if len(invalid_entity_indices) == len(payload):
             raise CraftAiBadRequestError(ERROR_ID_MESSAGE)
 
         return valid_entity_indices, invalid_entity_indices, invalid_payload
