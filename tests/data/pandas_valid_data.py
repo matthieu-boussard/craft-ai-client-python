@@ -158,7 +158,7 @@ MISSING_AGENT_DATA = pd.DataFrame(
         [5, "Jacques"],
         [6],
         [np.nan, OPTIONAL_VALUE],
-        [8, np.nan, "+01:00"],
+        [8, None, "+01:00"],
         [9],
         [10],
     ],
