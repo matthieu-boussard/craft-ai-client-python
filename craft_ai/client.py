@@ -731,11 +731,8 @@ class Client(object):
                             err.__str__()
                         )
                     )
-                print(json_pl)
                 resp = self._requests_session.post(url, headers=ct_header, data=json_pl)
-                print(resp)
                 decoded_response = self._decode_response(resp)
-                print(decoded_response)
                 responses += [
                     {
                         **r,

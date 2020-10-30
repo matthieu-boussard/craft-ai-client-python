@@ -102,15 +102,15 @@ class Client(VanillaClient):
                 if not isinstance(operations.index, pd.DatetimeIndex):
                     raise CraftAiBadRequestError(
                         "Invalid dataframe given for agent "
-                        "{}, it is not time indexed.".format(agent["id"])
+                        "{}, it is not time indexed.".format(agent_id)
                     )
                 if operations.index.tz is None:
                     raise CraftAiBadRequestError(
                         "tz-naive DatetimeIndex are not supported for "
-                        "agent {}, it must be tz-aware.".format(agent["id"])
+                        "agent {}, it must be tz-aware.".format(agent_id)
                     )
 
-                agent = super(Client, self).get_agent(agent["id"])
+                agent = super(Client, self).get_agent(agent_id)
                 tz_col = [
                     key
                     for key, value in agent["configuration"]["context"].items()
@@ -138,11 +138,11 @@ class Client(VanillaClient):
             elif isinstance(operations, list):
                 # Check if the operations are serializable
                 json.dumps([agent])
-                new_payload.append({"id": agent["id"], "operations": operations})
+                new_payload.append({"id": agent_id, "operations": operations})
             else:
                 raise CraftAiBadRequestError(
                     "The operations are not put in a DataFrame or a list"
-                    "of dict form for the agent {}.".format(agent["id"])
+                    "of dict form for the agent {}.".format(agent_id)
                 )
 
         return super(Client, self).add_agents_operations_bulk(new_payload)
