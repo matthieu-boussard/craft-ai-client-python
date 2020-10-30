@@ -107,6 +107,17 @@ class TestDeleteAgentsBulkFailure(unittest.TestCase):
             craft_err.CraftAiBadRequestError, self.client.delete_agents_bulk, payload
         )
 
+    def test_delete_agents_with_an_empty_payload(self):
+        """delete_agents_bulk should fail when given payload is empty.
+
+        It should raise an error of invalid given payload.
+        """
+        payload = []
+
+        self.assertRaises(
+            craft_err.CraftAiBadRequestError, self.client.delete_agents_bulk, payload
+        )
+
 
 class TestDeleteBulkAgentsBulkSomeFailure(unittest.TestCase):
     """Checks that the client succeed when deleting

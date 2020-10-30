@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased](https://github.com/craft-ai/craft-ai-client-python/compare/v2.1.0...HEAD) ##
 
+### Fixed
+
+- Empty payload now throw a proper error.
+
 ## [2.1.0](https://github.com/craft-ai/craft-ai-client-python/compare/v2.0.0...v2.1.0) - 2020-10-26 ##
 
 ### Added
