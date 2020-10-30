@@ -118,7 +118,9 @@ class Client(VanillaClient):
                 ]
                 if tz_col:
                     tz_col = tz_col[0]
-                    operations[tz_col] = create_timezone_df(operations, tz_col).iloc[:, 0]
+                    operations[tz_col] = create_timezone_df(operations, tz_col).iloc[
+                        :, 0
+                    ]
 
                 new_operations = [
                     {
