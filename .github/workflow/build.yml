@@ -1,0 +1,28 @@
+name: learn-github-actions
+on: [push]
+jobs:
+  run_tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.6, 3.8]
+        use_pandas: [0, 1]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Run image
+        uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: ${{ matrix.poetry-version }}
+      - name: Install dependencies
+        run: "[ $PANDAS -eq ${{ matrix.use_pandas }} ] && poetry install || poetry install -E pandas"
+      - name: Run lint
+        run: poetry run task lint
+      - name: Run tests
+        run: run pytest --durations=10 tests/*.py
+      - name: Build library
+        run: poetry build
+
